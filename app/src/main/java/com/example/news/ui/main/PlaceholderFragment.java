@@ -1,9 +1,12 @@
 package com.example.news.ui.main;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.support.annotation.Nullable;
 import android.support.annotation.NonNull;
@@ -46,13 +49,18 @@ public class PlaceholderFragment extends Fragment {
             @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_main, container, false);
-        final TextView textView = root.findViewById(R.id.section_label);
+        final Context rootCtx = root.getContext();
+        final ListView listView = root.findViewById(R.id.listView);
         pageViewModel.getText().observe(this, new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
-                textView.setText(s);
+
+                String[] names = {s, s, s, s, s};
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(rootCtx, android.R.layout.simple_list_item_1, names);
+                listView.setAdapter(adapter);
             }
         });
+
         return root;
     }
 }
