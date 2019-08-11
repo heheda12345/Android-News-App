@@ -16,6 +16,8 @@ import android.arch.lifecycle.ViewModelProviders;
 
 import com.example.news.R;
 
+import java.util.List;
+
 /**
  * A placeholder fragment containing a simple view.
  */
@@ -51,12 +53,11 @@ public class PlaceholderFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_main, container, false);
         final Context rootCtx = root.getContext();
         final ListView listView = root.findViewById(R.id.listView);
-        pageViewModel.getText().observe(this, new Observer<String>() {
+        pageViewModel.getVersion().observe(this, new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
-
-                String[] names = {s, s, s, s, s};
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(rootCtx, android.R.layout.simple_list_item_1, names);
+                List<String> newsBrief =  pageViewModel.getNewsBrief();
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(rootCtx, android.R.layout.simple_list_item_1, newsBrief);
                 listView.setAdapter(adapter);
             }
         });
