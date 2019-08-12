@@ -16,6 +16,9 @@ import android.arch.lifecycle.ViewModelProviders;
 
 import com.example.news.R;
 
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -56,8 +59,8 @@ public class PlaceholderFragment extends Fragment {
         pageViewModel.getVersion().observe(this, new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
-                List<String> newsBrief =  pageViewModel.getNewsBrief();
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(rootCtx, android.R.layout.simple_list_item_1, newsBrief);
+                ArrayList<JSONObject> news =  pageViewModel.getNews();
+                NewsListAdapter adapter = new NewsListAdapter(rootCtx, news);
                 listView.setAdapter(adapter);
             }
         });

@@ -46,19 +46,8 @@ public class PageViewModel extends ViewModel {
         return mVersion;
     }
 
-    public ArrayList<String> getNewsBrief() {
-        ArrayList<String> ret = new ArrayList<>();
-        for (int i=0; i<mNews.size(); i++) {
-            String title;
-            try {
-                title = mNews.get(i).getString("title");
-            } catch (JSONException e) {
-                e.printStackTrace();
-                continue;
-            }
-            ret.add(title);
-        }
-        return ret;
+    public ArrayList<JSONObject> getNews() {
+        return mNews;
     }
 
 }

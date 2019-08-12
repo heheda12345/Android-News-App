@@ -2,4 +2,5 @@
     <string name="app_name">News</string>
     <string name="tab_text_1">综合</string>
     <string name="tab_text_2">还是综合</string>
+    <string name="title_activity_news_detail">NewsDetailActivity</string>
 </resources>
