@@ -16,24 +16,34 @@ import android.text.SpannableString;
 import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.news.support.ImageCrawler;
 import com.example.news.support.NewsCrawler;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static android.text.Html.FROM_HTML_MODE_LEGACY;
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+import static java.lang.Math.max;
 
 public class NewsDetailActivity extends AppCompatActivity {
     private static final String LOG_TAG =
             NewsCrawler.class.getSimpleName();
+    final boolean useImage = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,44 +60,93 @@ public class NewsDetailActivity extends AppCompatActivity {
             }
         });
 
+        //解析json
         Intent intent = getIntent();
         String message = intent.getStringExtra("data");
         String title = "";
-        String content = "";
+        ArrayList<String> content = new ArrayList<>();
+        ArrayList<String> imgUrls = new ArrayList<String>();
         try {
             JSONObject jsonNews = new JSONObject(message);
-            content = jsonNews.getString("content");
+            content.addAll(Arrays.asList(jsonNews.getString("content").split("\n")));
             title = jsonNews.getString("title");
+            String url = jsonNews.getString("image");
+            if (url.length() > 2) {
+                imgUrls.addAll(Arrays.asList(url.substring(1, url.length()-1).split(",")));
+            }
+//            JSONArray imageJson = jsonNews.getJSONArray("image");
+//            for (int i=0; i<imageJson.length(); i++) {
+//                imgUrls.add(imageJson.getString(i));
+//            }
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage());
             e.printStackTrace();
         }
 
-        ImageCrawler imageCrawler = new ImageCrawler("http://5b0988e595225.cdn.sohucs.com/images/20190702/0c9bd3240e934475b027b8d5d1b9146e.jpeg");
-        imageCrawler.start();
-        try {
-            imageCrawler.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        // 建立所有imageView
+        ArrayList<ImageView> imageViews = new ArrayList<>();
+        if (useImage) {
+            ArrayList<ImageCrawler> crawlers = new ArrayList<>();
+            for (int i=0; i<imgUrls.size(); i++) {
+                ImageCrawler imageCrawler = new ImageCrawler(imgUrls.get(i));
+                imageCrawler.start();
+                crawlers.add(imageCrawler);
+            }
+            for (int i=0; i<crawlers.size(); i++) {
+                try {
+                    crawlers.get(i).join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    continue;
+                }
+                Bitmap bitmap = crawlers.get(i).getBitmap();
+                ImageView imageView = new ImageView(this);
+                imageView.setImageBitmap(bitmap);
+                ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT);
+                imageView.setLayoutParams(params);
+                imageViews.add(imageView);
+            }
+        }
+        //建立所有的textView
+        ArrayList<TextView> textViews = new ArrayList<>();
+        for (int i=0; i<content.size(); i++) {
+            TextView textView = new TextView(this);
+            textView.setText(content.get(i));
+            textViews.add(textView);
         }
 
         LinearLayout container = findViewById(R.id.container);
-
+        //标题
         TextView titleView = new TextView(this);
         titleView.setText(title);
         titleView.setTextSize(30);
         titleView.setTypeface(null, Typeface.BOLD);
         container.addView(titleView);
+        // 正文
+        if (imageViews.size() > 0 && textViews.size() > 0) {
+            //认为段数比图数多，多余的图放在最后
+            int ratio = max(textViews.size() / imageViews.size(), 1); // 每张图放ratio段文字
+            int imageToUse = 0;
+            for (int i=0; i<textViews.size(); i++) {
+                if (i % ratio == 0 && imageToUse < imageViews.size()) {
+                    container.addView(imageViews.get(imageToUse++));
+                }
+                container.addView(textViews.get(i));
+            }
+            for (int i=imageToUse; i<imageViews.size(); i++) {
+                container.addView(imageViews.get(i));
+            }
+        } else if (imageViews.size() == 0) {
+            for (int i=0; i<textViews.size(); i++) {
+                container.addView(textViews.get(i));
+            }
+        } else {
+            for (int i=0; i<imageViews.size(); i++) {
+                container.addView(imageViews.get(i));
+            }
+        }
 
-        Bitmap bitmap = imageCrawler.getBitmap();
-        ImageView imageView = new ImageView(this);
-        imageView.setImageBitmap(bitmap);
-        container.addView(imageView);
-
-        TextView textView = new TextView(this);
-        textView.setText(content);
-        container.addView(textView);
-
+        //收到的json
         TextView debugView = new TextView(this);
         debugView.setText("Debug:\n" + message);
         container.addView(debugView);
