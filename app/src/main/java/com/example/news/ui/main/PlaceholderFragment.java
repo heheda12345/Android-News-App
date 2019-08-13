@@ -2,6 +2,7 @@ package com.example.news.ui.main;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +48,7 @@ public class PlaceholderFragment extends Fragment {
             index = getArguments().getInt(ARG_SECTION_NUMBER);
         }
         pageViewModel.setIndex(index);
+        Log.d("Placeholder", "created");
     }
 
     @Override
@@ -64,7 +66,7 @@ public class PlaceholderFragment extends Fragment {
                 listView.setAdapter(adapter);
             }
         });
-
+        Log.d("Placeholder", "created view");
         return root;
     }
 }

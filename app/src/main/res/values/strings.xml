@@ -3,4 +3,7 @@
     <string name="tab_text_1">综合</string>
     <string name="tab_text_2">还是综合</string>
     <string name="title_activity_news_detail">NewsDetailActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
