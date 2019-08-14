@@ -20,7 +20,13 @@ public class NewsFragment extends Fragment {
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private static String[] sections = {
             "综合",
-            "还是综合"
+            "还是综合",
+            "Games",
+            "CS",
+            "Good",
+            "Hello",
+            "daishen",
+            "Tsinghua"
     };
 
     public NewsFragment() {
