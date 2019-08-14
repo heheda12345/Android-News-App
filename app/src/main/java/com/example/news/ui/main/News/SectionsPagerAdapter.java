@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.example.news.R;
+import com.example.news.data.UserConfig;
 import com.example.news.ui.main.News.PlaceholderFragment;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 //    @StringRes
 //    private static final int[] TAB_TITLES = new int[]{R.string.tab_text_1, R.string.tab_text_2};
     private final String[] mSectionList;
+    UserConfig userConfig = UserConfig.getInstance();
 
     public SectionsPagerAdapter(FragmentManager fm, final String[] sectionsList) {
         super(fm);
@@ -29,19 +31,18 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return mSectionList[position];
+        return userConfig.getSection(position).getSectionName();
     }
 
     @Override
     public Fragment getItem(int position) {
         // getItem is called to instantiate the fragment for the given page.
         // Return a PlaceholderFragment (defined as a static inner class below).
-        return PlaceholderFragment.newInstance(position + 1);
+        return PlaceholderFragment.newInstance(userConfig.getSection(position));
     }
 
     @Override
     public int getCount() {
-        // Show 2 total pages.
-        return mSectionList.length;
+        return userConfig.getSectionNum();
     }
 }

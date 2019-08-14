@@ -8,6 +8,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.example.news.data.UserConfig;
 import com.example.news.ui.main.MainPagerAdapter;
 
 public class MainActivity extends AppCompatActivity {
@@ -15,6 +16,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        /* Load User Config*/
+
         /* Create Main Tab Layout */
         TabLayout mainTabLayout = findViewById(R.id.main_tabLayout);
         mainTabLayout.addTab(mainTabLayout.newTab().setText(R.string.mainTab_news));

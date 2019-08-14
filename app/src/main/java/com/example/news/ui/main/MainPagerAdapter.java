@@ -22,8 +22,8 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         switch (position) {
-            case 0: return new NewsFragment();
-            case 1: return new MineFragment();
+            case 0: return NewsFragment.newInstance();
+            case 1: return MineFragment.newInstance();
             default: return null;
         }
     }

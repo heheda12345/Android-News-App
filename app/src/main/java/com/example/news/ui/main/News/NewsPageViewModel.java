@@ -5,6 +5,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
+import android.util.Log;
 
 import com.example.news.support.NewsCrawler;
 
@@ -17,16 +18,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-public class PageViewModel extends ViewModel {
+public class NewsPageViewModel extends ViewModel {
     private static final String LOG_TAG =
             NewsCrawler.class.getSimpleName();
 
-    private MutableLiveData<Integer> mIndex = new MutableLiveData<>();
+    private MutableLiveData<NewsCrawler.CrawlerInfo> mCrawlerInfo = new MutableLiveData<>();
     private ArrayList<JSONObject> mNews;
-    private LiveData<String> mVersion = Transformations.map(mIndex, new Function<Integer, String>() {
+    private LiveData<String> mVersion = Transformations.map(mCrawlerInfo, new Function<NewsCrawler.CrawlerInfo, String>() {
         @Override
-        public String apply(Integer input) {
-            NewsCrawler newsCrawler = new NewsCrawler();
+        public String apply(NewsCrawler.CrawlerInfo input) {
+            NewsCrawler newsCrawler = new NewsCrawler(input);
             newsCrawler.start();
             try {
                 newsCrawler.join();
@@ -38,8 +39,9 @@ public class PageViewModel extends ViewModel {
         }
     });
 
-    public void setIndex(int index) {
-        mIndex.setValue(index);
+    public void setInfo(NewsCrawler.CrawlerInfo info) {
+        Log.d("ViewModel", "SetInfo");
+        mCrawlerInfo.setValue(info);
     }
 
     public LiveData<String> getVersion() {

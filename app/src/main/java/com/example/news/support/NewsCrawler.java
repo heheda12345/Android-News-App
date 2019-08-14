@@ -24,6 +24,7 @@ public class NewsCrawler extends Thread {
     private static final String LOG_TAG =
             NewsCrawler.class.getSimpleName();
     private ArrayList<JSONObject> newsResp = new ArrayList<>();
+    private CrawlerInfo crawlerInfo;
 
     private void parse(String response) throws JSONException {
         JSONTokener jsonTokener = new JSONTokener(response);
@@ -33,12 +34,31 @@ public class NewsCrawler extends Thread {
             newsResp.add(data.getJSONObject(i));
         }
     }
+    public static class CrawlerInfo {
+        String keyWords;
+        String time;
+        String category;
+        public CrawlerInfo(String keyWords, String time, String category) {
+            this.keyWords = keyWords;
+            this.time = time;
+            this.category = category;
+        }
+    }
+
+    public NewsCrawler(CrawlerInfo info) {
+        crawlerInfo = info;
+    }
 
     @Override
     public void run() {
         StringBuilder response = new StringBuilder();
         try {
-            URL url = new URL("https://api2.newsminer.net/svc/news/queryNewsList?endDate=2019-08-11");
+            String urlStr = "https://api2.newsminer.net/svc/news/queryNewsList?" +
+                    "words=" + crawlerInfo.keyWords + "&" +
+                    "categories=" + crawlerInfo.category + "&" +
+                    "endDate=" + crawlerInfo.time;
+            Log.d("Crawler", urlStr);
+            URL url = new URL(urlStr);
             HttpURLConnection httpUrlConn = (HttpURLConnection) url.openConnection();
             httpUrlConn.setRequestMethod("GET");
             InputStream input = httpUrlConn.getInputStream();

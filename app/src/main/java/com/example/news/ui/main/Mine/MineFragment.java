@@ -19,7 +19,7 @@ public class MineFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static MineFragment newInstance(String param1, String param2) {
+    public static MineFragment newInstance() {
         MineFragment fragment = new MineFragment();
         return fragment;
     }
