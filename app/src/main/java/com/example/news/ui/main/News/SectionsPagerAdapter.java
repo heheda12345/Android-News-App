@@ -1,4 +1,4 @@
-package com.example.news.ui.main;
+package com.example.news.ui.main.News;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -8,6 +8,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.example.news.R;
+import com.example.news.ui.main.News.PlaceholderFragment;
+
+import java.util.List;
 
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
@@ -15,13 +18,18 @@ import com.example.news.R;
  */
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-    @StringRes
-    private static final int[] TAB_TITLES = new int[]{R.string.tab_text_1, R.string.tab_text_2};
-    private final Context mContext;
+//    @StringRes
+//    private static final int[] TAB_TITLES = new int[]{R.string.tab_text_1, R.string.tab_text_2};
+    private final String[] mSectionList;
 
-    public SectionsPagerAdapter(Context context, FragmentManager fm) {
+    public SectionsPagerAdapter(FragmentManager fm, final String[] sectionsList) {
         super(fm);
-        mContext = context;
+        mSectionList = sectionsList;
+    }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return mSectionList[position];
     }
 
     @Override
@@ -31,15 +39,9 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         return PlaceholderFragment.newInstance(position + 1);
     }
 
-    @Nullable
-    @Override
-    public CharSequence getPageTitle(int position) {
-        return mContext.getResources().getString(TAB_TITLES[position]);
-    }
-
     @Override
     public int getCount() {
         // Show 2 total pages.
-        return 2;
+        return mSectionList.length;
     }
 }

@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".NewsDetailActivity"
+            android:name=".ui.main.News.NewsDetailActivity"
             android:label="@string/title_activity_news_detail"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity

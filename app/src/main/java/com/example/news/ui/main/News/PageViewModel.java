@@ -1,4 +1,4 @@
-package com.example.news.ui.main;
+package com.example.news.ui.main.News;
 
 import android.arch.core.util.Function;
 import android.arch.lifecycle.LiveData;
