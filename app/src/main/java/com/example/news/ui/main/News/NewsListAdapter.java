@@ -3,6 +3,7 @@ package com.example.news.ui.main.News;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +23,13 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public class NewsItemVH extends RecyclerView.ViewHolder {
         public final TextView title;
+        public final TextView author;
+        public final TextView time;
         public NewsItemVH(View v) {
             super(v);
             title = v.findViewById(R.id.title);
+            author = v.findViewById(R.id.author);
+            time = v.findViewById(R.id.time);
         }
 
     }
@@ -39,9 +44,14 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             NewsItemVH itemHolder = (NewsItemVH) holder;
             try {
                 itemHolder.title.setText(mNews.get(position).getString("title"));
+                itemHolder.author.setText(mNews.get(position).getString("publisher"));
+                itemHolder.time.setText(mNews.get(position).getString("publishTime"));
             }
             catch (JSONException e) {
                 e.printStackTrace();
+            }
+            catch (NullPointerException e) {
+                throw e;
             }
             itemHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

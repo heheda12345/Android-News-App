@@ -89,6 +89,7 @@ public class NewsListFragment extends Fragment {
         mRecyclerView = root.findViewById(R.id.news_recyclerView);
         mRecyclerView.setAdapter(mNewsListAdapter);
         mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setHasFixedSize(true);
 
 
         /* 设置PageViewModel，每次有数据更新的时候更新news list*/
