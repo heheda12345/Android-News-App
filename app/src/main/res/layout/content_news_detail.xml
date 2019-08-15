@@ -13,10 +13,15 @@
         android:layout_height="wrap_content" >
 
         <LinearLayout
+            android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="16sp"
+            android:layout_marginTop="10sp"
+            android:layout_marginRight="16sp"
+            android:divider="@drawable/empty_divider"
             android:orientation="vertical"
-            android:id="@+id/container">
+            android:showDividers="middle">
 
 
         </LinearLayout>

@@ -38,6 +38,7 @@ import java.util.Arrays;
 import static android.text.Html.FROM_HTML_MODE_LEGACY;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+import static android.widget.ImageView.ScaleType.FIT_XY;
 import static java.lang.Math.max;
 
 public class NewsDetailActivity extends AppCompatActivity {
@@ -68,7 +69,7 @@ public class NewsDetailActivity extends AppCompatActivity {
         ArrayList<String> imgUrls = new ArrayList<String>();
         try {
             JSONObject jsonNews = new JSONObject(message);
-            content.addAll(Arrays.asList(jsonNews.getString("content").split("\n")));
+            content.addAll(Arrays.asList(jsonNews.getString("content").split("\n+")));
             title = jsonNews.getString("title");
             String url = jsonNews.getString("image");
             if (url.length() > 2) {
@@ -85,6 +86,8 @@ public class NewsDetailActivity extends AppCompatActivity {
 
         // 建立所有imageView
         ArrayList<ImageView> imageViews = new ArrayList<>();
+        ArrayList<Integer> imageViewCanInsert = new ArrayList<>();
+        ArrayList<Boolean> imageViewInserted = new ArrayList<>();
         if (useImage) {
             ArrayList<ImageCrawler> crawlers = new ArrayList<>();
             for (int i=0; i<imgUrls.size(); i++) {
@@ -104,7 +107,12 @@ public class NewsDetailActivity extends AppCompatActivity {
                 imageView.setImageBitmap(bitmap);
                 ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT);
                 imageView.setLayoutParams(params);
+                imageView.setAdjustViewBounds(true);
+                imageView.setScaleType(FIT_XY);
                 imageViews.add(imageView);
+                if (bitmap.getHeight() * 1.0 / bitmap.getWidth() < 1)
+                    imageViewCanInsert.add(imageViews.size() - 1);
+                imageViewInserted.add(false);
             }
         }
         //建立所有的textView
@@ -112,6 +120,9 @@ public class NewsDetailActivity extends AppCompatActivity {
         for (int i=0; i<content.size(); i++) {
             TextView textView = new TextView(this);
             textView.setText(content.get(i));
+            textView.setTextSize(18);
+//            ViewGroup.MarginLayoutParams textViewParam = (ViewGroup.MarginLayoutParams)textView.getLayoutParams();
+//            textViewParam.setMargins(0, 10, 0, 10);
             textViews.add(textView);
         }
 
@@ -119,28 +130,30 @@ public class NewsDetailActivity extends AppCompatActivity {
         //标题
         TextView titleView = new TextView(this);
         titleView.setText(title);
-        titleView.setTextSize(30);
-        titleView.setTypeface(null, Typeface.BOLD);
+        titleView.setTextSize(24);
         container.addView(titleView);
+        Log.d(LOG_TAG, "size "+imageViewCanInsert.size() + " " + textViews.size() + " " + imageViews.size());
         // 正文
-        if (imageViews.size() > 0 && textViews.size() > 0) {
+        if (imageViewCanInsert.size() > 0 && textViews.size() > 0) {
             //认为段数比图数多，多余的图放在最后
-            int ratio = max(textViews.size() / imageViews.size(), 1); // 每张图放ratio段文字
+            int ratio = max(textViews.size() / imageViewCanInsert.size(), 1); // 每张图放ratio段文字
             int imageToUse = 0;
             for (int i=0; i<textViews.size(); i++) {
-                if (i % ratio == 0 && imageToUse < imageViews.size()) {
-                    container.addView(imageViews.get(imageToUse++));
+                if (i % ratio == 0 && imageToUse < imageViewCanInsert.size()) {
+                    container.addView(imageViews.get(imageViewCanInsert.get(imageToUse)));
+                    imageViewInserted.set(imageViewCanInsert.get(imageToUse), true);
+                    imageToUse++;
                 }
                 container.addView(textViews.get(i));
             }
-            for (int i=imageToUse; i<imageViews.size(); i++) {
-                container.addView(imageViews.get(i));
+            for (int i=0; i<imageViews.size(); i++) {
+                if (!imageViewInserted.get(i))
+                    container.addView(imageViews.get(i));
             }
-        } else if (imageViews.size() == 0) {
+        } else {
             for (int i=0; i<textViews.size(); i++) {
                 container.addView(textViews.get(i));
             }
-        } else {
             for (int i=0; i<imageViews.size(); i++) {
                 container.addView(imageViews.get(i));
             }
