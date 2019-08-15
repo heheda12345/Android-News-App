@@ -1,12 +1,11 @@
 package com.example.news.ui.main.News;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.example.news.R;
@@ -14,62 +13,80 @@ import com.example.news.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
+import java.util.List;
 
-public class NewsListAdapter extends BaseAdapter {
+public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private LayoutInflater mInflater;
-    private ArrayList<JSONObject> mNews;
+    private Context mContext;
+    private List<JSONObject> mNews;
 
-    public NewsListAdapter(Context context, ArrayList<JSONObject> news) {
-        this.mInflater = LayoutInflater.from(context);
-        mNews = news;
+    public class NewsItemVH extends RecyclerView.ViewHolder {
+        public final TextView title;
+        public NewsItemVH(View v) {
+            super(v);
+            title = v.findViewById(R.id.title);
+        }
+
     }
+
+    public NewsListAdapter(Context context) {
+        mContext = context;
+    }
+
     @Override
-    public int getCount() {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+        if (holder instanceof NewsItemVH) {
+            NewsItemVH itemHolder = (NewsItemVH) holder;
+            try {
+                itemHolder.title.setText(mNews.get(position).getString("title"));
+            }
+            catch (JSONException e) {
+                e.printStackTrace();
+            }
+            itemHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showNews(mNews.get(position));
+                }
+            });
+        }
+    }
+
+    @Override
+    public int getItemCount() {
         return mNews.size();
     }
 
     @Override
-    public Object getItem(int position) {
-        return null;
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.news_item, parent, false);
+        return new NewsItemVH(v);
     }
 
-    @Override
-    public long getItemId(int position) {
-        return 0;
+    /**
+     * 实现新闻分类改变后存入新的数据
+     * */
+    public void setNews(List<JSONObject> news) {
+        mNews = news;
+        notifyDataSetChanged();
     }
 
-    private void showNews(JSONObject news){
-        Intent intent = new Intent(mInflater.getContext(), NewsDetailActivity.class);
+    /**
+     * 实现下拉刷新功能
+     * */
+    public void addNews(List<JSONObject> news) {
+        int changePos = mNews.size();
+        mNews.addAll(news);
+        notifyItemRangeChanged(changePos, getItemCount());
+    }
+
+    /**
+     * 展示新闻数据
+     * */
+
+    private void showNews(JSONObject news) {
+        Intent intent = new Intent(mContext, NewsDetailActivity.class);
         intent.putExtra("data", news.toString());
-        mInflater.getContext().startActivity(intent);
-    }
-
-    @SuppressLint("InflateParams")
-    @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        TextView title;
-        if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.fragment_main, null);
-            title = convertView.findViewById(R.id.title);
-            convertView.setTag(title);
-        } else {
-            title = (TextView) convertView.getTag();
-        }
-
-        try {
-            title.setText(mNews.get(position).getString("title"));
-        } catch (JSONException e) {
-                e.printStackTrace();
-        }
-
-        title.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showNews(mNews.get(position));
-            }
-        });
-        return convertView;
+        mContext.startActivity(intent);
     }
 }

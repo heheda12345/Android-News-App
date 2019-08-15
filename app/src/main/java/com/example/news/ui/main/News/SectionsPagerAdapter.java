@@ -1,17 +1,10 @@
 package com.example.news.ui.main.News;
 
-import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.example.news.R;
 import com.example.news.data.UserConfig;
-import com.example.news.ui.main.News.PlaceholderFragment;
-
-import java.util.List;
 
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
@@ -37,8 +30,8 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         // getItem is called to instantiate the fragment for the given page.
-        // Return a PlaceholderFragment (defined as a static inner class below).
-        return PlaceholderFragment.newInstance(userConfig.getSection(position));
+        // Return a NewsListFragment (defined as a static inner class below).
+        return NewsListFragment.newInstance(userConfig.getSection(position));
     }
 
     @Override
