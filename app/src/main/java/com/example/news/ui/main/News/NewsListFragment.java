@@ -1,13 +1,12 @@
 package com.example.news.ui.main.News;
 
-import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.support.annotation.Nullable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -39,6 +38,7 @@ public class NewsListFragment extends Fragment {
     private NewsPageViewModel mNewsPageViewModel;
     private NewsListAdapter mNewsListAdapter;
     private RecyclerView mRecyclerView;
+    private LinearLayoutManager mLayoutManager;
 
     public NewsListFragment() {
         // Required empty public constructor
@@ -81,12 +81,14 @@ public class NewsListFragment extends Fragment {
         mNewsPageViewModel.setInfo(new NewsCrawler.CrawlerInfo("", getCurrentTime(), mSectionName));
 
         /*从news List 的layout中构造出NewsList 的root view*/
-        View root = inflater.inflate(R.layout.fragment_newslist, container, false);
+        View root = inflater.inflate(R.layout.fragment_news_list, container, false);
 //        final Context rootContext = root.getContext();
 
         /* 从root view 中构造出recyclerView，存放新闻列表*/
+        mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView = root.findViewById(R.id.news_recyclerView);
         mRecyclerView.setAdapter(mNewsListAdapter);
+        mRecyclerView.setLayoutManager(mLayoutManager);
 
 
         /* 设置PageViewModel，每次有数据更新的时候更新news list*/

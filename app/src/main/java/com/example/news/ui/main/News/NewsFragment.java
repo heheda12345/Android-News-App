@@ -7,11 +7,8 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TableLayout;
 
 import com.example.news.R;
-
-import java.util.List;
 
 public class NewsFragment extends Fragment {
 
@@ -48,7 +45,7 @@ public class NewsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_news, container, false);
+        View view = inflater.inflate(R.layout.fragment_news_section, container, false);
         mNewsViewPager = view.findViewById(R.id.sections_viewPager);
         mSectionTabLayout = view.findViewById(R.id.sections_tabLayout);
         for (int i = 0; i < sections.length; ++i) {
