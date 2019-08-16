@@ -14,4 +14,10 @@ public class ConstantValues {
             "科技",
             "社会"
     };
+
+    final static public int[] IMAGE_NUM = {0, 1, 1, 3};
+
+    public enum ItemViewType {
+        NONE, ONE_BIG, ONE_SMALL, THREE
+    }
 }

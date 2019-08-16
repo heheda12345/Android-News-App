@@ -105,7 +105,7 @@ public class NewsListFragment extends Fragment {
     }
 
     private String getCurrentTime() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return sdf.format(new Date());
     }
 }

@@ -1,5 +1,6 @@
 package com.example.news.support;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.example.news.MainActivity;
