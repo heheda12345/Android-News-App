@@ -26,6 +26,7 @@ import java.util.List;
 public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context mContext;
+    private int mSectionPos;
     private List<JSONObject> mNews;
 
     private class NewsItemVH extends RecyclerView.ViewHolder {
@@ -64,8 +65,9 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    public NewsListAdapter(Context context) {
+    public NewsListAdapter(Context context, int sectionPos) {
         mContext = context;
+        mSectionPos = sectionPos;
     }
 
     @Override
@@ -203,7 +205,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         imageUrls = imageUrls.subList(0, num);
         List<ImageCrawler> imageCrawlers = new ArrayList<>();
         for (String url : imageUrls) {
-            ImageCrawler crawler = new ImageCrawler(url);
+            ImageCrawler crawler = new ImageCrawler(mSectionPos, url, true, true);
             crawler.start();
             imageCrawlers.add(crawler);
         }

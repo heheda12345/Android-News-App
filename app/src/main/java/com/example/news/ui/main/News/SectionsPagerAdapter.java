@@ -14,12 +14,10 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
 //    @StringRes
 //    private static final int[] TAB_TITLES = new int[]{R.string.tab_text_1, R.string.tab_text_2};
-    private final String[] mSectionList;
     UserConfig userConfig = UserConfig.getInstance();
 
-    public SectionsPagerAdapter(FragmentManager fm, final String[] sectionsList) {
+    public SectionsPagerAdapter(FragmentManager fm) {
         super(fm);
-        mSectionList = sectionsList;
     }
 
     @Override
@@ -31,7 +29,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         // getItem is called to instantiate the fragment for the given page.
         // Return a NewsListFragment (defined as a static inner class below).
-        return NewsListFragment.newInstance(userConfig.getSection(position));
+        return NewsListFragment.newInstance(userConfig.getSection(position), position);
     }
 
     @Override

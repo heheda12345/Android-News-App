@@ -33,9 +33,10 @@ import java.util.Date;
 
 public class NewsListFragment extends Fragment {
 
-    private static final String ARG_SECTION_NUMBER = "section_number";
+    private static final String ARG_SECTION_POS = "section_number";
     private static final String ARG_SECTION_NAME = "section_name";
     private String mSectionName;
+    private int mSectionPos;
 
     private NewsPageViewModel mNewsPageViewModel;
     private NewsListAdapter mNewsListAdapter;
@@ -48,10 +49,11 @@ public class NewsListFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static NewsListFragment newInstance(UserConfig.Section section) {
+    public static NewsListFragment newInstance(UserConfig.Section section, int position) {
         NewsListFragment fragment = new NewsListFragment();
         Bundle bundle = new Bundle();
         bundle.putString(ARG_SECTION_NAME, section.getSectionName());
+        bundle.putInt(ARG_SECTION_POS, position);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -60,18 +62,19 @@ public class NewsListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("PlaceFragment", "onCreate");
-
+        if (getArguments() != null) {
+            mSectionName = getArguments().getString(ARG_SECTION_NAME);
+            mSectionPos = getArguments().getInt(ARG_SECTION_POS);
+        }
         /*构造 NewPageViewModel 用于处理数据*/
         mNewsPageViewModel = ViewModelProviders.of(this).get(NewsPageViewModel.class);
 //        mNewsPageViewModel.setInfo(new NewsCrawler.CrawlerInfo("", getCurrentTime(), mSectionName));
 
         /* 构造News list Adapter 用于新闻列表*/
-        mNewsListAdapter = new NewsListAdapter(getContext());
+        mNewsListAdapter = new NewsListAdapter(getContext(), mSectionPos);
         mSectionName = ConstantValues.ALL_SECTIONS[0];
         mEarliestDate = getCurrentTime();
-        if (getArguments() != null) {
-            mSectionName = getArguments().getString(ARG_SECTION_NAME);
-        }
+
 
         Log.d("Placeholder", "created");
     }
