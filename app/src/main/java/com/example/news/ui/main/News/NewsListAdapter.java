@@ -70,7 +70,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
-        Log.d("NewsAdapter", "OnBind ");
+        Log.d("NewsAdapter", "OnBind " + position);
 
         if (holder instanceof NewsItemVH) {
             NewsItemVH itemHolder = (NewsItemVH) holder;
@@ -176,7 +176,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void addNews(List<JSONObject> news) {
         int changePos = mNews.size();
         mNews.addAll(news);
-        notifyItemRangeChanged(changePos, getItemCount());
+        notifyItemRangeInserted(changePos, news.size());
     }
 
     /**

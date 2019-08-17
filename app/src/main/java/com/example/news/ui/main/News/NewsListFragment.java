@@ -98,6 +98,7 @@ public class NewsListFragment extends Fragment {
         mRecyclerView.addOnScrollListener(new OnLoadMoreListener() {
             @Override
             protected void onLoading(int countNum, int lastNum) {
+                Log.d("Adapter List Fragment", "Loading " + mPage + " " + mSectionName);
                 mPage++;
                 mNewsPageViewModel.setInfo(new NewsCrawler.CrawlerInfo("", "", mEarliestDate, mSectionName));
             }
@@ -113,6 +114,7 @@ public class NewsListFragment extends Fragment {
                     mNewsListAdapter.setNews(news);
                 }
                 else {
+                    Log.d("Adapter List Fragment", "add news " + mPage);
                     mNewsListAdapter.addNews(news);
                 }
                 if (news.size() > 0) {
@@ -132,7 +134,7 @@ public class NewsListFragment extends Fragment {
     private String getEarliestTime(ArrayList<JSONObject> news) {
         String earliestDate = "";
         try {
-            earliestDate = news.get(news.size() - 1).getString("time");
+            earliestDate = news.get(news.size() - 1).getString("publishTime");
         }
         catch (JSONException e) {
             e.printStackTrace();
