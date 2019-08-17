@@ -62,6 +62,7 @@ public class NewsListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("PlaceFragment", "onCreate");
+        mSectionName = ConstantValues.ALL_SECTIONS[0];
         if (getArguments() != null) {
             mSectionName = getArguments().getString(ARG_SECTION_NAME);
             mSectionPos = getArguments().getInt(ARG_SECTION_POS);
@@ -72,7 +73,6 @@ public class NewsListFragment extends Fragment {
 
         /* 构造News list Adapter 用于新闻列表*/
         mNewsListAdapter = new NewsListAdapter(getContext(), mSectionPos);
-        mSectionName = ConstantValues.ALL_SECTIONS[0];
         mEarliestDate = getCurrentTime();
 
 
