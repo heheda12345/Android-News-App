@@ -18,8 +18,10 @@ import com.example.news.data.ConstantValues;
 import com.example.news.data.UserConfig;
 import com.example.news.support.NewsCrawler;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,6 +41,8 @@ public class NewsListFragment extends Fragment {
     private NewsListAdapter mNewsListAdapter;
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
+    private String mEarliestDate;
+    private int mPage = 0;
 
     public NewsListFragment() {
         // Required empty public constructor
@@ -64,6 +68,7 @@ public class NewsListFragment extends Fragment {
         /* 构造News list Adapter 用于新闻列表*/
         mNewsListAdapter = new NewsListAdapter(getContext());
         mSectionName = ConstantValues.ALL_SECTIONS[0];
+        mEarliestDate = getCurrentTime();
         if (getArguments() != null) {
             mSectionName = getArguments().getString(ARG_SECTION_NAME);
         }
@@ -78,7 +83,7 @@ public class NewsListFragment extends Fragment {
         Log.d("PlaceFragment", "onCreateView");
 
         /* 每次改变section时，重新请求一次数据*/
-        mNewsPageViewModel.setInfo(new NewsCrawler.CrawlerInfo("", getCurrentTime(), mSectionName));
+        mNewsPageViewModel.setInfo(new NewsCrawler.CrawlerInfo("", "", getCurrentTime(), mSectionName));
 
         /*从news List 的layout中构造出NewsList 的root view*/
         View root = inflater.inflate(R.layout.fragment_news_list, container, false);
@@ -90,6 +95,13 @@ public class NewsListFragment extends Fragment {
         mRecyclerView.setAdapter(mNewsListAdapter);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.addOnScrollListener(new OnLoadMoreListener() {
+            @Override
+            protected void onLoading(int countNum, int lastNum) {
+                mPage++;
+                mNewsPageViewModel.setInfo(new NewsCrawler.CrawlerInfo("", "", mEarliestDate, mSectionName));
+            }
+        });
 
 
         /* 设置PageViewModel，每次有数据更新的时候更新news list*/
@@ -97,7 +109,15 @@ public class NewsListFragment extends Fragment {
             @Override
             public void onChanged(@Nullable String s) {
                 ArrayList<JSONObject> news = mNewsPageViewModel.getNews();
-                mNewsListAdapter.setNews(news);
+                if (mPage == 0) {
+                    mNewsListAdapter.setNews(news);
+                }
+                else {
+                    mNewsListAdapter.addNews(news);
+                }
+                if (news.size() > 0) {
+                    mEarliestDate = getEarliestTime(news);
+                }
             }
         });
         Log.d("Placeholder", "created view");
@@ -107,5 +127,16 @@ public class NewsListFragment extends Fragment {
     private String getCurrentTime() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return sdf.format(new Date());
+    }
+
+    private String getEarliestTime(ArrayList<JSONObject> news) {
+        String earliestDate = "";
+        try {
+            earliestDate = news.get(news.size() - 1).getString("time");
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return earliestDate;
     }
 }

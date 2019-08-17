@@ -3,6 +3,7 @@ package com.example.news.ui.main.News;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,7 +28,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private Context mContext;
     private List<JSONObject> mNews;
 
-    public class NewsItemVH extends RecyclerView.ViewHolder {
+    private class NewsItemVH extends RecyclerView.ViewHolder {
         final TextView title;
         final TextView author;
         final TextView time;
@@ -53,7 +54,14 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 images[2] = v.findViewById(R.id.image2);
             }
         }
+    }
 
+    private class FootViewHolder extends RecyclerView.ViewHolder {
+        private ContentLoadingProgressBar processBar;
+        public FootViewHolder(View v) {
+            super(v);
+            processBar = itemView.findViewById(R.id.pb_progress);
+        }
     }
 
     public NewsListAdapter(Context context) {
@@ -96,15 +104,22 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 }
             });
         }
+        else if (holder instanceof FootViewHolder) {
+
+        }
     }
 
     @Override
     public int getItemCount() {
-        return mNews.size();
+        /* +1 for footer */
+        return mNews.size() + 1;
     }
 
     @Override
     public int getItemViewType(int position) {
+        if (position == mNews.size()) {
+            return ConstantValues.ItemViewType.FOOTER.ordinal();
+        }
         String imgUrlsStr = "[]";
         try {
             imgUrlsStr = mNews.get(position).getString("image");
@@ -132,6 +147,10 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         /* 选择匹配图片个数的layout*/
         ConstantValues.ItemViewType layoutType = ConstantValues.ItemViewType.values()[viewType];
         Log.d("NewsAdapter", "Create View Holder");
+        if (layoutType == ConstantValues.ItemViewType.FOOTER) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.foot_item, parent, false);
+            return new FootViewHolder(v);
+        }
         int resource = -1;
         switch (layoutType) {
             case NONE: resource = R.layout.news_item_none; break;

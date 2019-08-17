@@ -37,11 +37,13 @@ public class NewsCrawler extends Thread {
     }
     public static class CrawlerInfo {
         String keyWords;
-        String time;
+        String startTime;
+        String endTime;
         String category;
-        public CrawlerInfo(String keyWords, String time, String category) {
+        public CrawlerInfo(String keyWords, String startTime, String endTime, String category) {
             this.keyWords = keyWords;
-            this.time = time;
+            this.startTime = startTime;
+            this.endTime = endTime;
             this.category = category;
         }
     }
@@ -57,7 +59,8 @@ public class NewsCrawler extends Thread {
             String urlStr = "https://api2.newsminer.net/svc/news/queryNewsList?" +
                     "words=" + crawlerInfo.keyWords + "&" +
                     "categories=" + crawlerInfo.category + "&" +
-                    "endDate=" + crawlerInfo.time;
+                    "startDate=" + crawlerInfo.startTime + "&" +
+                    "endDate=" + crawlerInfo.endTime;
             Log.d("Crawler", urlStr);
             URL url = new URL(urlStr);
             HttpURLConnection httpUrlConn = (HttpURLConnection) url.openConnection();

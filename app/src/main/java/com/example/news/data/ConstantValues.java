@@ -18,6 +18,6 @@ public class ConstantValues {
     final static public int[] IMAGE_NUM = {0, 1, 1, 3};
 
     public enum ItemViewType {
-        NONE, ONE_BIG, ONE_SMALL, THREE
+        NONE, ONE_BIG, ONE_SMALL, THREE, FOOTER
     }
 }
