@@ -36,6 +36,7 @@ public class UserConfig {
     /* Index of this list <-> Position at the tabs*/
     private List<Integer> selectSectionsIndices;
     private TTS tts;
+    private boolean textMode = false;
 
     private static UserConfig instance = new UserConfig();
 
@@ -70,4 +71,12 @@ public class UserConfig {
 
     public String getTTSVoicer() { return tts.getVoicer(); }
     public void setTTSVoicer(String voicer) { tts.setVoicer(voicer);}
+
+    public boolean isTextMode() {
+        return textMode;
+    }
+
+    public void setTextMode(boolean textMode) {
+        this.textMode = textMode;
+    }
 }

@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 
 import com.example.news.R;
 import com.example.news.data.UserConfig;
@@ -46,6 +48,13 @@ public class MineFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 showPersonSelectDialog();
+            }
+        });
+
+        ((Switch)view.findViewById(R.id.switch_text_only)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                UserConfig.getInstance().setTextMode(isChecked);
             }
         });
 
