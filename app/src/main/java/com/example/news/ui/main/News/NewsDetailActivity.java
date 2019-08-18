@@ -50,19 +50,8 @@ public class NewsDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_news_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//                Intent intent = new Intent(NewsDetailActivity.this, TtsEngine.class);
-//                startActivity(intent);
-//            }
-//        });
-
         parseJson();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         LinearLayout container = (LinearLayout) findViewById(R.id.container);
         initContainer(container);
         initCollection();
@@ -72,6 +61,7 @@ public class NewsDetailActivity extends AppCompatActivity {
     void initTTS() {
         ((TtsButton)findViewById(R.id.tts_btn)).setTexts(text);
     }
+
 
     void initCollection() {
         mCollectionViewModel = ViewModelProviders.of(this).get(CollectionViewModel.class);
@@ -102,6 +92,7 @@ public class NewsDetailActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.detail_news, menu);
         mCollectionIcon = menu.findItem(R.id.collecting);
+        mSearchEdit = menu.findItem(R.id.search_edit);
         updateCollectionIcon();
         return true;
     }
@@ -234,6 +225,6 @@ public class NewsDetailActivity extends AppCompatActivity {
     private ArrayList<String> imgUrls = new ArrayList<String>();
     private String newsID = "";
     private CollectionViewModel mCollectionViewModel;
-    private MenuItem mCollectionIcon;
+    private MenuItem mCollectionIcon, mSearchIcon, mSearchEdit;
 
 }

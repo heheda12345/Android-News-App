@@ -10,12 +10,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.RadioGroup;
 
 import com.example.news.R;
 import com.example.news.data.UserConfig;
-import com.example.news.ui.main.News.TtsEngine;
 
 /**
  * A simple {@link Fragment} subclass.
