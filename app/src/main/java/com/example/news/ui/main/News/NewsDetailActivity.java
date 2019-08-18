@@ -1,4 +1,4 @@
-package com.example.news;
+package com.example.news.ui.main.News;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -35,6 +35,8 @@ import java.util.List;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.widget.ImageView.ScaleType.FIT_XY;
 import static java.lang.Math.max;
+
+import com.example.news.R;
 
 public class NewsDetailActivity extends AppCompatActivity {
     private static final String LOG_TAG =
