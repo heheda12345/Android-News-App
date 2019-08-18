@@ -25,3 +25,8 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+ext { //高版本没调通
+    roomVersion = '1.1.1'
+    archLifecycleVersion = '1.1.1'
+}
