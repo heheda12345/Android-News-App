@@ -51,21 +51,26 @@ public class NewsDetailActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                Intent intent = new Intent(NewsDetailActivity.this, TtsEngine.class);
-                startActivity(intent);
-            }
-        });
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//                Intent intent = new Intent(NewsDetailActivity.this, TtsEngine.class);
+//                startActivity(intent);
+//            }
+//        });
 
         parseJson();
         LinearLayout container = (LinearLayout) findViewById(R.id.container);
         initContainer(container);
         initCollection();
+        initTTS();
+    }
+
+    void initTTS() {
+        ((TtsButton)findViewById(R.id.tts_btn)).setTexts(text);
     }
 
     void initCollection() {
@@ -123,7 +128,8 @@ public class NewsDetailActivity extends AppCompatActivity {
         String message = intent.getStringExtra("data");
         try {
             JSONObject jsonNews = new JSONObject(message);
-            content.addAll(Arrays.asList(jsonNews.getString("content").split("\n+")));
+            text = jsonNews.getString("content");
+            content.addAll(Arrays.asList(text.split("\n+")));
             title = jsonNews.getString("title");
             newsID = jsonNews.getString("title");
             String url = jsonNews.getString("image");
@@ -216,7 +222,14 @@ public class NewsDetailActivity extends AppCompatActivity {
         container.addView(debugView);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ((TtsButton)findViewById(R.id.tts_btn)).destroy();
+    }
+
     private String title = "";
+    private String text = "";
     private ArrayList<String> content = new ArrayList<>();
     private ArrayList<String> imgUrls = new ArrayList<String>();
     private String newsID = "";

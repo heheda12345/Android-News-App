@@ -117,7 +117,6 @@ public class TtsEngine extends Activity implements OnClickListener {
         switch(view.getId()) {
 //            case R.id.image_tts_set:
 //                if(SpeechConstant.TYPE_CLOUD.equals(mEngineType)){
-//                    Intent intent = new Intent(TtsEngine.this, TtsSettings.class);
 //                    startActivity(intent);
 //                }else{
 //                    showTip("请前往xfyun.cn下载离线合成体验");

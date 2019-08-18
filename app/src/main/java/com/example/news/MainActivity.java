@@ -6,6 +6,7 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 
 import com.example.news.data.UserConfig;
@@ -14,6 +15,7 @@ import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechUtility;
 
 public class MainActivity extends AppCompatActivity {
+    private static String LOG_TAG = MainActivity.class.getSimpleName();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +61,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         /*科大讯飞语音合成api初始化*/
-        SpeechUtility.createUtility(this, SpeechConstant.APPID +"=5d58fa7c");
+        try {
+            SpeechUtility.createUtility(this, SpeechConstant.APPID +"=5d58fa7c");
+        } catch (Exception e) {
+            Log.e(LOG_TAG, e.getMessage());
+            e.printStackTrace();
+        }
+
     }
 }

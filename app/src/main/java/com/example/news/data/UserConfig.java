@@ -21,8 +21,21 @@ public class UserConfig {
         }
     }
 
+    public static class TTS { // 语音合成的配置
+        private String voicer = "xiaoyan";
+
+        public String getVoicer() {
+            return voicer;
+        }
+
+        public void setVoicer(String voicer) {
+            this.voicer = voicer;
+        }
+    }
+
     /* Index of this list <-> Position at the tabs*/
     private List<Integer> selectSectionsIndices;
+    private TTS tts;
 
     private static UserConfig instance = new UserConfig();
 
@@ -31,6 +44,7 @@ public class UserConfig {
         for (int i = 0; i < ConstantValues.ALL_SECTIONS.length; ++i) {
             selectSectionsIndices.add(i);
         }
+        tts = new TTS();
     }
 
     public static UserConfig getInstance() {
@@ -53,4 +67,7 @@ public class UserConfig {
     public int getSectionNum() {
         return selectSectionsIndices.size();
     }
+
+    public String getTTSVoicer() { return tts.getVoicer(); }
+    public void setTTSVoicer(String voicer) { tts.setVoicer(voicer);}
 }
