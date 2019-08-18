@@ -10,6 +10,8 @@ import android.view.View;
 
 import com.example.news.data.UserConfig;
 import com.example.news.ui.main.MainPagerAdapter;
+import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.cloud.SpeechUtility;
 
 public class MainActivity extends AppCompatActivity {
     @Override
@@ -19,11 +21,11 @@ public class MainActivity extends AppCompatActivity {
         /* Load User Config*/
 
         /* Create Main Tab Layout */
-        TabLayout mainTabLayout = findViewById(R.id.main_tabLayout);
+        TabLayout mainTabLayout = (TabLayout) findViewById(R.id.main_tabLayout);
         mainTabLayout.addTab(mainTabLayout.newTab().setText(R.string.mainTab_news));
         mainTabLayout.addTab(mainTabLayout.newTab().setText(R.string.mainTab_mine));
         /* Create Main View Pager */
-        final ViewPager mainViewPager = findViewById(R.id.main_viewPager);
+        final ViewPager mainViewPager = (ViewPager) findViewById(R.id.main_viewPager);
         final MainPagerAdapter mainPagerAdapter = new MainPagerAdapter(this, getSupportFragmentManager(), 2);
         mainViewPager.setAdapter(mainPagerAdapter);
         /* Set listener for clicks*/
@@ -47,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 //        viewPager.setAdapter(sectionsPagerAdapter);
 //        TabLayout tabs = findViewById(R.id.tabs);
 //        tabs.setupWithViewPager(viewPager);
-        FloatingActionButton fab = findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,5 +58,7 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+        /*科大讯飞语音合成api初始化*/
+        SpeechUtility.createUtility(this, SpeechConstant.APPID +"=5d58fa7c");
     }
 }

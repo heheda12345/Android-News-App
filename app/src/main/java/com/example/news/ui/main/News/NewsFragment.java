@@ -49,8 +49,8 @@ public class NewsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_news, container, false);
-        mNewsViewPager = view.findViewById(R.id.sections_viewPager);
-        mSectionTabLayout = view.findViewById(R.id.sections_tabLayout);
+        mNewsViewPager = (ViewPager) view.findViewById(R.id.sections_viewPager);
+        mSectionTabLayout = (TabLayout) view.findViewById(R.id.sections_tabLayout);
         for (int i = 0; i < sections.length; ++i) {
             mSectionTabLayout.addTab(mSectionTabLayout.newTab());
         }

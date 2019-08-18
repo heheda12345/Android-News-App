@@ -75,7 +75,7 @@ public class PlaceholderFragment extends Fragment {
 
         View root = inflater.inflate(R.layout.fragment_main, container, false);
         final Context rootCtx = root.getContext();
-        final ListView listView = root.findViewById(R.id.listView);
+        final ListView listView = (ListView) root.findViewById(R.id.listView);
         newsPageViewModel.getVersion().observe(this, new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {

@@ -52,7 +52,7 @@ public class NewsListAdapter extends BaseAdapter {
         TextView title;
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.fragment_main, null);
-            title = convertView.findViewById(R.id.title);
+            title = (TextView) convertView.findViewById(R.id.title);
             convertView.setTag(title);
         } else {
             title = (TextView) convertView.getTag();

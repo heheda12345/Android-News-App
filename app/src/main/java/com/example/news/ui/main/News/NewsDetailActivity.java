@@ -20,6 +20,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.news.MainActivity;
+import com.example.news.R;
 import com.example.news.collection.CollectionItem;
 import com.example.news.collection.CollectionViewModel;
 import com.example.news.support.ImageCrawler;
@@ -36,7 +38,6 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.widget.ImageView.ScaleType.FIT_XY;
 import static java.lang.Math.max;
 
-import com.example.news.R;
 
 public class NewsDetailActivity extends AppCompatActivity {
     private static final String LOG_TAG =
@@ -47,20 +48,22 @@ public class NewsDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_detail);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                Intent intent = new Intent(NewsDetailActivity.this, TtsEngine.class);
+                startActivity(intent);
             }
         });
 
         parseJson();
-        LinearLayout container = findViewById(R.id.container);
+        LinearLayout container = (LinearLayout) findViewById(R.id.container);
         initContainer(container);
         initCollection();
     }
