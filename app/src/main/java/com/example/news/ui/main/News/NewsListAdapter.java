@@ -201,7 +201,6 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         if (imageUrls.size() == 0) {
             return images;
         }
-        /* TODO 其他的策略*/
         imageUrls = imageUrls.subList(0, num);
         List<ImageCrawler> imageCrawlers = new ArrayList<>();
         for (String url : imageUrls) {

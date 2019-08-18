@@ -61,7 +61,6 @@ public class NewsListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("PlaceFragment", "onCreate");
         mSectionName = ConstantValues.ALL_SECTIONS[0];
         if (getArguments() != null) {
             mSectionName = getArguments().getString(ARG_SECTION_NAME);
@@ -75,8 +74,6 @@ public class NewsListFragment extends Fragment {
         mNewsListAdapter = new NewsListAdapter(getContext(), mSectionPos);
         mEarliestDate = getCurrentTime();
 
-
-        Log.d("Placeholder", "created");
     }
 
     @Override

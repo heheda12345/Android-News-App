@@ -2,11 +2,6 @@ package com.example.news.ui.main.News;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.widget.LinearLayout;
-
-import static android.support.v7.widget.RecyclerView.SCROLL_STATE_DRAGGING;
-import static android.support.v7.widget.RecyclerView.SCROLL_STATE_SETTLING;
 
 public abstract class OnLoadMoreListener extends RecyclerView.OnScrollListener {
     private int countItem;
