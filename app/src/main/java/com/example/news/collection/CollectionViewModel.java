@@ -26,7 +26,13 @@ public class CollectionViewModel extends AndroidViewModel {
     public void insert(CollectionItem item) { mRepository.insert(item); }
 
     public boolean contains(CollectionItem item) {
-        return Objects.requireNonNull(mAllItems.getValue()).contains(item);
+        try {
+            return mAllItems.getValue().contains(item);
+        } catch (Exception e) {
+            Log.e(LOG_TAG, e.getMessage());
+            return false;
+        }
+
     }
 
     public void erase(CollectionItem item) {
