@@ -24,6 +24,7 @@ import com.example.news.MainActivity;
 import com.example.news.R;
 import com.example.news.collection.CollectionItem;
 import com.example.news.collection.CollectionViewModel;
+import com.example.news.data.UserConfig;
 import com.example.news.support.ImageCrawler;
 import com.example.news.support.NewsCrawler;
 
@@ -42,7 +43,6 @@ import static java.lang.Math.max;
 public class NewsDetailActivity extends AppCompatActivity {
     private static final String LOG_TAG =
             NewsCrawler.class.getSimpleName();
-    final boolean useImage = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,7 +138,7 @@ public class NewsDetailActivity extends AppCompatActivity {
         ArrayList<ImageView> imageViews = new ArrayList<>();
         ArrayList<Integer> imageViewCanInsert = new ArrayList<>();
         ArrayList<Boolean> imageViewInserted = new ArrayList<>();
-        if (useImage) {
+        if (!UserConfig.getInstance().isTextMode()) {
             ArrayList<ImageCrawler> crawlers = new ArrayList<>();
             for (int i=0; i<imgUrls.size(); i++) {
                 ImageCrawler imageCrawler = new ImageCrawler(imgUrls.get(i));
