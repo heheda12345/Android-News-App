@@ -39,19 +39,21 @@ public class SectionsPopWindow extends PopupWindow {
         TextView text = view.findViewById(R.id.section_textView);
         Button button = view.findViewById(R.id.section_button);
         GridView sectionGrid = view.findViewById(R.id.section_grid);
+        GridView unSectionGrid = view.findViewById(R.id.unsection_grid);
+
         ArrayList<String> sectionName = new ArrayList<>();
         for (UserConfig.Section section : UserConfig.getInstance().getAllSelectSections()) {
             sectionName.add(section.getSectionName());
         }
         sectionGrid.setAdapter(new SectionsGridAdapter(context, sectionName));
 
+        ArrayList<String> unselectedSectionName = new ArrayList<>();
+        for (UserConfig.Section section : UserConfig.getInstance().getAllUnselectedSections()) {
+            unselectedSectionName.add(section.getSectionName());
+        }
+        unSectionGrid.setAdapter(new SectionsGridAdapter(context, unselectedSectionName));
+
         text.setOnClickListener(sectionClick);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
 
     }
 

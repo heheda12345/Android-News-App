@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.example.news.R;
 import com.example.news.data.ConstantValues;
 import com.example.news.support.ImageCrawler;
+import com.example.news.support.ImageLoadingTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -72,7 +73,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
-        Log.d("NewsAdapter", "OnBind " + position);
+//        Log.d("NewsAdapter", "OnBind " + position);
 
         if (holder instanceof NewsItemVH) {
             NewsItemVH itemHolder = (NewsItemVH) holder;
@@ -91,13 +92,16 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 throw e;
             }
 
-            List<Bitmap> images = getImages(imagesUrlStr, ConstantValues.IMAGE_NUM[itemHolder.layoutType.ordinal()]);
-            if (itemHolder.mCurrentPosition == position) {
-                for (int i = 0; i < images.size(); ++i) {
-                    itemHolder.images[i].setImageBitmap(images.get(i));
-                    itemHolder.images[i].invalidate();
-                }
-            }
+//            List<Bitmap> images = getImages(imagesUrlStr, ConstantValues.IMAGE_NUM[itemHolder.layoutType.ordinal()]);
+//            if (itemHolder.mCurrentPosition == position) {
+//                for (int i = 0; i < images.size(); ++i) {
+//                    itemHolder.images[i].setImageBitmap(images.get(i));
+//                    itemHolder.images[i].invalidate();
+//                }
+//            }
+            List<String> imgUrls = getImageUrlsList(imagesUrlStr, ConstantValues.IMAGE_NUM[itemHolder.layoutType.ordinal()]);
+            new ImageLoadingTask(mSectionPos, itemHolder.images).execute(imgUrls.toArray(new String[imgUrls.size()]));
+
 
             itemHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -219,6 +223,14 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             images.add(crawler.getBitmap());
         }
         return images;
+    }
+
+    private List<String> getImageUrlsList(String imageUrlsStr, int num) {
+        List<String> imageUrls = parseJsonList(imageUrlsStr);
+        if (imageUrls.size() == 0) {
+            return new ArrayList<>();
+        }
+        return imageUrls.subList(0, num);
     }
 
     private List<String> parseJsonList(String listStr) {

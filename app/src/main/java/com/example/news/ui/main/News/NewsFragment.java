@@ -88,4 +88,8 @@ public class NewsFragment extends Fragment {
         Toast.makeText(getActivity(), "Change Section", Toast.LENGTH_LONG);
     }
 
+    private void delPage(int position) {
+        
+    }
+
 }

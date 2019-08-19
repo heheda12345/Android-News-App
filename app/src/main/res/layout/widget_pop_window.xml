@@ -34,14 +34,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <GridView
+            android:id="@+id/unsection_grid"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:numColumns="4"
+            android:columnWidth="90dp"
+            android:stretchMode="columnWidth"/>
 
 
     </LinearLayout>
-
-    <Button
-        android:id="@+id/section_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
 </LinearLayout>
