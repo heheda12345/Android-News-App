@@ -1,5 +1,6 @@
 package com.example.news.ui.main.News;
 
+import android.app.ActivityOptions;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
@@ -9,13 +10,18 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Fade;
+import android.transition.Slide;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -52,12 +58,12 @@ public class NewsDetailActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         parseJson();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         LinearLayout container = (LinearLayout) findViewById(R.id.container);
         initContainer(container);
         initCollection();
         initTTS();
         Slidr.attach(this);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     void initTTS() {
@@ -109,6 +115,10 @@ public class NewsDetailActivity extends AppCompatActivity {
                 } else {
                     mCollectionViewModel.insert(collectionItem);
                 }
+                return true;
+            case android.R.id.home:
+                Log.d(LOG_TAG, "home clicked");
+                finish();
                 return true;
             default:
                 //do nothing
@@ -164,6 +174,14 @@ public class NewsDetailActivity extends AppCompatActivity {
                 imageViews.add(imageView);
                 if (bitmap.getHeight() * 1.0 / bitmap.getWidth() < 1)
                     imageViewCanInsert.add(imageViews.size() - 1);
+                imageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(NewsDetailActivity.this, LargeImageActivity.class);
+                        intent.putStringArrayListExtra("url", imgUrls);
+                        startActivity(intent);
+                    }
+                });
                 imageViewInserted.add(false);
             }
         }

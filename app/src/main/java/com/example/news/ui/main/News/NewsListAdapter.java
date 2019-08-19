@@ -1,6 +1,7 @@
 package com.example.news.ui.main.News;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
