@@ -14,23 +14,35 @@ import java.util.List;
 
 public class SectionsGridAdapter extends BaseAdapter {
     private Context context;
-    private List<UserConfig.Section> listItem;
+    boolean type;
+//    private List<UserConfig.Section> listItem;
     private View.OnClickListener sectionClick;
 
-    public SectionsGridAdapter(Context context, List<UserConfig.Section> listItem, View.OnClickListener sectionClick) {
+    public SectionsGridAdapter(Context context, boolean type, View.OnClickListener sectionClick) {
         this.context = context;
-        this.listItem = listItem;
+//        this.listItem = listItem;
+        this.type = type;
         this.sectionClick = sectionClick;
     }
 
     @Override
     public int getCount() {
-        return listItem.size();
+        if (type) {
+            return UserConfig.getInstance().getSectionNum();
+        }
+        else {
+            return UserConfig.getInstance().getUnSectionNum();
+        }
     }
 
     @Override
     public String getItem(int position) {
-        return listItem.get(position).getSectionName();
+        if (type) {
+            return UserConfig.getInstance().getSection(position).getSectionName();
+        }
+        else {
+            return UserConfig.getInstance().getUnSetion(position).getSectionName();
+        }
     }
 
     @Override
@@ -45,7 +57,12 @@ public class SectionsGridAdapter extends BaseAdapter {
         }
         Button sectionButton = convertView.findViewById(R.id.section_button);
         sectionButton.setTag(position);
-        sectionButton.setText(listItem.get(position).getSectionName());
+        if (type) {
+            sectionButton.setText(UserConfig.getInstance().getSection(position).getSectionName());
+        }
+        else {
+            sectionButton.setText(UserConfig.getInstance().getUnSetion(position).getSectionName());
+        }
         sectionButton.setOnClickListener(sectionClick);
         return convertView;
     }

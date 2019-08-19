@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,10 +47,10 @@ public class SectionsPopWindow extends PopupWindow {
         GridView unSectionGrid = view.findViewById(R.id.unsection_grid);
 
 
-        selectedGridAdapter = new SectionsGridAdapter(context, UserConfig.getInstance().getAllSelectSections(), removeSectionClick);
+        selectedGridAdapter = new SectionsGridAdapter(context, true, removeSectionClick);
         sectionGrid.setAdapter(selectedGridAdapter);
 
-        unSelectedGridAdapter = new SectionsGridAdapter(context, UserConfig.getInstance().getAllUnselectedSections(), addSectionClick);
+        unSelectedGridAdapter = new SectionsGridAdapter(context, false, addSectionClick);
         unSectionGrid.setAdapter(unSelectedGridAdapter);
 
 //        text.setOnClickListener(sectionClick);
@@ -76,6 +77,7 @@ public class SectionsPopWindow extends PopupWindow {
     }
 
     public void updatePage() {
+        Log.d(TAG, "update page");
         unSelectedGridAdapter.notifyDataSetChanged();
         selectedGridAdapter.notifyDataSetChanged();
     }

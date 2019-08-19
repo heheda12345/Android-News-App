@@ -64,9 +64,16 @@ public class UserConfig {
         return new Section(ConstantValues.ALL_SECTIONS[sectionIndex], position);
     }
 
+    public Section getUnSetion(int position) {
+        int sectionIndex = unselectedSectionsIndices.get(position);
+        return new Section(ConstantValues.ALL_SECTIONS[sectionIndex], position);
+    }
+
     public int getSectionNum() {
         return selectSectionsIndices.size();
     }
+
+    public int getUnSectionNum() { return unselectedSectionsIndices.size(); }
 
     public void addSection(int pos) {
         int id = unselectedSectionsIndices.get(pos);
