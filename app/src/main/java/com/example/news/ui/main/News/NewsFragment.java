@@ -11,12 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.PopupWindow;
-import android.widget.Toast;
-
-import com.example.news.MainActivity;
 import com.example.news.R;
 import com.example.news.data.BitMapCache;
-import com.example.news.data.ConstantValues;
 import com.example.news.data.UserConfig;
 
 public class NewsFragment extends Fragment {
@@ -26,6 +22,7 @@ public class NewsFragment extends Fragment {
     private Button mPopSectionsButton;
     private SectionsPopWindow mPopWindow;
     private SectionsPagerAdapter mSectionsPagerAdapter;
+    private BitMapCache bitMapCache;
 
     public NewsFragment() {
         // Required empty public constructor
@@ -41,6 +38,7 @@ public class NewsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
+        bitMapCache = BitMapCache.getInstance();
     }
 
     @Override
@@ -61,8 +59,7 @@ public class NewsFragment extends Fragment {
         mPopSectionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("Fragment", "BUtton Clicked");
-                mPopWindow = new SectionsPopWindow(getActivity(), sectionsOnClick);
+                mPopWindow = new SectionsPopWindow(getActivity(), removeSectionOnClick, addSectionOnClick);
                 mPopWindow.showAtLocation(v, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
                 mPopWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
                     @Override
@@ -73,23 +70,38 @@ public class NewsFragment extends Fragment {
             }
         });
 
-        BitMapCache.getInstance().addAllSections(UserConfig.getInstance().getSectionNum());
+        bitMapCache.addAllSections(UserConfig.getInstance().getSectionNum());
         return view;
     }
 
-    private View.OnClickListener sectionsOnClick = new View.OnClickListener() {
+    private View.OnClickListener removeSectionOnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            sectionsChangeHandler();
+            int pos = (int)v.getTag();
+            delPage(pos);
+            bitMapCache.removeSection(pos);
         }
     };
 
-    private void sectionsChangeHandler() {
-        Toast.makeText(getActivity(), "Change Section", Toast.LENGTH_LONG);
-    }
+    private View.OnClickListener addSectionOnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int pos = (int)v.getTag();
+            addPage(pos);
+            bitMapCache.addSection();
+        }
+    };
 
     private void delPage(int position) {
-        
+        UserConfig.getInstance().removeSection(position);
+        mSectionsPagerAdapter.notifyDataSetChanged();
+        mPopWindow.updatePage();
+    }
+
+    private void addPage(int position) {
+        UserConfig.getInstance().addSection(position);
+        mSectionsPagerAdapter.notifyDataSetChanged();
+        mPopWindow.updatePage();
     }
 
 }

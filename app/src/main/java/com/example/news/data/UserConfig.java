@@ -72,11 +72,12 @@ public class UserConfig {
         int id = unselectedSectionsIndices.get(pos);
         unselectedSectionsIndices.remove(pos);
         selectSectionsIndices.add(id);
+
     }
 
     public void removeSection(int pos) {
         int id = selectSectionsIndices.get(pos);
         selectSectionsIndices.remove(pos);
-        unselectedSectionsIndices.add(pos);
+        unselectedSectionsIndices.add(id);
     }
 }

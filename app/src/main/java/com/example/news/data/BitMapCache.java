@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class BitMapCache {
     private ArrayList<HashMap<String, Bitmap>> maps;
@@ -35,13 +34,17 @@ public class BitMapCache {
         return maps.get(pos).containsKey(url);
     }
 
-    public void removeSectionCache(int pos) {
-        maps.remove(pos);
-    }
-
     public void addAllSections(int numSection) {
          for (int i = 0; i < numSection; ++i) {
              maps.add(new HashMap<String, Bitmap>());
          }
+    }
+
+    public void addSection() {
+        maps.add(new HashMap<String, Bitmap>());
+    }
+
+    public void removeSection(int pos) {
+        maps.remove(pos);
     }
 }

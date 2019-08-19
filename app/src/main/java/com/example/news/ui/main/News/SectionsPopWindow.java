@@ -23,13 +23,17 @@ public class SectionsPopWindow extends PopupWindow {
     private static final String TAG = "SectionPopWindow";
     private final View view;
     private Activity context;
-    private View.OnClickListener sectionClick;
+    private View.OnClickListener removeSectionClick;
+    private View.OnClickListener addSectionClick;
+    private SectionsGridAdapter unSelectedGridAdapter;
+    private SectionsGridAdapter selectedGridAdapter;
 
-    public SectionsPopWindow(Activity context, View.OnClickListener itemClick) {
+    public SectionsPopWindow(Activity context, View.OnClickListener removeSectionClick, View.OnClickListener addSectionClick) {
         super(context);
         LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         view = inflater.inflate(R.layout.widget_pop_window, null);
-        this.sectionClick = itemClick;
+        this.removeSectionClick = removeSectionClick;
+        this.addSectionClick = addSectionClick;
         this.context = context;
         initView();
         initPopWindow();
@@ -41,19 +45,14 @@ public class SectionsPopWindow extends PopupWindow {
         GridView sectionGrid = view.findViewById(R.id.section_grid);
         GridView unSectionGrid = view.findViewById(R.id.unsection_grid);
 
-        ArrayList<String> sectionName = new ArrayList<>();
-        for (UserConfig.Section section : UserConfig.getInstance().getAllSelectSections()) {
-            sectionName.add(section.getSectionName());
-        }
-        sectionGrid.setAdapter(new SectionsGridAdapter(context, sectionName));
 
-        ArrayList<String> unselectedSectionName = new ArrayList<>();
-        for (UserConfig.Section section : UserConfig.getInstance().getAllUnselectedSections()) {
-            unselectedSectionName.add(section.getSectionName());
-        }
-        unSectionGrid.setAdapter(new SectionsGridAdapter(context, unselectedSectionName));
+        selectedGridAdapter = new SectionsGridAdapter(context, UserConfig.getInstance().getAllSelectSections(), removeSectionClick);
+        sectionGrid.setAdapter(selectedGridAdapter);
 
-        text.setOnClickListener(sectionClick);
+        unSelectedGridAdapter = new SectionsGridAdapter(context, UserConfig.getInstance().getAllUnselectedSections(), addSectionClick);
+        unSectionGrid.setAdapter(unSelectedGridAdapter);
+
+//        text.setOnClickListener(sectionClick);
 
     }
 
@@ -74,6 +73,11 @@ public class SectionsPopWindow extends PopupWindow {
         p.alpha = alpha;
         context.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         context.getWindow().setAttributes(p);
+    }
+
+    public void updatePage() {
+        unSelectedGridAdapter.notifyDataSetChanged();
+        selectedGridAdapter.notifyDataSetChanged();
     }
 
 }
