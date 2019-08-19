@@ -27,6 +27,7 @@ import com.example.news.collection.CollectionViewModel;
 import com.example.news.data.UserConfig;
 import com.example.news.support.ImageCrawler;
 import com.example.news.support.NewsCrawler;
+import com.r0adkll.slidr.Slidr;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,6 +57,7 @@ public class NewsDetailActivity extends AppCompatActivity {
         initContainer(container);
         initCollection();
         initTTS();
+        Slidr.attach(this);
     }
 
     void initTTS() {

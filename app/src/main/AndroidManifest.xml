@@ -27,7 +27,7 @@
         <activity
             android:name=".ui.main.News.NewsDetailActivity"
             android:label="@string/title_activity_news_detail"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.Slidable" />
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
