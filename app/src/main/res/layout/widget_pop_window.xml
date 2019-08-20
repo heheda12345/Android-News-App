@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFFFFF">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/section_textView"
+            android:text="@string/text_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <GridView
+            android:id="@+id/section_grid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:numColumns="4"
+            android:columnWidth="90dp"
+            android:stretchMode="columnWidth"/>
+
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/suggest_textView"
+            android:text="@string/suggest_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <GridView
+            android:id="@+id/unsection_grid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:numColumns="4"
+            android:columnWidth="90dp"
+            android:stretchMode="columnWidth"/>
+
+
+    </LinearLayout>
+</LinearLayout>

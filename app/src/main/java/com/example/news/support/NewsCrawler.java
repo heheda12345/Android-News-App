@@ -1,5 +1,6 @@
 package com.example.news.support;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.example.news.MainActivity;
@@ -36,11 +37,13 @@ public class NewsCrawler extends Thread {
     }
     public static class CrawlerInfo {
         String keyWords;
-        String time;
+        String startTime;
+        String endTime;
         String category;
-        public CrawlerInfo(String keyWords, String time, String category) {
+        public CrawlerInfo(String keyWords, String startTime, String endTime, String category) {
             this.keyWords = keyWords;
-            this.time = time;
+            this.startTime = startTime;
+            this.endTime = endTime;
             this.category = category;
         }
     }
@@ -56,7 +59,8 @@ public class NewsCrawler extends Thread {
             String urlStr = "https://api2.newsminer.net/svc/news/queryNewsList?" +
                     "words=" + crawlerInfo.keyWords + "&" +
                     "categories=" + crawlerInfo.category + "&" +
-                    "endDate=" + crawlerInfo.time;
+                    "startDate=" + crawlerInfo.startTime + "&" +
+                    "endDate=" + crawlerInfo.endTime;
             Log.d("Crawler", urlStr);
             URL url = new URL(urlStr);
             HttpURLConnection httpUrlConn = (HttpURLConnection) url.openConnection();
@@ -81,7 +85,7 @@ public class NewsCrawler extends Thread {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.d(LOG_TAG, "getNews: " + response.toString());
+//        Log.d(LOG_TAG, "getNews: " + response.toString());
     }
 
     public ArrayList<JSONObject> getNewsResp() {

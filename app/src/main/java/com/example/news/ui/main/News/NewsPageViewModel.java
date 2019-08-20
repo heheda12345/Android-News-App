@@ -5,6 +5,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.example.news.support.NewsCrawler;
@@ -40,7 +41,6 @@ public class NewsPageViewModel extends ViewModel {
     });
 
     public void setInfo(NewsCrawler.CrawlerInfo info) {
-        Log.d("ViewModel", "SetInfo");
         mCrawlerInfo.setValue(info);
     }
 
@@ -51,5 +51,6 @@ public class NewsPageViewModel extends ViewModel {
     public ArrayList<JSONObject> getNews() {
         return mNews;
     }
+
 
 }

@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import com.example.news.data.BitMapCache;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -27,17 +29,17 @@ public class ImageCrawler extends Thread {
     @Override
     public void run() {
         try {
-            Log.d(LOG_TAG, url);
+//            Log.d(LOG_TAG, url);
             URL imgUrl = new URL(url);
-            Log.d(LOG_TAG, url);
+//            Log.d(LOG_TAG, url);
             HttpURLConnection conn = (HttpURLConnection) imgUrl
                     .openConnection();
             conn.setRequestMethod("GET");
-            Log.d(LOG_TAG, "resp-code:");
+//            Log.d(LOG_TAG, "resp-code:");
             InputStream is = conn.getInputStream();
-            Log.d(LOG_TAG, "resp-code:");
+//            Log.d(LOG_TAG, "resp-code:");
             bitmap = BitmapFactory.decodeStream(is);
-            Log.d(LOG_TAG, "resp-code:");
+//            Log.d(LOG_TAG, "resp-code:");
             is.close();
             conn.disconnect();
         } catch (MalformedURLException e) {
@@ -47,7 +49,7 @@ public class ImageCrawler extends Thread {
             Log.e(LOG_TAG, e.getMessage());
             e.printStackTrace();
         }
-        Log.d(LOG_TAG, bitmap == null ? "null" : bitmap.toString());
+//        Log.d(LOG_TAG, bitmap == null ? "null" : bitmap.toString());
     }
 
 }

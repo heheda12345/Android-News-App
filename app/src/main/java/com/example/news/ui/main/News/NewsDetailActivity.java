@@ -127,7 +127,7 @@ public class NewsDetailActivity extends AppCompatActivity {
             title = jsonNews.getString("title");
             newsID = jsonNews.getString("title");
             String url = jsonNews.getString("image");
-            if (url.length() > 2) {
+            if (url.length() > 5) {
                 imgUrls.addAll(Arrays.asList(url.substring(1, url.length()-1).split(",")));
             }
         } catch (JSONException e) {

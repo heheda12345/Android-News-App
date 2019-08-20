@@ -1,32 +1,27 @@
 package com.example.news.ui.main.News;
 
-import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.view.View;
+import android.view.ViewGroup;
 
-import com.example.news.R;
 import com.example.news.data.UserConfig;
-import com.example.news.ui.main.News.PlaceholderFragment;
-
-import java.util.List;
 
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
  * one of the sections/tabs/pages.
  */
-public class SectionsPagerAdapter extends FragmentPagerAdapter {
+public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
 
 //    @StringRes
 //    private static final int[] TAB_TITLES = new int[]{R.string.tab_text_1, R.string.tab_text_2};
-    private final String[] mSectionList;
     UserConfig userConfig = UserConfig.getInstance();
 
-    public SectionsPagerAdapter(FragmentManager fm, final String[] sectionsList) {
+    public SectionsPagerAdapter(FragmentManager fm) {
         super(fm);
-        mSectionList = sectionsList;
     }
 
     @Override
@@ -37,12 +32,18 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         // getItem is called to instantiate the fragment for the given page.
-        // Return a PlaceholderFragment (defined as a static inner class below).
-        return PlaceholderFragment.newInstance(userConfig.getSection(position));
+        // Return a NewsListFragment (defined as a static inner class below).
+        return NewsListFragment.newInstance(userConfig.getSection(position), position);
     }
 
     @Override
     public int getCount() {
         return userConfig.getSectionNum();
     }
+
+    @Override
+    public int getItemPosition(Object obj) {
+        return PagerAdapter.POSITION_NONE;
+    }
+
 }
