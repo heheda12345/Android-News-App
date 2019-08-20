@@ -3,6 +3,8 @@ package com.example.news.ui.main.News;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -12,7 +14,7 @@ import com.example.news.data.UserConfig;
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
  * one of the sections/tabs/pages.
  */
-public class SectionsPagerAdapter extends FragmentPagerAdapter {
+public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
 
 //    @StringRes
 //    private static final int[] TAB_TITLES = new int[]{R.string.tab_text_1, R.string.tab_text_2};
@@ -39,5 +41,9 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         return userConfig.getSectionNum();
     }
 
+    @Override
+    public int getItemPosition(Object obj) {
+        return PagerAdapter.POSITION_NONE;
+    }
 
 }
