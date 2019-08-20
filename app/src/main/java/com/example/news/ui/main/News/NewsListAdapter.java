@@ -26,6 +26,7 @@ import java.util.List;
 
 public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    private static final String TAG = "NewsListAdapter";
     private Context mContext;
     private int mSectionPos;
     private List<JSONObject> mNews;
@@ -183,6 +184,12 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         int changePos = mNews.size();
         mNews.addAll(news);
         notifyItemRangeInserted(changePos, news.size());
+    }
+
+    public void addRefreshNews(List<JSONObject> news) {
+        Log.d(TAG, "refresh add");
+        mNews.addAll(0, news);
+        notifyItemRangeInserted(0, news.size());
     }
 
     /**

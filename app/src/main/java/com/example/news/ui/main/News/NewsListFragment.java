@@ -1,6 +1,7 @@
 package com.example.news.ui.main.News;
 
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -35,6 +36,7 @@ public class NewsListFragment extends Fragment {
 
     private static final String ARG_SECTION_POS = "section_number";
     private static final String ARG_SECTION_NAME = "section_name";
+    private static final String TAG = "News List Fragment";
     private String mSectionName;
     private int mSectionPos;
 
@@ -43,7 +45,10 @@ public class NewsListFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
     private String mEarliestDate;
+    private String mLatestDate;
+    private SwipeRefreshLayout mRefreshLayout;
     private int mPage = 0;
+    private boolean mRefresh = false;
 
     public NewsListFragment() {
         // Required empty public constructor
@@ -103,6 +108,15 @@ public class NewsListFragment extends Fragment {
                 mNewsPageViewModel.setInfo(new NewsCrawler.CrawlerInfo("", "", mEarliestDate, mSectionName));
             }
         });
+        mRefreshLayout = root.findViewById(R.id.swipeRefreshLayout);
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.d(TAG, "On Refreshing");
+                mRefresh = true;
+                mNewsPageViewModel.setInfo(new NewsCrawler.CrawlerInfo("", mLatestDate, getCurrentTime(), mSectionName));
+            }
+        });
 
 
         /* 设置PageViewModel，每次有数据更新的时候更新news list*/
@@ -111,10 +125,19 @@ public class NewsListFragment extends Fragment {
             public void onChanged(@Nullable String s) {
                 ArrayList<JSONObject> news = mNewsPageViewModel.getNews();
                 if (mPage == 0) {
-                    mNewsListAdapter.setNews(news);
+                    if (mRefresh) {
+                        mNewsListAdapter.addRefreshNews(news);
+                        mRefresh = false;
+                        mRefreshLayout.setRefreshing(false);
+                    }
+                    else {
+                        mNewsListAdapter.setNews(news);
+                    }
+                    if (news.size() > 0) {
+                        mLatestDate = getLatestTime(news);
+                    }
                 }
                 else {
-                    Log.d("Adapter List Fragment", "add news " + mPage);
                     mNewsListAdapter.addNews(news);
                 }
                 if (news.size() > 0) {
@@ -140,5 +163,16 @@ public class NewsListFragment extends Fragment {
             e.printStackTrace();
         }
         return earliestDate;
+    }
+
+    private String getLatestTime(ArrayList<JSONObject> news) {
+        String latestTime = "";
+        try {
+            latestTime = news.get(0).getString("publishTime");
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return latestTime;
     }
 }
