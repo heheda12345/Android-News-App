@@ -36,7 +36,6 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         final TextView author;
         final TextView time;
         final ImageView[] images;
-        List<Bitmap> bitmaps;
         ConstantValues.ItemViewType layoutType;
         int mCurrentPosition = -1;
 
@@ -178,7 +177,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     /**
-     * 实现下拉刷新功能
+     * 实现上拉加载功能
      * */
     public void addNews(List<JSONObject> news) {
         int changePos = mNews.size();
@@ -186,6 +185,9 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         notifyItemRangeInserted(changePos, news.size());
     }
 
+    /**
+     * 实现下拉刷新功能
+     * */
     public void addRefreshNews(List<JSONObject> news) {
         Log.d(TAG, "refresh add");
         mNews.addAll(0, news);

@@ -103,7 +103,7 @@ public class NewsListFragment extends Fragment {
         mRecyclerView.addOnScrollListener(new OnLoadMoreListener() {
             @Override
             protected void onLoading(int countNum, int lastNum) {
-                Log.d("Adapter List Fragment", "Loading " + mPage + " " + mSectionName);
+                Log.d("Adapter List Fragment", "Loading " + mEarliestDate);
                 mPage++;
                 mNewsPageViewModel.setInfo(new NewsCrawler.CrawlerInfo("", "", mEarliestDate, mSectionName));
             }
@@ -124,24 +124,27 @@ public class NewsListFragment extends Fragment {
             @Override
             public void onChanged(@Nullable String s) {
                 ArrayList<JSONObject> news = mNewsPageViewModel.getNews();
-                if (mPage == 0) {
-                    if (mRefresh) {
-                        mNewsListAdapter.addRefreshNews(news);
-                        mRefresh = false;
-                        mRefreshLayout.setRefreshing(false);
-                    }
-                    else {
-                        mNewsListAdapter.setNews(news);
-                    }
+                if (mRefresh) {
+                    mNewsListAdapter.addRefreshNews(news);
+                    mRefresh = false;
+                    mRefreshLayout.setRefreshing(false);
                     if (news.size() > 0) {
                         mLatestDate = getLatestTime(news);
                     }
                 }
                 else {
-                    mNewsListAdapter.addNews(news);
-                }
-                if (news.size() > 0) {
-                    mEarliestDate = getEarliestTime(news);
+                    if (mPage == 0) {
+                        mNewsListAdapter.setNews(news);
+                        if (news.size() > 0) {
+                            mLatestDate = getLatestTime(news);
+                        }
+                    }
+                    else {
+                        mNewsListAdapter.addNews(news);
+                    }
+                    if (news.size() > 0) {
+                        mEarliestDate = getEarliestTime(news);
+                    }
                 }
             }
         });
@@ -162,7 +165,18 @@ public class NewsListFragment extends Fragment {
         catch (JSONException e) {
             e.printStackTrace();
         }
-        return earliestDate;
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date tempDate = new Date();
+        try {
+            tempDate = df.parse(earliestDate);
+        }
+        catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Date newDate = new Date(tempDate.getTime() - 5000);
+        Log.d(TAG, df.format(tempDate));
+        Log.d(TAG, df.format(newDate));
+        return df.format(newDate);
     }
 
     private String getLatestTime(ArrayList<JSONObject> news) {
@@ -173,6 +187,17 @@ public class NewsListFragment extends Fragment {
         catch (JSONException e) {
             e.printStackTrace();
         }
-        return latestTime;
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date tempDate = new Date();
+        try {
+            tempDate = df.parse(latestTime);
+        }
+        catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Date newDate = new Date(tempDate.getTime() + 5000);
+        Log.d(TAG, df.format(tempDate));
+        Log.d(TAG, df.format(newDate));
+        return df.format(newDate);
     }
 }
