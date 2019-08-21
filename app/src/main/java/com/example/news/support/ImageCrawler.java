@@ -34,6 +34,8 @@ public class ImageCrawler extends Thread {
 //            Log.d(LOG_TAG, url);
             HttpURLConnection conn = (HttpURLConnection) imgUrl
                     .openConnection();
+            conn.setConnectTimeout(3000);
+            conn.setReadTimeout(3000);
             conn.setRequestMethod("GET");
 //            Log.d(LOG_TAG, "resp-code:");
             InputStream is = conn.getInputStream();

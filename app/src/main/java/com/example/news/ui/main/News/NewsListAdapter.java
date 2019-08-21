@@ -2,7 +2,6 @@ package com.example.news.ui.main.News;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,7 +13,6 @@ import android.widget.TextView;
 
 import com.example.news.R;
 import com.example.news.data.ConstantValues;
-import com.example.news.support.ImageCrawler;
 import com.example.news.support.ImageLoadingTask;
 
 import org.json.JSONException;
@@ -30,6 +28,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private Context mContext;
     private int mSectionPos;
     private List<JSONObject> mNews;
+    private boolean netWorkError = false;
 
     private class NewsItemVH extends RecyclerView.ViewHolder {
         final TextView title;
@@ -60,9 +59,26 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private class FootViewHolder extends RecyclerView.ViewHolder {
         private ContentLoadingProgressBar processBar;
+        private TextView textView;
         public FootViewHolder(View v) {
             super(v);
             processBar = itemView.findViewById(R.id.pb_progress);
+            textView = itemView.findViewById(R.id.foot_view_text);
+        }
+
+        public void setNetWorkError() {
+            textView.setVisibility(View.VISIBLE);
+            processBar.setVisibility(View.INVISIBLE);
+        }
+
+        public void setLoading() {
+            textView.setVisibility(View.INVISIBLE);
+            processBar.setVisibility(View.VISIBLE);
+        }
+
+        public void setCommon() {
+            textView.setVisibility(View.INVISIBLE);
+            processBar.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -88,17 +104,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             catch (JSONException e) {
                 e.printStackTrace();
             }
-            catch (NullPointerException e) {
-                throw e;
-            }
 
-//            List<Bitmap> images = getImages(imagesUrlStr, ConstantValues.IMAGE_NUM[itemHolder.layoutType.ordinal()]);
-//            if (itemHolder.mCurrentPosition == position) {
-//                for (int i = 0; i < images.size(); ++i) {
-//                    itemHolder.images[i].setImageBitmap(images.get(i));
-//                    itemHolder.images[i].invalidate();
-//                }
-//            }
             List<String> imgUrls = getImageUrlsList(imagesUrlStr, ConstantValues.IMAGE_NUM[itemHolder.layoutType.ordinal()]);
             new ImageLoadingTask(mSectionPos, itemHolder.images).execute(imgUrls.toArray(new String[imgUrls.size()]));
 
@@ -111,7 +117,14 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             });
         }
         else if (holder instanceof FootViewHolder) {
-
+            FootViewHolder footViewHolder = (FootViewHolder)holder;
+            if (netWorkError) {
+                footViewHolder.setNetWorkError();
+            }
+            else {
+                Log.d(TAG, "Set Loading");
+                footViewHolder.setLoading();
+            }
         }
     }
 
@@ -169,6 +182,14 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     /**
+     * 实现加载时候foot view 的状态
+     * */
+    public void setLoading() {
+        netWorkError = false;
+        notifyItemChanged(mNews.size());
+    }
+
+    /**
      * 实现新闻分类改变后存入新的数据
      * */
     public void setNews(List<JSONObject> news) {
@@ -182,7 +203,13 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void addNews(List<JSONObject> news) {
         int changePos = mNews.size();
         mNews.addAll(news);
-        notifyItemRangeInserted(changePos, news.size());
+        if (news.size() > 0) {
+            notifyItemRangeInserted(changePos, news.size());
+        }
+        else {
+            netWorkError = true;
+            notifyItemChanged(mNews.size());
+        }
     }
 
     /**

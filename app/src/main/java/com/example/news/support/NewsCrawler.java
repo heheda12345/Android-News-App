@@ -17,6 +17,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,8 +66,10 @@ public class NewsCrawler extends Thread {
             URL url = new URL(urlStr);
             HttpURLConnection httpUrlConn = (HttpURLConnection) url.openConnection();
             httpUrlConn.setRequestMethod("GET");
+            httpUrlConn.setConnectTimeout(3000);
+            httpUrlConn.setReadTimeout(3000);
             InputStream input = httpUrlConn.getInputStream();
-            InputStreamReader read = new InputStreamReader(input, "utf-8");
+            InputStreamReader read = new InputStreamReader(input, StandardCharsets.UTF_8);
             BufferedReader br = new BufferedReader(read);
             String data = br.readLine();
             while(data!=null)  {

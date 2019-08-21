@@ -96,6 +96,15 @@ public class NewsListFragment extends Fragment {
 
         /* 从root view 中构造出recyclerView，存放新闻列表*/
         mLayoutManager = new LinearLayoutManager(getContext());
+        mRefreshLayout = root.findViewById(R.id.swipeRefreshLayout);
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mRefresh = true;
+                mNewsPageViewModel.setInfo(new NewsCrawler.CrawlerInfo("", mLatestDate, getCurrentTime(), mSectionName));
+            }
+        });
+
         mRecyclerView = root.findViewById(R.id.news_recyclerView);
         mRecyclerView.setAdapter(mNewsListAdapter);
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -105,18 +114,11 @@ public class NewsListFragment extends Fragment {
             protected void onLoading(int countNum, int lastNum) {
                 Log.d("Adapter List Fragment", "Loading " + mEarliestDate);
                 mPage++;
+                mNewsListAdapter.setLoading();
                 mNewsPageViewModel.setInfo(new NewsCrawler.CrawlerInfo("", "", mEarliestDate, mSectionName));
             }
         });
-        mRefreshLayout = root.findViewById(R.id.swipeRefreshLayout);
-        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                Log.d(TAG, "On Refreshing");
-                mRefresh = true;
-                mNewsPageViewModel.setInfo(new NewsCrawler.CrawlerInfo("", mLatestDate, getCurrentTime(), mSectionName));
-            }
-        });
+
 
 
         /* 设置PageViewModel，每次有数据更新的时候更新news list*/
