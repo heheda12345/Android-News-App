@@ -112,4 +112,9 @@ public class UserConfig {
     public void setTextMode(boolean textMode) {
         this.textMode = textMode;
     }
+
+    public static String getHostName() {
+        return "95.179.200.164";
+    }
+    public static int getHostPort() {return 5000;}
 }

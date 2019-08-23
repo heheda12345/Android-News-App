@@ -11,10 +11,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import com.example.news.R;
 import com.example.news.data.UserConfig;
+import com.example.news.support.ServerInteraction;
+
+import static com.example.news.support.ServerInteraction.*;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -42,7 +47,7 @@ public class MineFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_mine_section, container, false);
+        final View view = inflater.inflate(R.layout.fragment_mine_section, container, false);
         mContext = view.getContext();
         view.findViewById(R.id.tts_btn_person_select).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,6 +60,65 @@ public class MineFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 UserConfig.getInstance().setTextMode(isChecked);
+            }
+        });
+
+        view.findViewById(R.id.loginButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String name = ((EditText)view.findViewById(R.id.userName)).getText().toString();
+                final String passwd = ((EditText)view.findViewById(R.id.password)).getText().toString();
+                LoginResult result = getInstance().login(name, passwd);
+                switch (result) {
+                    case success:
+                         new AlertDialog.Builder(getActivity()).setMessage("登录成功").show();
+                        return;
+                    case wrong:
+                        new AlertDialog.Builder(getActivity()).setMessage("用户名或密码错误").show();
+                        return;
+                    case error:
+                        new AlertDialog.Builder(getActivity()).setMessage("网络错误，请稍后重试").show();
+                        return;
+                }
+                Log.d(LOG_TAG, "Login:" + result.toString());
+            }
+        });
+
+        view.findViewById(R.id.registerButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String name = ((EditText)view.findViewById(R.id.userName)).getText().toString().trim();
+                String passwd = ((EditText)view.findViewById(R.id.password)).getText().toString().trim();
+                if (!name.matches("[0-9a-zA-Z]{2,10}")) {
+                    new AlertDialog.Builder(getActivity()).setMessage("用户名应为长度2-10的字母或数字").show();
+                    return;
+                }
+                if (!passwd.matches("[0-9]{2,10}")) {
+                    new AlertDialog.Builder(getActivity()).setMessage("密码应为长度2-10的数字").show();
+                    return;
+                }
+                RegisterResult result = getInstance().register(name, passwd);
+                switch (result) {
+                    case success:
+                        new AlertDialog.Builder(getActivity()).setMessage("注册成功").show();
+                        return;
+                    case nameUsed:
+                        new AlertDialog.Builder(getActivity()).setMessage("用户名已被占用").show();
+                        return;
+                    case error:
+                        new AlertDialog.Builder(getActivity()).setMessage("网络错误，请稍后重试").show();
+                        return;
+                }
+                Log.d(LOG_TAG, "Register:" + result.toString());
+            }
+        });
+
+        view.findViewById(R.id.logoutButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(getActivity()).setMessage("退出成功").show();
+                LogoutResult result = getInstance().logout();
+                Log.d(LOG_TAG, "Logout:" + result.toString());
             }
         });
 
