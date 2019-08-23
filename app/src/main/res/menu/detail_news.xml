@@ -2,10 +2,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.news.NewsDetailActivity">
+
+    <item
+        android:id="@+id/search_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@android:color/background_light"
+        android:title="@string/search"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="always" />
+
     <item
         android:id="@+id/collecting"
         android:icon="@drawable/ic_uncollected"
-        android:orderInCategory="100"
+        android:orderInCategory="102"
         android:title="@string/collecting"
         app:showAsAction="always" />
 </menu>

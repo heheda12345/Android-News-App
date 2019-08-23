@@ -2,10 +2,8 @@ package com.example.news.ui.main.News;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +12,6 @@ import android.widget.TextView;
 
 import com.example.news.R;
 import com.example.news.data.ConstantValues;
-import com.example.news.support.ImageCrawler;
 import com.example.news.support.ImageLoadingTask;
 
 import org.json.JSONException;

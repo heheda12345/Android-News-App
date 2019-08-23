@@ -22,9 +22,23 @@ public class UserConfig {
         }
     }
 
+    public static class TTS { // 语音合成的配置
+        private String voicer = "xiaoyan";
+
+        public String getVoicer() {
+            return voicer;
+        }
+
+        public void setVoicer(String voicer) {
+            this.voicer = voicer;
+        }
+    }
+
     /* Index of this list <-> Position at the tabs*/
     private List<Integer> selectSectionsIndices;
     private List<Integer> unselectedSectionsIndices;
+    private TTS tts;
+    private boolean textMode = false;
 
     private static UserConfig instance = new UserConfig();
 
@@ -37,6 +51,7 @@ public class UserConfig {
         for (int i = 1; i < ConstantValues.ALL_SECTIONS.length; i += 2) {
             unselectedSectionsIndices.add(i);
         }
+        tts = new TTS();
     }
 
     public static UserConfig getInstance() {
@@ -79,12 +94,22 @@ public class UserConfig {
         int id = unselectedSectionsIndices.get(pos);
         unselectedSectionsIndices.remove(pos);
         selectSectionsIndices.add(id);
-
     }
 
     public void removeSection(int pos) {
         int id = selectSectionsIndices.get(pos);
         selectSectionsIndices.remove(pos);
         unselectedSectionsIndices.add(id);
+    }
+
+    public String getTTSVoicer() { return tts.getVoicer(); }
+    public void setTTSVoicer(String voicer) { tts.setVoicer(voicer);}
+
+    public boolean isTextMode() {
+        return textMode;
+    }
+
+    public void setTextMode(boolean textMode) {
+        this.textMode = textMode;
     }
 }

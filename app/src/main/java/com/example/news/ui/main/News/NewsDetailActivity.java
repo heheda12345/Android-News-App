@@ -1,5 +1,6 @@
 package com.example.news.ui.main.News;
 
+import android.app.ActivityOptions;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
@@ -9,13 +10,18 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Fade;
+import android.transition.Slide;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -24,8 +30,10 @@ import com.example.news.MainActivity;
 import com.example.news.R;
 import com.example.news.collection.CollectionItem;
 import com.example.news.collection.CollectionViewModel;
+import com.example.news.data.UserConfig;
 import com.example.news.support.ImageCrawler;
 import com.example.news.support.NewsCrawler;
+import com.r0adkll.slidr.Slidr;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,7 +50,6 @@ import static java.lang.Math.max;
 public class NewsDetailActivity extends AppCompatActivity {
     private static final String LOG_TAG =
             NewsCrawler.class.getSimpleName();
-    final boolean useImage = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,23 +57,19 @@ public class NewsDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_news_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                Intent intent = new Intent(NewsDetailActivity.this, TtsEngine.class);
-                startActivity(intent);
-            }
-        });
-
         parseJson();
         LinearLayout container = (LinearLayout) findViewById(R.id.container);
         initContainer(container);
         initCollection();
+        initTTS();
+        Slidr.attach(this);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
+
+    void initTTS() {
+        ((TtsButton)findViewById(R.id.tts_btn)).setTexts(text);
+    }
+
 
     void initCollection() {
         mCollectionViewModel = ViewModelProviders.of(this).get(CollectionViewModel.class);
@@ -97,6 +100,7 @@ public class NewsDetailActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.detail_news, menu);
         mCollectionIcon = menu.findItem(R.id.collecting);
+        mSearchEdit = menu.findItem(R.id.search_edit);
         updateCollectionIcon();
         return true;
     }
@@ -112,6 +116,10 @@ public class NewsDetailActivity extends AppCompatActivity {
                     mCollectionViewModel.insert(collectionItem);
                 }
                 return true;
+            case android.R.id.home:
+                Log.d(LOG_TAG, "home clicked");
+                finish();
+                return true;
             default:
                 //do nothing
         }
@@ -123,7 +131,8 @@ public class NewsDetailActivity extends AppCompatActivity {
         String message = intent.getStringExtra("data");
         try {
             JSONObject jsonNews = new JSONObject(message);
-            content.addAll(Arrays.asList(jsonNews.getString("content").split("\n+")));
+            text = jsonNews.getString("content");
+            content.addAll(Arrays.asList(text.split("\n+")));
             title = jsonNews.getString("title");
             newsID = jsonNews.getString("title");
             String url = jsonNews.getString("image");
@@ -141,7 +150,7 @@ public class NewsDetailActivity extends AppCompatActivity {
         ArrayList<ImageView> imageViews = new ArrayList<>();
         ArrayList<Integer> imageViewCanInsert = new ArrayList<>();
         ArrayList<Boolean> imageViewInserted = new ArrayList<>();
-        if (useImage) {
+        if (!UserConfig.getInstance().isTextMode()) {
             ArrayList<ImageCrawler> crawlers = new ArrayList<>();
             for (int i=0; i<imgUrls.size(); i++) {
                 ImageCrawler imageCrawler = new ImageCrawler(imgUrls.get(i));
@@ -165,6 +174,14 @@ public class NewsDetailActivity extends AppCompatActivity {
                 imageViews.add(imageView);
                 if (bitmap.getHeight() * 1.0 / bitmap.getWidth() < 1)
                     imageViewCanInsert.add(imageViews.size() - 1);
+                imageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(NewsDetailActivity.this, LargeImageActivity.class);
+                        intent.putStringArrayListExtra("url", imgUrls);
+                        startActivity(intent);
+                    }
+                });
                 imageViewInserted.add(false);
             }
         }
@@ -216,11 +233,18 @@ public class NewsDetailActivity extends AppCompatActivity {
         container.addView(debugView);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ((TtsButton)findViewById(R.id.tts_btn)).destroy();
+    }
+
     private String title = "";
+    private String text = "";
     private ArrayList<String> content = new ArrayList<>();
     private ArrayList<String> imgUrls = new ArrayList<String>();
     private String newsID = "";
     private CollectionViewModel mCollectionViewModel;
-    private MenuItem mCollectionIcon;
+    private MenuItem mCollectionIcon, mSearchIcon, mSearchEdit;
 
 }

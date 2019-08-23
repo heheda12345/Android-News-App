@@ -20,7 +20,7 @@ android {
         abi {
             enable true
             reset()
-            include 'x86','arm64-v8a','armeabi-v7a','x86_64'
+            include 'x86', 'arm64-v8a', 'armeabi-v7a', 'x86_64'
             universalApk true
         }
     }
@@ -46,4 +46,7 @@ dependencies {
     // Lifecycle components
     implementation "android.arch.lifecycle:extensions:$rootProject.archLifecycleVersion"
     annotationProcessor "android.arch.lifecycle:compiler:$rootProject.archLifecycleVersion"
+
+    //拖动返回效果
+    implementation 'com.r0adkll:slidableactivity:2.0.6'
 }
