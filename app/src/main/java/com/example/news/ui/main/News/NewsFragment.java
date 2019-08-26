@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.PopupWindow;
 import com.example.news.R;
 import com.example.news.data.BitMapCache;
+import com.example.news.data.NewsCache;
 import com.example.news.data.UserConfig;
 
 public class NewsFragment extends Fragment {
@@ -23,6 +24,7 @@ public class NewsFragment extends Fragment {
     private SectionsPopWindow mPopWindow;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private BitMapCache bitMapCache;
+    private NewsCache newsCache;
 
     public NewsFragment() {
         // Required empty public constructor
@@ -39,6 +41,7 @@ public class NewsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
         bitMapCache = BitMapCache.getInstance();
+        newsCache = NewsCache.getInstance();
     }
 
     @Override
@@ -71,6 +74,7 @@ public class NewsFragment extends Fragment {
         });
 
         bitMapCache.addAllSections(UserConfig.getInstance().getSectionNum());
+        newsCache.addAllSections(UserConfig.getInstance().getSectionNum());
         return view;
     }
 
@@ -80,6 +84,7 @@ public class NewsFragment extends Fragment {
             int pos = (int)v.getTag();
             delPage(pos);
             bitMapCache.removeSection(pos);
+            newsCache.removeSection(pos);
         }
     };
 
@@ -89,6 +94,7 @@ public class NewsFragment extends Fragment {
             int pos = (int)v.getTag();
             addPage(pos);
             bitMapCache.addSection();
+            newsCache.addSection();
         }
     };
 

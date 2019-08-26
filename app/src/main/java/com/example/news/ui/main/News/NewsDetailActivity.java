@@ -6,6 +6,7 @@ import android.content.ClipData;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -25,8 +26,10 @@ import com.example.news.MainActivity;
 import com.example.news.R;
 import com.example.news.collection.CollectionItem;
 import com.example.news.collection.CollectionViewModel;
+import com.example.news.data.NewsCache;
 import com.example.news.support.ImageCrawler;
 import com.example.news.support.NewsCrawler;
+import com.example.news.support.NewsItem;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,6 +66,9 @@ public class NewsDetailActivity extends AppCompatActivity {
             }
         });
 
+        mNewsCache = NewsCache.getInstance();
+        rawNews = getIntent().getStringExtra("data");
+        mSectionPos = getIntent().getIntExtra("sectionPos", 0);
         parseJson();
         LinearLayout container = (LinearLayout) findViewById(R.id.container);
         initContainer(container);
@@ -119,14 +125,24 @@ public class NewsDetailActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void parseJson() {
-        Intent intent = getIntent();
-        String message = intent.getStringExtra("data");
+    private void storeCache(ArrayList<Bitmap> bitmaps) {
         try {
-            JSONObject jsonNews = new JSONObject(message);
+            NewsItem item = new NewsItem(new JSONObject(rawNews));
+            item.setImages(bitmaps);
+            mNewsCache.add(mSectionPos, newsID, item);
+            Log.d(LOG_TAG, "Cached News");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void parseJson() {
+        try {
+            JSONObject jsonNews = new JSONObject(rawNews);
             content.addAll(Arrays.asList(jsonNews.getString("content").split("\n+")));
             title = jsonNews.getString("title");
-            newsID = jsonNews.getString("title");
+            newsID = jsonNews.getString("newsID");
             String url = jsonNews.getString("image");
             if (url.length() > 5) {
                 imgUrls.addAll(Arrays.asList(url.substring(1, url.length()-1).split(",")));
@@ -140,27 +156,48 @@ public class NewsDetailActivity extends AppCompatActivity {
     private void initContainer(LinearLayout container) {
         // 建立所有imageView
         ArrayList<ImageView> imageViews = new ArrayList<>();
+        ArrayList<Bitmap> bitmaps = new ArrayList<>();
         ArrayList<Integer> imageViewCanInsert = new ArrayList<>();
         ArrayList<Boolean> imageViewInserted = new ArrayList<>();
         if (useImage) {
-            ArrayList<ImageCrawler> crawlers = new ArrayList<>();
-            for (int i=0; i<imgUrls.size(); i++) {
-                ImageCrawler imageCrawler = new ImageCrawler(imgUrls.get(i));
-                imageCrawler.start();
-                crawlers.add(imageCrawler);
+            boolean fromCache = false;
+            if (mNewsCache.contains(mSectionPos, newsID)) {
+                fromCache = true;
+                bitmaps = mNewsCache.get(mSectionPos, newsID).getBitmaps();
             }
-            for (int i=0; i<crawlers.size(); i++) {
-                try {
-                    crawlers.get(i).join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    continue;
+
+            ArrayList<ImageCrawler> crawlers = new ArrayList<>();
+            if (!fromCache) {
+                for (int i=0; i < imgUrls.size(); i++) {
+                    ImageCrawler imageCrawler = new ImageCrawler(imgUrls.get(i));
+                    imageCrawler.start();
+                    crawlers.add(imageCrawler);
                 }
-                Bitmap bitmap = crawlers.get(i).getBitmap();
+            }
+
+            for (int i = 0; i < imgUrls.size(); i++) {
+                if (!fromCache) {
+                    try {
+                        crawlers.get(i).join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        continue;
+                    }
+                }
+
+                Bitmap bitmap = null;
+                if (fromCache) {
+                    bitmap = bitmaps.get(i);
+                    Log.d(LOG_TAG, "from cache");
+                }
+                else {
+                    bitmap = crawlers.get(i).getBitmap();
+                }
                 ImageView imageView = new ImageView(this);
                 if (bitmap == null) {
                     bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.no_image);
                 }
+                bitmaps.add(bitmap);
                 imageView.setImageBitmap(bitmap);
 
                 ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT);
@@ -171,6 +208,10 @@ public class NewsDetailActivity extends AppCompatActivity {
                 if (bitmap.getHeight() * 1.0 / bitmap.getWidth() < 1)
                     imageViewCanInsert.add(imageViews.size() - 1);
                 imageViewInserted.add(false);
+            }
+
+            if (!fromCache) {
+                storeCache(bitmaps);
             }
         }
         //建立所有的textView
@@ -219,13 +260,17 @@ public class NewsDetailActivity extends AppCompatActivity {
         debugView.setTextIsSelectable(true);
         debugView.setText(String.format("Debug:\n%s", getIntent().getStringExtra("data")));
         container.addView(debugView);
+
     }
 
+    private NewsCache mNewsCache;
+    private String rawNews = "";
     private String title = "";
     private ArrayList<String> content = new ArrayList<>();
     private ArrayList<String> imgUrls = new ArrayList<String>();
     private String newsID = "";
     private CollectionViewModel mCollectionViewModel;
     private MenuItem mCollectionIcon;
+    private int mSectionPos;
 
 }

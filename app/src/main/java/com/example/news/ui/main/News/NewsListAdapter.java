@@ -59,9 +59,9 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             }
         }
 
-        public void initImages() {
-            for (int i = 0; i < images.length; ++i) {
-                images[i].setImageBitmap(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.no_image));
+        void initImages() {
+            for (ImageView image : images) {
+                image.setImageBitmap(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.no_image));
             }
         }
     }
@@ -69,26 +69,22 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private class FootViewHolder extends RecyclerView.ViewHolder {
         private ContentLoadingProgressBar processBar;
         private TextView textView;
-        public FootViewHolder(View v) {
+        FootViewHolder(View v) {
             super(v);
             processBar = itemView.findViewById(R.id.pb_progress);
             textView = itemView.findViewById(R.id.foot_view_text);
         }
 
-        public void setNetWorkError() {
+        void setNetWorkError() {
             textView.setVisibility(View.VISIBLE);
             processBar.setVisibility(View.INVISIBLE);
         }
 
-        public void setLoading() {
+        void setLoading() {
             textView.setVisibility(View.INVISIBLE);
             processBar.setVisibility(View.VISIBLE);
         }
 
-        public void setCommon() {
-            textView.setVisibility(View.INVISIBLE);
-            processBar.setVisibility(View.INVISIBLE);
-        }
     }
 
     public NewsListAdapter(Context context, int sectionPos) {
@@ -256,6 +252,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private void showNews(JSONObject news) {
         Intent intent = new Intent(mContext, NewsDetailActivity.class);
         intent.putExtra("data", news.toString());
+        intent.putExtra("sectionPos", mSectionPos);
         mContext.startActivity(intent);
     }
 
