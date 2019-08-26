@@ -20,4 +20,8 @@ public class ConstantValues {
     public enum ItemViewType {
         NONE, ONE_BIG, ONE_SMALL, THREE, FOOTER
     }
+
+    public enum NetWorkStatus {
+        NORMAL, ERROR
+    }
 }

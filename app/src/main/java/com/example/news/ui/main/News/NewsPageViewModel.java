@@ -8,6 +8,7 @@ import android.arch.lifecycle.ViewModel;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.example.news.data.ConstantValues;
 import com.example.news.support.NewsCrawler;
 
 import org.json.JSONException;
@@ -25,6 +26,7 @@ public class NewsPageViewModel extends ViewModel {
 
     private MutableLiveData<NewsCrawler.CrawlerInfo> mCrawlerInfo = new MutableLiveData<>();
     private ArrayList<JSONObject> mNews;
+    private ConstantValues.NetWorkStatus mNetWorkStatus;
     private LiveData<String> mVersion = Transformations.map(mCrawlerInfo, new Function<NewsCrawler.CrawlerInfo, String>() {
         @Override
         public String apply(NewsCrawler.CrawlerInfo input) {
@@ -36,6 +38,7 @@ public class NewsPageViewModel extends ViewModel {
                 e.printStackTrace();
             }
             mNews = newsCrawler.getNewsResp();
+            mNetWorkStatus = newsCrawler.getNetWorkStatus();
             return input + "-" + mNews.hashCode();
         }
     });
@@ -51,6 +54,8 @@ public class NewsPageViewModel extends ViewModel {
     public ArrayList<JSONObject> getNews() {
         return mNews;
     }
+
+    public ConstantValues.NetWorkStatus getStatus() { return mNetWorkStatus; }
 
 
 }

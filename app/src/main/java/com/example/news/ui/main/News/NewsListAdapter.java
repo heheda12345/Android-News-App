@@ -9,7 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.news.R;
 import com.example.news.data.ConstantValues;
@@ -192,18 +194,25 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     /**
      * 实现新闻分类改变后存入新的数据
      * */
-    public void setNews(List<JSONObject> news) {
+    public void setNews(ConstantValues.NetWorkStatus status, List<JSONObject> news) {
         mNews = news;
-        notifyDataSetChanged();
+        if (status == ConstantValues.NetWorkStatus.NORMAL) {
+            netWorkError = false;
+            notifyDataSetChanged();
+        }
+        else {
+            netWorkError = true;
+        }
     }
 
     /**
      * 实现上拉加载功能
      * */
-    public void addNews(List<JSONObject> news) {
+    public void addNews(ConstantValues.NetWorkStatus status, List<JSONObject> news) {
         int changePos = mNews.size();
         mNews.addAll(news);
-        if (news.size() > 0) {
+        if (status == ConstantValues.NetWorkStatus.NORMAL) {
+            netWorkError = false;
             notifyItemRangeInserted(changePos, news.size());
         }
         else {
@@ -215,9 +224,21 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     /**
      * 实现下拉刷新功能
      * */
-    public void addRefreshNews(List<JSONObject> news) {
+    public void addRefreshNews(ConstantValues.NetWorkStatus status, List<JSONObject> news) {
         mNews.addAll(0, news);
-        notifyItemRangeInserted(0, news.size());
+        if (status == ConstantValues.NetWorkStatus.NORMAL) {
+            netWorkError = false;
+            if (news.size() > 0) {
+                notifyItemRangeInserted(0, news.size());
+            }
+            else {
+                Toast.makeText(mContext, "没有更多新闻啦！", Toast.LENGTH_LONG).show();
+            }
+        }
+        else {
+            netWorkError = true;
+            Toast.makeText(mContext, "网络连接异常，请稍后再试。", Toast.LENGTH_LONG).show();
+        }
     }
 
     /**

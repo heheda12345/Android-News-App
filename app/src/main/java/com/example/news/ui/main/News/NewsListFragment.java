@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.widget.Toast;
 
 import com.example.news.R;
 import com.example.news.data.ConstantValues;
@@ -126,8 +127,9 @@ public class NewsListFragment extends Fragment {
             @Override
             public void onChanged(@Nullable String s) {
                 ArrayList<JSONObject> news = mNewsPageViewModel.getNews();
+                ConstantValues.NetWorkStatus status =mNewsPageViewModel.getStatus();
                 if (mRefresh) {
-                    mNewsListAdapter.addRefreshNews(news);
+                    mNewsListAdapter.addRefreshNews(status, news);
                     mRefresh = false;
                     mRefreshLayout.setRefreshing(false);
                     if (news.size() > 0) {
@@ -136,13 +138,13 @@ public class NewsListFragment extends Fragment {
                 }
                 else {
                     if (mPage == 0) {
-                        mNewsListAdapter.setNews(news);
+                        mNewsListAdapter.setNews(status, news);
                         if (news.size() > 0) {
                             mLatestDate = getLatestTime(news);
                         }
                     }
                     else {
-                        mNewsListAdapter.addNews(news);
+                        mNewsListAdapter.addNews(status, news);
                     }
                     if (news.size() > 0) {
                         mEarliestDate = getEarliestTime(news);

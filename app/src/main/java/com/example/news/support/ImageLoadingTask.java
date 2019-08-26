@@ -40,29 +40,21 @@ public class ImageLoadingTask extends AsyncTask<String, Void, List<Bitmap>> {
             }
             Bitmap bitmap = null;
             try {
-//                Log.d(LOG_TAG, "Get from " + url);
                 URL imgUrl = new URL(url);
-//            Log.d(LOG_TAG, url);
                 HttpURLConnection conn = (HttpURLConnection) imgUrl
                         .openConnection();
                 conn.setRequestMethod("GET");
-//            Log.d(LOG_TAG, "resp-code:");
                 InputStream is = conn.getInputStream();
-//            Log.d(LOG_TAG, "resp-code:");
                 bitmap = BitmapFactory.decodeStream(is);
                 bitmapList.add(bitmap);
                 cache.add(sectionPos, url, bitmap);
-//            Log.d(LOG_TAG, "resp-code:");
                 is.close();
                 conn.disconnect();
             } catch (MalformedURLException e) {
 //                Log.e(LOG_TAG, e.getMessage());
-                e.printStackTrace();
             } catch (IOException e) {
 //                Log.e(LOG_TAG, e.getMessage());
-                e.printStackTrace();
             }
-//            Log.d(LOG_TAG, "Store cache");
         }
         return bitmapList;
     }
