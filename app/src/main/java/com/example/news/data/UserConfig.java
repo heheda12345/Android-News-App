@@ -2,7 +2,6 @@ package com.example.news.data;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 public class UserConfig {
     public static class Section {
@@ -26,11 +25,19 @@ public class UserConfig {
     private List<Integer> selectSectionsIndices;
     private List<Integer> unselectedSectionsIndices;
 
+    private List<String> searchHistory;
+
+
     private static UserConfig instance = new UserConfig();
 
     private UserConfig() {
         selectSectionsIndices = new ArrayList<>();
         unselectedSectionsIndices = new ArrayList<>();
+        searchHistory = new ArrayList<>();
+        searchHistory.add("Hello");
+        searchHistory.add("World");
+        searchHistory.add("Tsinghua");
+        searchHistory.add("清华大学");
         for (int i = 0; i < ConstantValues.ALL_SECTIONS.length; i += 2) {
             selectSectionsIndices.add(i);
         }
@@ -57,6 +64,10 @@ public class UserConfig {
             sL.add(new Section(ConstantValues.ALL_SECTIONS[unselectedSectionsIndices.get(position)], position));
         }
         return sL;
+    }
+
+    public List<String> getSearchHistory() {
+        return searchHistory;
     }
 
     public Section getSection(int position) {
