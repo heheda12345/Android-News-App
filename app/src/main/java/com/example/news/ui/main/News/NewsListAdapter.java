@@ -3,6 +3,8 @@ package com.example.news.ui.main.News;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.support.annotation.ColorInt;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -40,6 +42,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         final ImageView[] images;
         ConstantValues.ItemViewType layoutType;
         int mCurrentPosition = -1;
+        boolean hasRead = false;
 
         NewsItemVH(View v, ConstantValues.ItemViewType layoutType) {
             super(v);
@@ -63,6 +66,17 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             for (ImageView image : images) {
                 image.setImageBitmap(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.no_image));
             }
+        }
+
+        boolean isHasRead() {
+            return hasRead;
+        }
+
+        void setRead() {
+            int readColor = ContextCompat.getColor(mContext, R.color.gray);
+            title.setTextColor(readColor);
+            author.setTextColor(readColor);
+            time.setTextColor(readColor);
         }
     }
 
@@ -97,7 +111,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 //        Log.d("NewsAdapter", "OnBind " + position);
 
         if (holder instanceof NewsItemVH) {
-            NewsItemVH itemHolder = (NewsItemVH) holder;
+            final NewsItemVH itemHolder = (NewsItemVH) holder;
             String imagesUrlStr = "[]";
             try {
                 itemHolder.title.setText(mNews.get(position).getString("title"));
@@ -119,6 +133,8 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 @Override
                 public void onClick(View v) {
                     showNews(mNews.get(position));
+                    itemHolder.setRead();
+
                 }
             });
         }
