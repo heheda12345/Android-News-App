@@ -2,6 +2,7 @@ package com.example.news.ui.main.News;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -57,6 +58,12 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 images[2] = v.findViewById(R.id.image2);
             }
         }
+
+        public void initImages() {
+            for (int i = 0; i < images.length; ++i) {
+                images[i].setImageBitmap(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.no_image));
+            }
+        }
     }
 
     private class FootViewHolder extends RecyclerView.ViewHolder {
@@ -102,6 +109,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 itemHolder.time.setText(mNews.get(position).getString("publishTime"));
                 imagesUrlStr = mNews.get(position).getString("image");
                 itemHolder.mCurrentPosition = position;
+                itemHolder.initImages();
             }
             catch (JSONException e) {
                 e.printStackTrace();

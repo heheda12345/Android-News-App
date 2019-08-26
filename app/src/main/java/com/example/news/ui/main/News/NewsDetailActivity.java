@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -157,7 +158,11 @@ public class NewsDetailActivity extends AppCompatActivity {
                 }
                 Bitmap bitmap = crawlers.get(i).getBitmap();
                 ImageView imageView = new ImageView(this);
+                if (bitmap == null) {
+                    bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.no_image);
+                }
                 imageView.setImageBitmap(bitmap);
+
                 ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT);
                 imageView.setLayoutParams(params);
                 imageView.setAdjustViewBounds(true);
@@ -170,7 +175,7 @@ public class NewsDetailActivity extends AppCompatActivity {
         }
         //建立所有的textView
         ArrayList<TextView> textViews = new ArrayList<>();
-        for (int i=0; i<content.size(); i++) {
+        for (int i=0; i < content.size(); i++) {
             TextView textView = new TextView(this);
             textView.setText(content.get(i));
             textView.setTextSize(18);

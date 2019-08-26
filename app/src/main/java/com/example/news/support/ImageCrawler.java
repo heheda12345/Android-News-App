@@ -15,7 +15,7 @@ import java.net.URL;
 public class ImageCrawler extends Thread {
     private static final String LOG_TAG =
             ImageCrawler.class.getSimpleName();
-    private Bitmap bitmap;
+    private Bitmap bitmap = null;
     private String url;
 
     public ImageCrawler(String url) {
