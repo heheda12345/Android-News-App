@@ -26,10 +26,6 @@
         android:theme="@style/AppTheme">
         <activity android:name=".ui.main.News.TtsEngine"></activity>
         <activity
-            android:name=".ui.main.Search.SearchResultActivity"
-            android:label="@string/title_activity_search_result"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity
             android:name=".ui.main.News.NewsDetailActivity"
             android:label="@string/title_activity_news_detail"
             android:theme="@style/AppTheme.NoActionBar" />

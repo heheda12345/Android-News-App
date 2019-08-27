@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ListPopupWindow;
@@ -18,7 +20,7 @@ import android.widget.ArrayAdapter;
 
 import com.example.news.data.UserConfig;
 import com.example.news.ui.main.MainPagerAdapter;
-import com.example.news.ui.main.Search.SearchResultActivity;
+import com.example.news.ui.main.Search.SearchResultFragment;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechUtility;
 
@@ -30,9 +32,13 @@ public class MainActivity extends AppCompatActivity {
     private ListPopupWindow listPopupWindow;
     private Toolbar toolbar;
     private SearchView searchView;
+    private SearchResultFragment searchResultFragment;
+    private FragmentManager fragmentManager;
     private List<String> searchSuggest;
     private UserConfig userConfig = UserConfig.getInstance();
     private String LOG_TAG = getClass().getSimpleName();
+    private ViewPager mainViewPager;
+    private TabLayout mainTabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,13 +49,15 @@ public class MainActivity extends AppCompatActivity {
         searchSuggest.addAll(userConfig.getSearchHistory());
 
         /* Create Main Tab Layout */
-        TabLayout mainTabLayout = findViewById(R.id.main_tabLayout);
+        mainTabLayout = findViewById(R.id.main_tabLayout);
         mainTabLayout.addTab(mainTabLayout.newTab().setText(R.string.mainTab_news));
         mainTabLayout.addTab(mainTabLayout.newTab().setText(R.string.mainTab_mine));
+
         /* Create Main View Pager */
-        final ViewPager mainViewPager = findViewById(R.id.main_viewPager);
-        final MainPagerAdapter mainPagerAdapter = new MainPagerAdapter(this, getSupportFragmentManager(), 2);
+        mainViewPager = findViewById(R.id.main_viewPager);
+        MainPagerAdapter mainPagerAdapter = new MainPagerAdapter(this, getSupportFragmentManager(), 2);
         mainViewPager.setAdapter(mainPagerAdapter);
+
         /* Set listener for clicks*/
         mainViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mainTabLayout));
         mainTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -99,6 +107,14 @@ public class MainActivity extends AppCompatActivity {
                 listPopupWindow.dismiss();
             }
         });
+
+        /* Create Search Result Fragment*/
+        fragmentManager = getSupportFragmentManager();
+        searchResultFragment = SearchResultFragment.newInstance();
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.replace(R.id.fragment_container, searchResultFragment);
+        ft.hide(searchResultFragment);
+        ft.commit();
     }
 
     @Override
@@ -110,10 +126,11 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                Intent intent = new Intent(MainActivity.this, SearchResultActivity.class);
-                intent.putExtra("search_str", s);
-                startActivity(intent);
-                return false;
+                Log.d(LOG_TAG, "Show Search Detail");
+                fragmentManager.beginTransaction().show(searchResultFragment).commit();
+                mainViewPager.setVisibility(View.GONE);
+                mainTabLayout.setVisibility(View.GONE);
+                return true;
             }
 
             @Override
@@ -142,6 +159,16 @@ public class MainActivity extends AppCompatActivity {
                 else {
                     listPopupWindow.dismiss();
                 }
+            }
+        });
+
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                fragmentManager.beginTransaction().hide(searchResultFragment).commit();
+                mainViewPager.setVisibility(View.VISIBLE);
+                mainTabLayout.setVisibility(View.VISIBLE);
+                return false;
             }
         });
         return true;
