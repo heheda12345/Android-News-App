@@ -6,6 +6,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -13,6 +14,12 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.util.Log;
@@ -135,6 +142,8 @@ public class NewsDetailActivity extends AppCompatActivity {
             content.addAll(Arrays.asList(text.split("\n+")));
             title = jsonNews.getString("title");
             newsID = jsonNews.getString("title");
+            newsSource = jsonNews.getString("publisher");
+            newsTime  = jsonNews.getString("publishTime");
             String url = jsonNews.getString("image");
             if (url.length() > 5) {
                 imgUrls.addAll(Arrays.asList(url.substring(1, url.length()-1).split(",")));
@@ -196,8 +205,15 @@ public class NewsDetailActivity extends AppCompatActivity {
         }
         //标题
         TextView titleView = new TextView(this);
-        titleView.setText(title);
-        titleView.setTextSize(24);
+        SpannableStringBuilder spanTitle = new SpannableStringBuilder(title + "\n\n");
+        spanTitle.setSpan(new AbsoluteSizeSpan(24, true), 0, title.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        SpannableStringBuilder spanSource = new SpannableStringBuilder( newsSource + "  ");
+        spanSource.setSpan(new ForegroundColorSpan(0xff5c78b9), 0, newsSource.length()+1, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        spanSource.setSpan(new AbsoluteSizeSpan(18, true), 0, newsSource.length()+1, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        SpannableStringBuilder spanTime = new SpannableStringBuilder(newsTime);
+        spanTime.setSpan(new AbsoluteSizeSpan(18, true), 0, newsTime.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        spanTime.setSpan(new ForegroundColorSpan(0xffb7b7b7), 0, newsTime.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        titleView.setText(spanTitle.append(spanSource).append(spanTime));
         titleView.setTextIsSelectable(true);
         container.addView(titleView);
         Log.d(LOG_TAG, "size "+imageViewCanInsert.size() + " " + textViews.size() + " " + imageViews.size());
@@ -244,6 +260,8 @@ public class NewsDetailActivity extends AppCompatActivity {
     private ArrayList<String> content = new ArrayList<>();
     private ArrayList<String> imgUrls = new ArrayList<String>();
     private String newsID = "";
+    private String newsSource = "";
+    private String newsTime = "";
     private CollectionViewModel mCollectionViewModel;
     private MenuItem mCollectionIcon, mSearchIcon, mSearchEdit;
 
