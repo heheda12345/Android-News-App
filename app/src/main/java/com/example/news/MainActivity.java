@@ -1,5 +1,6 @@
 package com.example.news;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,10 +13,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.support.v7.widget.SearchView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import com.example.news.data.UserConfig;
 import com.example.news.ui.main.MainPagerAdapter;
+import com.example.news.ui.main.Search.SearchResultActivity;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechUtility;
 
@@ -26,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter suggestArrayAdapter;
     private ListPopupWindow listPopupWindow;
     private Toolbar toolbar;
+    private SearchView searchView;
     private List<String> searchSuggest;
     private UserConfig userConfig = UserConfig.getInstance();
     private String LOG_TAG = getClass().getSimpleName();
@@ -88,17 +92,27 @@ public class MainActivity extends AppCompatActivity {
         listPopupWindow = new ListPopupWindow(MainActivity.this);
         listPopupWindow.setAdapter(suggestArrayAdapter);
         listPopupWindow.setAnchorView(toolbar);
+        listPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                searchView.setQuery(searchSuggest.get(position), true);
+                listPopupWindow.dismiss();
+            }
+        });
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search_item).getActionView();
+        searchView = (SearchView) menu.findItem(R.id.search_item).getActionView();
         searchView.setQueryHint(getString(R.string.search_text));
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
+                Intent intent = new Intent(MainActivity.this, SearchResultActivity.class);
+                intent.putExtra("search_str", s);
+                startActivity(intent);
                 return false;
             }
 

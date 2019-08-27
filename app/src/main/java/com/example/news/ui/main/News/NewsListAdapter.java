@@ -19,6 +19,8 @@ import android.widget.Toast;
 import com.example.news.R;
 import com.example.news.data.ConstantValues;
 import com.example.news.support.ImageLoadingTask;
+import com.example.news.ui.main.Items.FootViewHolder;
+import com.example.news.ui.main.Items.NewsItemVH;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,72 +36,6 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private int mSectionPos;
     private List<JSONObject> mNews;
     private boolean netWorkError = false;
-
-    private class NewsItemVH extends RecyclerView.ViewHolder {
-        final TextView title;
-        final TextView author;
-        final TextView time;
-        final ImageView[] images;
-        ConstantValues.ItemViewType layoutType;
-        int mCurrentPosition = -1;
-        boolean hasRead = false;
-
-        NewsItemVH(View v, ConstantValues.ItemViewType layoutType) {
-            super(v);
-            this.layoutType = layoutType;
-            title = v.findViewById(R.id.title);
-            author = v.findViewById(R.id.author);
-            time = v.findViewById(R.id.time);
-            int imageNum = ConstantValues.IMAGE_NUM[this.layoutType.ordinal()];
-            images = new ImageView[imageNum];
-            if (imageNum == 1) {
-                images[0] = v.findViewById(R.id.image);
-            }
-            if (imageNum == 3) {
-                images[0] = v.findViewById(R.id.image0);
-                images[1] = v.findViewById(R.id.image1);
-                images[2] = v.findViewById(R.id.image2);
-            }
-        }
-
-        void initImages() {
-            for (ImageView image : images) {
-                image.setImageBitmap(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.no_image));
-            }
-        }
-
-        boolean isHasRead() {
-            return hasRead;
-        }
-
-        void setRead() {
-            int readColor = ContextCompat.getColor(mContext, R.color.gray);
-            title.setTextColor(readColor);
-            author.setTextColor(readColor);
-            time.setTextColor(readColor);
-        }
-    }
-
-    private class FootViewHolder extends RecyclerView.ViewHolder {
-        private ContentLoadingProgressBar processBar;
-        private TextView textView;
-        FootViewHolder(View v) {
-            super(v);
-            processBar = itemView.findViewById(R.id.pb_progress);
-            textView = itemView.findViewById(R.id.foot_view_text);
-        }
-
-        void setNetWorkError() {
-            textView.setVisibility(View.VISIBLE);
-            processBar.setVisibility(View.INVISIBLE);
-        }
-
-        void setLoading() {
-            textView.setVisibility(View.INVISIBLE);
-            processBar.setVisibility(View.VISIBLE);
-        }
-
-    }
 
     public NewsListAdapter(Context context, int sectionPos) {
         mContext = context;
@@ -200,7 +136,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case THREE: resource = R.layout.news_item_three; break;
         }
         View v = LayoutInflater.from(parent.getContext()).inflate(resource, parent, false);
-        return new NewsItemVH(v, layoutType);
+        return new NewsItemVH(mContext, v, layoutType);
     }
 
     /**

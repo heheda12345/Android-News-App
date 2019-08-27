@@ -94,6 +94,7 @@
     <string formatted="false" name="tts_toast_format">缓冲进度为%d%%，播放进度为%d%%</string>
     <string name="network_error">网络连接异常，请稍后再试</string>
     <string name="search_text">搜一搜</string>
+    <string name="title_activity_search_result">SearchResultActivity</string>
     <!-- 语言 -->
     <string-array name="language_entries">
         <item>普通话</item>
