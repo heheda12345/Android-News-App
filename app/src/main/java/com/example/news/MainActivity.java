@@ -13,7 +13,6 @@ import android.view.Menu;
 import android.view.View;
 import android.support.v7.widget.SearchView;
 import android.widget.ArrayAdapter;
-import android.widget.PopupWindow;
 
 import com.example.news.data.UserConfig;
 import com.example.news.ui.main.MainPagerAdapter;
@@ -25,24 +24,26 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private ArrayAdapter suggestArrayAdapter;
-    private PopupWindow popupWindow;
+    private ListPopupWindow listPopupWindow;
     private Toolbar toolbar;
     private List<String> searchSuggest;
+    private UserConfig userConfig = UserConfig.getInstance();
+    private String LOG_TAG = getClass().getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         /* Load User Config*/
-        searchSuggest = new ArrayList<String>();
-        searchSuggest.addAll(UserConfig.getInstance().getSearchHistory());
+        searchSuggest = new ArrayList<>();
+        searchSuggest.addAll(userConfig.getSearchHistory());
 
         /* Create Main Tab Layout */
-        TabLayout mainTabLayout = (TabLayout) findViewById(R.id.main_tabLayout);
+        TabLayout mainTabLayout = findViewById(R.id.main_tabLayout);
         mainTabLayout.addTab(mainTabLayout.newTab().setText(R.string.mainTab_news));
         mainTabLayout.addTab(mainTabLayout.newTab().setText(R.string.mainTab_mine));
         /* Create Main View Pager */
-        final ViewPager mainViewPager = (ViewPager) findViewById(R.id.main_viewPager);
+        final ViewPager mainViewPager = findViewById(R.id.main_viewPager);
         final MainPagerAdapter mainPagerAdapter = new MainPagerAdapter(this, getSupportFragmentManager(), 2);
         mainViewPager.setAdapter(mainPagerAdapter);
         /* Set listener for clicks*/
@@ -82,6 +83,11 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         suggestArrayAdapter = new ArrayAdapter(MainActivity.this, R.layout.suggest_item, searchSuggest);
+
+        /* Create Popup Window*/
+        listPopupWindow = new ListPopupWindow(MainActivity.this);
+        listPopupWindow.setAdapter(suggestArrayAdapter);
+        listPopupWindow.setAnchorView(toolbar);
     }
 
     @Override
@@ -98,18 +104,30 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String s) {
-                return false;
+                listPopupWindow.show();
+                searchSuggest.clear();
+                for (String suggest : userConfig.getSearchHistory()) {
+                    if (suggest.toLowerCase().contains(s.toLowerCase())) {
+                        searchSuggest.add(suggest);
+                    }
+                }
+                suggestArrayAdapter.notifyDataSetChanged();
+                if (searchSuggest.isEmpty()) {
+                    listPopupWindow.dismiss();
+                }
+                return true;
             }
         });
 
         searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                ListPopupWindow listPopupWindow = new ListPopupWindow(MainActivity.this);
-                listPopupWindow.setAdapter(suggestArrayAdapter);
-                listPopupWindow.setAnchorView(toolbar);
-                listPopupWindow.show();
-                Log.d("Search", "searchview QueryTextFocusChange-->" + hasFocus);
+                if (hasFocus) {
+                    listPopupWindow.show();
+                }
+                else {
+                    listPopupWindow.dismiss();
+                }
             }
         });
         return true;
