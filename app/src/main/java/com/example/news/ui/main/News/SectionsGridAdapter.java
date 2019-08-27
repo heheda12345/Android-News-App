@@ -10,7 +10,6 @@ import android.widget.Button;
 import com.example.news.R;
 import com.example.news.data.UserConfig;
 
-import java.util.List;
 
 public class SectionsGridAdapter extends BaseAdapter {
     private Context context;
@@ -18,7 +17,7 @@ public class SectionsGridAdapter extends BaseAdapter {
 //    private List<UserConfig.Section> listItem;
     private View.OnClickListener sectionClick;
 
-    public SectionsGridAdapter(Context context, boolean type, View.OnClickListener sectionClick) {
+    SectionsGridAdapter(Context context, boolean type, View.OnClickListener sectionClick) {
         this.context = context;
 //        this.listItem = listItem;
         this.type = type;

@@ -13,7 +13,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.widget.Toast;
 
 import com.example.news.R;
 import com.example.news.data.ConstantValues;
@@ -37,29 +36,41 @@ public class NewsListFragment extends Fragment {
 
     private static final String ARG_SECTION_POS = "section_number";
     private static final String ARG_SECTION_NAME = "section_name";
+    private static final String ARG_INIT_ON_CREATE = "init_on_create";
     private static final String TAG = "News List Fragment";
-    private String mSectionName;
-    private int mSectionPos;
+    private String mSectionName = "";
+    private int mSectionPos = 0; // default section is "suggest section"
 
     private NewsPageViewModel mNewsPageViewModel;
     private NewsListAdapter mNewsListAdapter;
-    private RecyclerView mRecyclerView;
-    private LinearLayoutManager mLayoutManager;
     private String mEarliestDate;
     private String mLatestDate;
     private SwipeRefreshLayout mRefreshLayout;
     private int mPage = 0;
     private boolean mRefresh = false;
+    private boolean mInitOnCreate = false;
+    private String mKeyWord = "";
 
     public NewsListFragment() {
         // Required empty public constructor
     }
 
-    public static NewsListFragment newInstance(UserConfig.Section section, int position) {
+    public static NewsListFragment newInstance(UserConfig.Section section, int position, boolean initOnCreate) {
         NewsListFragment fragment = new NewsListFragment();
         Bundle bundle = new Bundle();
         bundle.putString(ARG_SECTION_NAME, section.getSectionName());
         bundle.putInt(ARG_SECTION_POS, position);
+        bundle.putBoolean(ARG_INIT_ON_CREATE, initOnCreate);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
+    public static NewsListFragment newInstance(boolean initOnCreate) {
+        NewsListFragment fragment = new NewsListFragment();
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(ARG_INIT_ON_CREATE, initOnCreate);
+        bundle.putInt(ARG_SECTION_POS, 0);
+        bundle.putString(ARG_SECTION_NAME, "");
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -71,42 +82,41 @@ public class NewsListFragment extends Fragment {
         if (getArguments() != null) {
             mSectionName = getArguments().getString(ARG_SECTION_NAME);
             mSectionPos = getArguments().getInt(ARG_SECTION_POS);
+            mInitOnCreate = getArguments().getBoolean(ARG_INIT_ON_CREATE);
         }
         /*构造 NewPageViewModel 用于处理数据*/
         mNewsPageViewModel = ViewModelProviders.of(this).get(NewsPageViewModel.class);
-//        mNewsPageViewModel.setInfo(new NewsCrawler.CrawlerInfo("", getCurrentTime(), mSectionName));
 
         /* 构造News list Adapter 用于新闻列表*/
         mNewsListAdapter = new NewsListAdapter(getContext(), mSectionPos);
         mEarliestDate = getCurrentTime();
-
     }
 
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        Log.d("PlaceFragment", "onCreateView");
 
         /* 每次改变section时，重新请求一次数据*/
-        mNewsPageViewModel.setInfo(new NewsCrawler.CrawlerInfo("", "", getCurrentTime(), mSectionName));
+        if (mInitOnCreate) {
+            setNews("", mSectionName);
+        }
 
         /*从news List 的layout中构造出NewsList 的root view*/
         View root = inflater.inflate(R.layout.fragment_news_list, container, false);
-//        final Context rootContext = root.getContext();
 
         /* 从root view 中构造出recyclerView，存放新闻列表*/
-        mLayoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         mRefreshLayout = root.findViewById(R.id.swipeRefreshLayout);
         mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 mRefresh = true;
-                mNewsPageViewModel.setInfo(new NewsCrawler.CrawlerInfo("", mLatestDate, getCurrentTime(), mSectionName));
+                setNews(mKeyWord, mLatestDate, getCurrentTime(), mSectionName);
             }
         });
 
-        mRecyclerView = root.findViewById(R.id.news_recyclerView);
+        RecyclerView mRecyclerView = root.findViewById(R.id.news_recyclerView);
         mRecyclerView.setAdapter(mNewsListAdapter);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(true);
@@ -116,11 +126,9 @@ public class NewsListFragment extends Fragment {
                 Log.d("Adapter List Fragment", "Loading " + mEarliestDate);
                 mPage++;
                 mNewsListAdapter.setLoading();
-                mNewsPageViewModel.setInfo(new NewsCrawler.CrawlerInfo("", "", mEarliestDate, mSectionName));
+                setNews(mKeyWord, "", mEarliestDate, mSectionName);
             }
         });
-
-
 
         /* 设置PageViewModel，每次有数据更新的时候更新news list*/
         mNewsPageViewModel.getVersion().observe(this, new Observer<String>() {
@@ -154,6 +162,20 @@ public class NewsListFragment extends Fragment {
         });
         Log.d("Placeholder", "created view");
         return root;
+    }
+
+    public void setNews(String keyWord) {
+        setNews(keyWord, mSectionName);
+    }
+
+    public void setNews(String keyword, String sectionName) {
+        setNews(keyword, "", getCurrentTime(), sectionName);
+    }
+
+    public void setNews(String keyword, String startTime, String endTime, String sectionName) {
+        mKeyWord = keyword;
+        mSectionName = sectionName;
+        mNewsPageViewModel.setInfo(new NewsCrawler.CrawlerInfo(keyword, startTime, endTime, sectionName));
     }
 
     private String getCurrentTime() {

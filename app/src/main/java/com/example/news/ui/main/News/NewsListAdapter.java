@@ -2,6 +2,7 @@ package com.example.news.ui.main.News;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,13 +31,13 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private List<JSONObject> mNews;
     private boolean netWorkError = false;
 
-    public NewsListAdapter(Context context, int sectionPos) {
+    NewsListAdapter(Context context, int sectionPos) {
         mContext = context;
         mSectionPos = sectionPos;
     }
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
 //        Log.d("NewsAdapter", "OnBind " + position);
 
         if (holder instanceof NewsItemVH) {
@@ -55,7 +56,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             }
 
             List<String> imgUrls = getImageUrlsList(imagesUrlStr, ConstantValues.IMAGE_NUM[itemHolder.layoutType.ordinal()]);
-            new ImageLoadingTask(mSectionPos, itemHolder.images).execute(imgUrls.toArray(new String[imgUrls.size()]));
+            new ImageLoadingTask(mSectionPos, itemHolder.images).execute(imgUrls.toArray(new String[0]));
 
 
             itemHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -112,8 +113,9 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         /* 选择匹配图片个数的layout*/
         ConstantValues.ItemViewType layoutType = ConstantValues.ItemViewType.values()[viewType];
 //        Log.d("NewsAdapter", "Create View Holder");
@@ -135,7 +137,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     /**
      * 实现加载时候foot view 的状态
      * */
-    public void setLoading() {
+    void setLoading() {
         netWorkError = false;
         notifyItemChanged(mNews.size());
     }
@@ -143,7 +145,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     /**
      * 实现新闻分类改变后存入新的数据
      * */
-    public void setNews(ConstantValues.NetWorkStatus status, List<JSONObject> news) {
+    void setNews(ConstantValues.NetWorkStatus status, List<JSONObject> news) {
         mNews = news;
         if (status == ConstantValues.NetWorkStatus.NORMAL) {
             netWorkError = false;
@@ -157,7 +159,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     /**
      * 实现上拉加载功能
      * */
-    public void addNews(ConstantValues.NetWorkStatus status, List<JSONObject> news) {
+    void addNews(ConstantValues.NetWorkStatus status, List<JSONObject> news) {
         int changePos = mNews.size();
         mNews.addAll(news);
         if (status == ConstantValues.NetWorkStatus.NORMAL) {
@@ -173,7 +175,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     /**
      * 实现下拉刷新功能
      * */
-    public void addRefreshNews(ConstantValues.NetWorkStatus status, List<JSONObject> news) {
+    void addRefreshNews(ConstantValues.NetWorkStatus status, List<JSONObject> news) {
         mNews.addAll(0, news);
         if (status == ConstantValues.NetWorkStatus.NORMAL) {
             netWorkError = false;

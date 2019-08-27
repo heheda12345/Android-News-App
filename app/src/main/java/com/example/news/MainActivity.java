@@ -1,6 +1,5 @@
 package com.example.news;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -20,7 +19,7 @@ import android.widget.ArrayAdapter;
 
 import com.example.news.data.UserConfig;
 import com.example.news.ui.main.MainPagerAdapter;
-import com.example.news.ui.main.Search.SearchResultFragment;
+import com.example.news.ui.main.News.NewsListFragment;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechUtility;
 
@@ -32,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private ListPopupWindow listPopupWindow;
     private Toolbar toolbar;
     private SearchView searchView;
-    private SearchResultFragment searchResultFragment;
+    private NewsListFragment searchResultFragment;
     private FragmentManager fragmentManager;
     private List<String> searchSuggest;
     private UserConfig userConfig = UserConfig.getInstance();
@@ -79,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
 //        viewPager.setAdapter(sectionsPagerAdapter);
 //        TabLayout tabs = findViewById(R.id.tabs);
 //        tabs.setupWithViewPager(viewPager);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
 
         /* Create Search Result Fragment*/
         fragmentManager = getSupportFragmentManager();
-        searchResultFragment = SearchResultFragment.newInstance();
+        searchResultFragment = NewsListFragment.newInstance(false);
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.replace(R.id.fragment_container, searchResultFragment);
         ft.hide(searchResultFragment);
@@ -126,10 +125,12 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                Log.d(LOG_TAG, "Show Search Detail");
                 fragmentManager.beginTransaction().show(searchResultFragment).commit();
+                searchResultFragment.setNews(s);
+                userConfig.addSearchHistory(s);
                 mainViewPager.setVisibility(View.GONE);
                 mainTabLayout.setVisibility(View.GONE);
+                listPopupWindow.dismiss();
                 return true;
             }
 

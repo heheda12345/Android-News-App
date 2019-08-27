@@ -34,10 +34,9 @@ public class UserConfig {
         selectSectionsIndices = new ArrayList<>();
         unselectedSectionsIndices = new ArrayList<>();
         searchHistory = new ArrayList<>();
-        searchHistory.add("Hello");
-        searchHistory.add("World");
-        searchHistory.add("Tsinghua");
+        searchHistory.add("Hello World");
         searchHistory.add("清华大学");
+        searchHistory.add("特朗普");
         for (int i = 0; i < ConstantValues.ALL_SECTIONS.length; i += 2) {
             selectSectionsIndices.add(i);
         }
@@ -97,5 +96,11 @@ public class UserConfig {
         int id = selectSectionsIndices.get(pos);
         selectSectionsIndices.remove(pos);
         unselectedSectionsIndices.add(id);
+    }
+
+    public void addSearchHistory(String history) {
+        if (!searchHistory.contains(history)) {
+            searchHistory.add(history);
+        }
     }
 }
