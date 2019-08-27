@@ -1,5 +1,7 @@
 package com.example.news;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -69,4 +71,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
 }

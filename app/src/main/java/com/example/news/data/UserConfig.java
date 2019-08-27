@@ -1,11 +1,14 @@
 package com.example.news.data;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
 public class UserConfig {
-    public static class Section {
+        public static class Section {
         private String mSectionName;
         private int mPosition;
         Section(String sectionName, int position) {
@@ -117,4 +120,18 @@ public class UserConfig {
         return "95.179.200.164";
     }
     public static int getHostPort() {return 5000;}
+    public static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
+    }
+
+    private String userName = "";
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
 }
