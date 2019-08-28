@@ -1,39 +1,31 @@
 package com.example.news.ui.main.News;
 
-import android.app.ActivityOptions;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.ClipData;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.SpannableString;
+import android.text.Editable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.TextWatcher;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.RelativeSizeSpan;
-import android.transition.Fade;
-import android.transition.Slide;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.news.MainActivity;
 import com.example.news.R;
 import com.example.news.collection.CollectionItem;
 import com.example.news.collection.CollectionViewModel;
@@ -49,12 +41,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import am.widget.smoothinputlayout.SmoothInputLayout;
+
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.widget.ImageView.ScaleType.FIT_XY;
 import static java.lang.Math.max;
 
 
-public class NewsDetailActivity extends AppCompatActivity {
+public class NewsDetailActivity extends AppCompatActivity implements View.OnClickListener,
+        View.OnTouchListener{
     private static final String LOG_TAG =
             NewsCrawler.class.getSimpleName();
 
@@ -67,6 +62,7 @@ public class NewsDetailActivity extends AppCompatActivity {
         parseJson();
         LinearLayout container = (LinearLayout) findViewById(R.id.container);
         initContainer(container);
+        initBottom();
         initCollection();
         initTTS();
         Slidr.attach(this);
@@ -74,7 +70,32 @@ public class NewsDetailActivity extends AppCompatActivity {
     }
 
     void initTTS() {
-        ((TtsButton)findViewById(R.id.tts_btn)).setTexts(text);
+        btnVoice.setTexts(text);
+    }
+
+    void initBottom() {
+        Toolbar mToolbar = findViewById(R.id.smoothinputlayout_toolbar);
+        if (mToolbar != null) {
+            mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBackPressed();
+                }
+            });
+        }
+
+        lytContent = findViewById(R.id.sil_lyt_content);
+        edtInput = findViewById(R.id.sil_edt_input);
+        btnCollect = findViewById(R.id.sil_ibtn_collect);
+        btnVoice = findViewById(R.id.sil_ibtn_tts);
+        btnShare = findViewById(R.id.sil_ibtn_share);
+        btnSend = findViewById(R.id.sil_ibtn_send);
+
+        btnCollect.setOnClickListener(this);
+        btnShare.setOnClickListener(this);
+        btnSend.setOnClickListener(this);
+        edtInput.setOnTouchListener(this);
+        findViewById(R.id.sil_v_list).setOnTouchListener(this);
     }
 
 
@@ -90,15 +111,14 @@ public class NewsDetailActivity extends AppCompatActivity {
                 updateCollectionIcon();
             }
         });
+        updateCollectionIcon();
     }
 
     private void updateCollectionIcon() {
         if (mCollectionViewModel.contains(new CollectionItem(newsID))) {
-            if (mCollectionIcon != null)
-                mCollectionIcon.setIcon(R.drawable.ic_collected);
+            btnCollect.setBackgroundResource(R.drawable.ic_collected);
         } else {
-            if (mCollectionIcon != null)
-                mCollectionIcon.setIcon(R.drawable.ic_uncollected);
+            btnCollect.setBackgroundResource(R.drawable.ic_uncollected);
         }
     }
 
@@ -106,23 +126,12 @@ public class NewsDetailActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.detail_news, menu);
-        mCollectionIcon = menu.findItem(R.id.collecting);
-        mSearchEdit = menu.findItem(R.id.search_edit);
-        updateCollectionIcon();
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.collecting:
-                CollectionItem collectionItem = new CollectionItem(newsID);
-                if (mCollectionViewModel.contains(collectionItem)) {
-                    mCollectionViewModel.erase(collectionItem);
-                } else {
-                    mCollectionViewModel.insert(collectionItem);
-                }
-                return true;
             case android.R.id.home:
                 Log.d(LOG_TAG, "home clicked");
                 finish();
@@ -252,7 +261,73 @@ public class NewsDetailActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ((TtsButton)findViewById(R.id.tts_btn)).destroy();
+        ((TtsButton)findViewById(R.id.sil_ibtn_tts)).destroy();
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.sil_ibtn_collect:
+                CollectionItem collectionItem = new CollectionItem(newsID);
+                if (mCollectionViewModel.contains(collectionItem)) {
+                    mCollectionViewModel.erase(collectionItem);
+                } else {
+                    mCollectionViewModel.insert(collectionItem);
+                }
+                break;
+            case R.id.sil_ibtn_share:
+                Toast.makeText(getApplicationContext(), "share, unimplemented",
+                        Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.sil_ibtn_send:
+                sendMessage();
+                break;
+        }
+    }
+
+    private void setToolsVisibility(int visibilityCode) {
+        btnCollect.setVisibility(visibilityCode);
+        btnShare.setVisibility(visibilityCode);
+        btnVoice.setVisibility(visibilityCode);
+    }
+
+    private void sendMessage() {
+        Toast.makeText(getApplicationContext(), edtInput.getText().toString().trim(),
+                Toast.LENGTH_SHORT).show();
+        edtInput.setText(null);
+    }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        Log.d(LOG_TAG, "onTouch" + view.getId());
+        switch (view.getId()) {
+            case R.id.sil_v_list:
+                lytContent.closeKeyboard(true);
+                lytContent.closeInputPane();
+                if (edtInput.getText().toString().trim().length() > 0) {
+                    setToolsVisibility(View.GONE);
+                    btnSend.setVisibility(View.VISIBLE);
+                } else {
+                    setToolsVisibility(View.VISIBLE);
+                    btnSend.setVisibility(View.GONE);
+                }
+                break;
+            case R.id.sil_edt_input:
+                setToolsVisibility(View.GONE);
+                btnSend.setVisibility(View.VISIBLE);
+                break;
+        }
+
+        return false;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (lytContent.isInputPaneOpen()) {
+            lytContent.closeInputPane();
+            return;
+        }
+        super.onBackPressed();
     }
 
     private String title = "";
@@ -263,6 +338,10 @@ public class NewsDetailActivity extends AppCompatActivity {
     private String newsSource = "";
     private String newsTime = "";
     private CollectionViewModel mCollectionViewModel;
-    private MenuItem mCollectionIcon, mSearchIcon, mSearchEdit;
+
+    private SmoothInputLayout lytContent;
+    private EditText edtInput;
+    private View btnCollect, btnShare, btnSend;
+    private TtsButton btnVoice;
 
 }

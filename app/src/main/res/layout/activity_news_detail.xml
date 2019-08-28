@@ -5,8 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.main.News.NewsDetailActivity"
-    android:background="@color/background_material_light">
+    android:background="@color/background_material_light"
+    android:windowSoftInputMode="adjustResize"
+    tools:context="ui.main.News.NewsDetailActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -24,12 +25,90 @@
 
     <include layout="@layout/content_news_detail" />
 
-    <com.example.news.ui.main.News.TtsButton
-        android:id="@+id/tts_btn"
-        android:layout_width="wrap_content"
+    <!--<com.example.news.ui.main.News.TtsButton-->
+        <!--android:id="@+id/tts_btn"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="bottom|end"-->
+        <!--android:layout_margin="@dimen/fab_margin"-->
+        <!--app:srcCompat="@drawable/ic_listen" />-->
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/smoothinputlayout_toolbar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@drawable/ic_listen" />
+        app:title="title"/>
+
+    <am.widget.smoothinputlayout.SmoothInputLayout
+        android:id="@+id/sil_lyt_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:silInputView="@+id/sil_edt_input"
+        app:silInputPane="@+id/sil_lyt_pane">
+
+        <View
+            android:id="@+id/sil_v_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_smoothinputlayout_bar"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <android.support.v7.widget.AppCompatEditText
+                android:id="@id/sil_edt_input"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="写评论..."
+                android:inputType="textMultiLine"
+                android:maxLines="4" />
+
+            <android.support.v7.widget.AppCompatImageButton
+                android:id="@+id/sil_ibtn_collect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@color/transparent"
+                android:padding="5dp"
+                android:src="@drawable/ic_uncollected" />
+
+            <com.example.news.ui.main.News.TtsButton
+                android:id="@+id/sil_ibtn_tts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@color/transparent"
+                android:padding="5dp"
+                android:src="@drawable/ic_listen" />
+
+            <android.support.v7.widget.AppCompatImageButton
+                android:id="@+id/sil_ibtn_share"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@color/transparent"
+                android:padding="5dp"
+                android:src="@drawable/ic_share" />
+            <android.support.v7.widget.AppCompatImageButton
+                android:id="@+id/sil_ibtn_send"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:background="@color/transparent"
+                android:padding="5dp"
+                android:visibility="gone"
+                android:src="@drawable/ic_send" />
+
+        </LinearLayout>
+
+
+    </am.widget.smoothinputlayout.SmoothInputLayout>
+
 
 </android.support.design.widget.CoordinatorLayout>

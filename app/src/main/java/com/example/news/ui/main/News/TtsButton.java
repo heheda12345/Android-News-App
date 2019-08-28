@@ -1,24 +1,11 @@
 package com.example.news.ui.main.News;
 
-import android.annotation.SuppressLint;
-import android.arch.lifecycle.LiveData;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Environment;
-import android.support.v4.content.ContextCompat;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.style.BackgroundColorSpan;
+import android.support.v7.widget.AppCompatImageButton;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.example.news.R;
@@ -30,7 +17,7 @@ import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechSynthesizer;
 import com.iflytek.cloud.SynthesizerListener;
 
-public class TtsButton extends android.support.design.widget.FloatingActionButton {
+public class TtsButton extends AppCompatImageButton {
     private static String LOG_TAG = TtsButton.class.getSimpleName();
     // 语音合成对象
     private SpeechSynthesizer mTts;
