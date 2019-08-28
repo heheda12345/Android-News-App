@@ -325,9 +325,13 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
                 commentViews.add(v);
                 container.addView(v);
                 ImageView iv = v.findViewById(R.id.iconView);
-                File f1 = ServerInteraction.getInstance().getIcon(name,false, getBaseContext());
-                if (f1 != null)
-                    Glide.with(getBaseContext()).load(Uri.fromFile(f1)).into(iv);
+                if (UserConfig.getInstance().isTextMode()) {
+                    iv.setVisibility(View.GONE);
+                } else {
+                    File f1 = ServerInteraction.getInstance().getIcon(name,false, getBaseContext());
+                    if (f1 != null)
+                        Glide.with(getBaseContext()).load(Uri.fromFile(f1)).into(iv);
+                }
             } catch (JSONException e) {
                 Log.e(LOG_TAG, e.getMessage());
                 e.printStackTrace();
