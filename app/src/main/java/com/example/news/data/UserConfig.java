@@ -134,4 +134,8 @@ public class UserConfig {
         this.userName = userName;
     }
 
+    public boolean isLogin() {
+        return userName.length() > 0;
+    }
+
 }

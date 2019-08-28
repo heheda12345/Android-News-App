@@ -206,7 +206,8 @@ public class MineFragment extends Fragment {
             ResultCode result = ServerInteraction.getInstance().uploadIcon(f, UserConfig.getInstance().getUserName());
             if (result == ResultCode.success) {
                 new AlertDialog.Builder(getActivity()).setMessage("上传成功").show();
-                File f1 = ServerInteraction.getInstance().getIcon(UserConfig.getInstance().getUserName(), getContext());
+                File f1 = ServerInteraction.getInstance().getIcon(UserConfig.getInstance().getUserName(),
+                            true, getContext());
                 if (f1 != null)
                     Glide.with(view.getContext()).load(Uri.fromFile(f1)).into(icon);
             } else {

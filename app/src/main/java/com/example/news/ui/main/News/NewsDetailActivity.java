@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,7 @@ import android.text.TextWatcher;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -26,17 +28,21 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.news.R;
 import com.example.news.collection.CollectionItem;
 import com.example.news.collection.CollectionViewModel;
 import com.example.news.data.UserConfig;
 import com.example.news.support.ImageCrawler;
 import com.example.news.support.NewsCrawler;
+import com.example.news.support.ServerInteraction;
 import com.r0adkll.slidr.Slidr;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -57,14 +63,15 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_detail);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         parseJson();
-        LinearLayout container = (LinearLayout) findViewById(R.id.container);
+        container = findViewById(R.id.container);
         initContainer(container);
         initBottom();
         initCollection();
         initTTS();
+        loadComment();
         Slidr.attach(this);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
@@ -90,12 +97,13 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
         btnVoice = findViewById(R.id.sil_ibtn_tts);
         btnShare = findViewById(R.id.sil_ibtn_share);
         btnSend = findViewById(R.id.sil_ibtn_send);
+        vList = findViewById(R.id.sil_v_list);
 
         btnCollect.setOnClickListener(this);
         btnShare.setOnClickListener(this);
         btnSend.setOnClickListener(this);
         edtInput.setOnTouchListener(this);
-        findViewById(R.id.sil_v_list).setOnTouchListener(this);
+        vList.setOnTouchListener(this);
     }
 
 
@@ -291,15 +299,73 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
         btnVoice.setVisibility(visibilityCode);
     }
 
+    private void loadComment() {
+        JSONArray comments = ServerInteraction.getInstance().getComment(newsID);
+        Log.d(LOG_TAG, comments.toString());
+        for (View v: commentViews)
+            container.removeView(v);
+        commentViews.clear();
+        for (int i=0; i<comments.length(); i++) {
+            try {
+                JSONObject comment = comments.getJSONObject(i);
+                String name = comment.getString("name");
+                String text = comment.getString("text");
+                Log.d(LOG_TAG, name+text);
+                SpannableStringBuilder spanName = new SpannableStringBuilder(name + "\n");
+                spanName.setSpan(new ForegroundColorSpan(0xff5c78b9), 0, name.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                spanName.setSpan(new AbsoluteSizeSpan(18, true), 0, name.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+                SpannableStringBuilder spanText = new SpannableStringBuilder(text);
+                spanText.setSpan(new AbsoluteSizeSpan(24, true), 0, text.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+                View v = LayoutInflater.from(getApplicationContext()).inflate(R.layout.comment_item, null, false);
+                v.setId(View.generateViewId());
+                TextView tv = v.findViewById(R.id.commentView);
+                tv.setText(spanName.append(spanText));
+                commentViews.add(v);
+                container.addView(v);
+                ImageView iv = v.findViewById(R.id.iconView);
+                File f1 = ServerInteraction.getInstance().getIcon(name,false, getBaseContext());
+                if (f1 != null)
+                    Glide.with(getBaseContext()).load(Uri.fromFile(f1)).into(iv);
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, e.getMessage());
+                e.printStackTrace();
+            }
+        }
+
+    }
+
     private void sendMessage() {
-        Toast.makeText(getApplicationContext(), edtInput.getText().toString().trim(),
-                Toast.LENGTH_SHORT).show();
-        edtInput.setText(null);
+        if (!UserConfig.getInstance().isLogin()) {
+            Toast.makeText(getApplicationContext(), "登录后才能发表评论哦",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String text = edtInput.getText().toString().trim();
+        if (text.length() == 0) {
+            Toast.makeText(getApplicationContext(), "评论不能为空",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+        ServerInteraction.ResultCode resultCode = ServerInteraction.getInstance().postComment(
+                UserConfig.getInstance().getUserName(),
+                newsID, text
+        );
+        if (resultCode == ServerInteraction.ResultCode.success) {
+            Toast.makeText(getApplicationContext(), "评论成功",
+                    Toast.LENGTH_SHORT).show();
+            edtInput.setText(null);
+            loadComment();
+            onTouch(vList, null);
+        } else {
+            Toast.makeText(getApplicationContext(), "评论失败，请稍后重试",
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
-        Log.d(LOG_TAG, "onTouch" + view.getId());
         switch (view.getId()) {
             case R.id.sil_v_list:
                 lytContent.closeKeyboard(true);
@@ -333,7 +399,7 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
     private String title = "";
     private String text = "";
     private ArrayList<String> content = new ArrayList<>();
-    private ArrayList<String> imgUrls = new ArrayList<String>();
+    private ArrayList<String> imgUrls = new ArrayList<>();
     private String newsID = "";
     private String newsSource = "";
     private String newsTime = "";
@@ -341,7 +407,9 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
 
     private SmoothInputLayout lytContent;
     private EditText edtInput;
-    private View btnCollect, btnShare, btnSend;
+    private View btnCollect, btnShare, btnSend, vList;
     private TtsButton btnVoice;
 
+    private LinearLayout container;
+    private ArrayList<View> commentViews = new ArrayList<>();
 }

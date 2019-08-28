@@ -21,11 +21,10 @@
             android:layout_marginRight="16sp"
             android:divider="@drawable/empty_divider"
             android:orientation="vertical"
+            android:paddingBottom="80sp"
             android:showDividers="middle">
-
-
         </LinearLayout>
-
     </ScrollView>
+
 
 </android.support.constraint.ConstraintLayout>

@@ -9,6 +9,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -64,7 +65,7 @@ public class ServerInteraction {
         }
     }
 
-    public synchronized ResultCode register(String name, String passwd) {
+    public ResultCode register(String name, String passwd) {
         synchronized (this) {
             RequestParams params = new RequestParams();
             params.add("name", name);
@@ -98,7 +99,7 @@ public class ServerInteraction {
         return ResultCode.success;
     }
 
-    public synchronized ResultCode uploadIcon(File f, String name) {
+    public ResultCode uploadIcon(File f, String name) {
         synchronized (this) {
             RequestParams params = new RequestParams();
             try {
@@ -132,10 +133,11 @@ public class ServerInteraction {
             return result;
         }
     }
-    public synchronized File getIcon(String name, Context ctx) {
+    public File getIcon(String name, boolean large, Context ctx) {
         synchronized (this) {
             RequestParams params = new RequestParams();
             params.put("name", name);
+            params.put("size", large ? "large" :"small" );
             downloaded = null;
             HostClient.get("getIcon", params, new FileAsyncHttpResponseHandler(ctx) {
                 @Override
@@ -151,5 +153,43 @@ public class ServerInteraction {
             return downloaded;
         }
     }
+
+    public ResultCode postComment(String name, String newsID, String text) {
+        synchronized (this) {
+            RequestParams params = new RequestParams();
+            params.add("name", name);
+            params.add("newsID", newsID);
+            params.add("text", text);
+            result = ResultCode.unknownError;
+            HostClient.post("postComment", params, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    result = ResultCode.success;
+                }
+            });
+            return result;
+        }
+    }
+
+    public JSONArray getComment(String newsID) {
+        synchronized (this) {
+            RequestParams params = new RequestParams();
+            params.put("newsID", newsID);
+            comments = new JSONArray();
+            HostClient.get("getComment", params, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    result = ResultCode.success;
+                    Log.d(LOG_TAG, response.toString());
+                    try {
+                        comments = response.getJSONArray("msg");
+                    } catch (JSONException e) {}
+                }
+            });
+            return comments;
+        }
+    }
+
     File downloaded;
+    JSONArray comments;
 }
