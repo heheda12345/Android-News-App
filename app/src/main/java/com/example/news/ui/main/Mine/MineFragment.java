@@ -92,6 +92,11 @@ public class MineFragment extends Fragment {
                     case success:
                         new AlertDialog.Builder(getActivity()).setMessage("登录成功").show();
                         UserConfig.getInstance().setUserName(name);
+                        File f1 = ServerInteraction.getInstance().getIcon(UserConfig.getInstance().getUserName(),
+                                true, getContext());
+                        ImageView icon = view.findViewById(R.id.iconImageView);
+                        if (f1 != null)
+                            Glide.with(view.getContext()).load(Uri.fromFile(f1)).into(icon);
                         break;
                     case wrongUserNameorPassWord:
                         new AlertDialog.Builder(getActivity()).setMessage("用户名或密码错误").show();
