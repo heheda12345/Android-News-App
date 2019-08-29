@@ -1,5 +1,6 @@
 package com.example.news.ui.main.News;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,6 +50,7 @@ public class SectionsGridAdapter extends BaseAdapter {
         return position;
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
@@ -57,14 +59,19 @@ public class SectionsGridAdapter extends BaseAdapter {
         Button sectionButton = convertView.findViewById(R.id.section_button);
         sectionButton.setTag(position);
         if (type) {
-            if (position == 0) {
+            String sectionName = UserConfig.getInstance().getSection(position).getSectionName();
+            if (sectionName.equals("推荐")) {
                 //推荐 按钮设置为不可点击
                 sectionButton.setEnabled(false);
+                sectionButton.setText(sectionName);
             }
-            sectionButton.setText(UserConfig.getInstance().getSection(position).getSectionName());
+            else {
+                sectionButton.setEnabled(true);
+                sectionButton.setText("- " + sectionName);
+            }
         }
         else {
-            sectionButton.setText(UserConfig.getInstance().getUnSection(position).getSectionName());
+            sectionButton.setText("+ " + UserConfig.getInstance().getUnSection(position).getSectionName());
         }
         sectionButton.setOnClickListener(sectionClick);
         return convertView;
