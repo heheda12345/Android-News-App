@@ -26,4 +26,5 @@ public class ConstantValues {
     }
 
     public static int DEFAULT_NEWS_SIZE = 15;
+    public static int DEFAULT_SUGGEST_TOP = 5;
 }

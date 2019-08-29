@@ -40,9 +40,27 @@ public class NewsCrawler extends Thread {
         JSONObject jsonObject = (JSONObject) jsonTokener.nextValue();
         JSONArray data = jsonObject.getJSONArray("data");
         for (int i = 0; i < data.length(); i++) {
-            newsResp.add(data.getJSONObject(i));
+            if (!isDuplicate(data.getJSONObject(i))) {
+                newsResp.add(data.getJSONObject(i));
+            }
         }
     }
+
+    private boolean isDuplicate(JSONObject obj) {
+        for (JSONObject newsObj : newsResp) {
+            try {
+                if (newsObj.getString("newsID").equals(obj.getString("newsID"))) {
+                    return true;
+                }
+
+            }
+            catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
     public static class CrawlerInfo {
         String keyWords;
         String startTime;
@@ -101,7 +119,7 @@ public class NewsCrawler extends Thread {
     }
 
     private void getSuggestNews() {
-        int allNum = ConstantValues.DEFAULT_NEWS_SIZE;
+        int allNum = ConstantValues.DEFAULT_SUGGEST_TOP;
         List<Map.Entry<String, Double>> keyWords = UserConfig.getInstance().getKeyWords(allNum);
         double allScore = 0;
         for (Map.Entry<String, Double> entry : keyWords) {
@@ -109,7 +127,7 @@ public class NewsCrawler extends Thread {
         }
         List<Integer> newsNum = new ArrayList<>();
         for (Map.Entry<String, Double> entry : keyWords) {
-            int num = (int)((allNum + 1) * entry.getValue() / allScore);
+            int num = (int)((ConstantValues.DEFAULT_NEWS_SIZE + 1) * entry.getValue() / allScore);
             newsNum.add(num);
         }
 

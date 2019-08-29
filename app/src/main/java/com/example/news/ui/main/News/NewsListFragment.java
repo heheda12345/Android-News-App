@@ -184,46 +184,56 @@ public class NewsListFragment extends Fragment {
     }
 
     protected String getEarliestTime(ArrayList<JSONObject> news) {
-        String earliestDate = "";
-        try {
-            earliestDate = news.get(news.size() - 1).getString("publishTime");
-        }
-        catch (JSONException e) {
-            e.printStackTrace();
-        }
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date tempDate = new Date();
-        try {
-            tempDate = df.parse(earliestDate);
+        long earliestDate = Long.MAX_VALUE;
+        for (JSONObject newsItem : news) {
+            try {
+                String d = newsItem.getString("publishTime");
+                Date tempDate = new Date();
+                try {
+                    tempDate = df.parse(d);
+                }
+                catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                if (tempDate.getTime() < earliestDate) {
+                    earliestDate = tempDate.getTime();
+                }
+            }
+            catch (JSONException e) {
+                e.printStackTrace();
+            }
+
         }
-        catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Date newDate = new Date(tempDate.getTime() - 5000);
-        Log.d(TAG, df.format(tempDate));
-        Log.d(TAG, df.format(newDate));
+        Date newDate = new Date(earliestDate - 5000);
+
         return df.format(newDate);
     }
 
     protected String getLatestTime(ArrayList<JSONObject> news) {
-        String latestTime = "";
-        try {
-            latestTime = news.get(0).getString("publishTime");
-        }
-        catch (JSONException e) {
-            e.printStackTrace();
-        }
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date tempDate = new Date();
-        try {
-            tempDate = df.parse(latestTime);
+        long latestTime = Long.MIN_VALUE;
+        for (JSONObject newsItem : news) {
+            try {
+                String d = newsItem.getString("publishTime");
+                Date tempDate = new Date();
+                try {
+                    tempDate = df.parse(d);
+                }
+                catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                if (tempDate.getTime() > latestTime) {
+                    latestTime = tempDate.getTime();
+                }
+            }
+            catch (JSONException e) {
+                e.printStackTrace();
+            }
+
         }
-        catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Date newDate = new Date(tempDate.getTime() + 5000);
-        Log.d(TAG, df.format(tempDate));
-        Log.d(TAG, df.format(newDate));
+        Date newDate = new Date(latestTime - 5000);
+
         return df.format(newDate);
     }
 }
