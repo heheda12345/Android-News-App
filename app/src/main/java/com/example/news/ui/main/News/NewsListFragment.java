@@ -41,15 +41,16 @@ public class NewsListFragment extends Fragment {
     private String mSectionName = "";
     private int mSectionPos = 0; // default section is "suggest section"
 
-    private NewsPageViewModel mNewsPageViewModel;
-    private NewsListAdapter mNewsListAdapter;
-    private String mEarliestDate;
-    private String mLatestDate;
-    private SwipeRefreshLayout mRefreshLayout;
-    private int mPage = 0;
-    private boolean mRefresh = false;
     private boolean mInitOnCreate = false;
     private String mKeyWord = "";
+
+    protected NewsListAdapter mNewsListAdapter;
+    protected int mPage = 0;
+    protected boolean mRefresh = false;
+    protected String mEarliestDate;
+    protected String mLatestDate;
+    protected NewsPageViewModel mNewsPageViewModel;
+    protected SwipeRefreshLayout mRefreshLayout;
 
     public NewsListFragment() {
         // Required empty public constructor
@@ -112,7 +113,7 @@ public class NewsListFragment extends Fragment {
             @Override
             public void onRefresh() {
                 mRefresh = true;
-                setNews(mKeyWord, mLatestDate, getCurrentTime(), mSectionName);
+                setNews(mKeyWord, mLatestDate, getCurrentTime(), mSectionName, ConstantValues.DEFAULT_NEWS_SIZE);
             }
         });
 
@@ -126,7 +127,7 @@ public class NewsListFragment extends Fragment {
                 Log.d("Adapter List Fragment", "Loading " + mEarliestDate);
                 mPage++;
                 mNewsListAdapter.setLoading();
-                setNews(mKeyWord, "", mEarliestDate, mSectionName);
+                setNews(mKeyWord, "", mEarliestDate, mSectionName, ConstantValues.DEFAULT_NEWS_SIZE);
             }
         });
 
@@ -160,7 +161,6 @@ public class NewsListFragment extends Fragment {
                 }
             }
         });
-        Log.d("Placeholder", "created view");
         return root;
     }
 
@@ -169,21 +169,21 @@ public class NewsListFragment extends Fragment {
     }
 
     public void setNews(String keyword, String sectionName) {
-        setNews(keyword, "", getCurrentTime(), sectionName);
+        setNews(keyword, "", getCurrentTime(), sectionName, ConstantValues.DEFAULT_NEWS_SIZE);
     }
 
-    public void setNews(String keyword, String startTime, String endTime, String sectionName) {
+    public void setNews(String keyword, String startTime, String endTime, String sectionName, int size) {
         mKeyWord = keyword;
         mSectionName = sectionName;
-        mNewsPageViewModel.setInfo(new NewsCrawler.CrawlerInfo(keyword, startTime, endTime, sectionName));
+        mNewsPageViewModel.setInfo(new NewsCrawler.CrawlerInfo(keyword, startTime, endTime, sectionName, size));
     }
 
-    private String getCurrentTime() {
+    protected String getCurrentTime() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return sdf.format(new Date());
     }
 
-    private String getEarliestTime(ArrayList<JSONObject> news) {
+    protected String getEarliestTime(ArrayList<JSONObject> news) {
         String earliestDate = "";
         try {
             earliestDate = news.get(news.size() - 1).getString("publishTime");
@@ -205,7 +205,7 @@ public class NewsListFragment extends Fragment {
         return df.format(newDate);
     }
 
-    private String getLatestTime(ArrayList<JSONObject> news) {
+    protected String getLatestTime(ArrayList<JSONObject> news) {
         String latestTime = "";
         try {
             latestTime = news.get(0).getString("publishTime");

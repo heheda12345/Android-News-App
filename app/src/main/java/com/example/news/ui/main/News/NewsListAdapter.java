@@ -12,10 +12,12 @@ import android.widget.Toast;
 
 import com.example.news.R;
 import com.example.news.data.ConstantValues;
+import com.example.news.data.UserConfig;
 import com.example.news.support.ImageLoadingTask;
 import com.example.news.ui.main.Items.FootViewHolder;
 import com.example.news.ui.main.Items.NewsItemVH;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -63,6 +65,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 @Override
                 public void onClick(View v) {
                     showNews(mNews.get(position));
+                    addToKeywords(mNews.get(position));
                     itemHolder.setRead();
 
                 }
@@ -203,35 +206,18 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         mContext.startActivity(intent);
     }
 
-    /**
-     * 获取图片
-     * */
-
-//    private List<Bitmap> getImages(String imageUrlsStr, int num) {
-//        List<String> imageUrls = parseJsonList(imageUrlsStr);
-//        List<Bitmap> images = new ArrayList<>();
-//        if (imageUrls.size() == 0) {
-//            return images;
-//        }
-//        imageUrls = imageUrls.subList(0, num);
-//        List<ImageCrawler> imageCrawlers = new ArrayList<>();
-//        for (String url : imageUrls) {
-//            ImageCrawler crawler = new ImageCrawler(mSectionPos, url, true, true);
-//            crawler.start();
-//            imageCrawlers.add(crawler);
-//        }
-//        for (ImageCrawler crawler : imageCrawlers) {
-//            try {
-//                crawler.join();
-//            }
-//            catch (InterruptedException e) {
-//                e.printStackTrace();
-//                continue;
-//            }
-//            images.add(crawler.getBitmap());
-//        }
-//        return images;
-//    }
+    private void addToKeywords(JSONObject news) {
+        try {
+            JSONArray keywordsArray = news.getJSONArray("keywords");
+            for (int i = 0; i < keywordsArray.length(); ++i) {
+                JSONObject obj = keywordsArray.getJSONObject(i);
+                UserConfig.getInstance().addKeyWords(obj.getString("word"), obj.getDouble("score"));
+            }
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
     private List<String> getImageUrlsList(String imageUrlsStr, int num) {
         List<String> imageUrls = parseJsonList(imageUrlsStr);

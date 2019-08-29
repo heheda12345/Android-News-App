@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.example.news.MainActivity;
 import com.example.news.data.ConstantValues;
+import com.example.news.data.UserConfig;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,6 +25,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 public class NewsCrawler extends Thread {
@@ -46,11 +48,13 @@ public class NewsCrawler extends Thread {
         String startTime;
         String endTime;
         String category;
-        public CrawlerInfo(String keyWords, String startTime, String endTime, String category) {
+        int size;
+        public CrawlerInfo(String keyWords, String startTime, String endTime, String category, int size) {
             this.keyWords = keyWords;
             this.startTime = startTime;
             this.endTime = endTime;
             this.category = category;
+            this.size = size;
         }
     }
 
@@ -58,15 +62,15 @@ public class NewsCrawler extends Thread {
         crawlerInfo = info;
     }
 
-    @Override
-    public void run() {
+    private void getNews(String keyWord, String category, int size) {
         StringBuilder response = new StringBuilder();
         try {
             String urlStr = "https://api2.newsminer.net/svc/news/queryNewsList?" +
-                    "words=" + crawlerInfo.keyWords + "&" +
-                    "categories=" + crawlerInfo.category + "&" +
+                    "words=" + keyWord + "&" +
+                    "categories=" + category + "&" +
                     "startDate=" + crawlerInfo.startTime + "&" +
-                    "endDate=" + crawlerInfo.endTime;
+                    "endDate=" + crawlerInfo.endTime + "&" +
+                    "size=" + size;
             Log.d("Crawler", urlStr);
             URL url = new URL(urlStr);
             HttpURLConnection httpUrlConn = (HttpURLConnection) url.openConnection();
@@ -88,15 +92,42 @@ public class NewsCrawler extends Thread {
             parse(response.toString());
             netWorkStatus = ConstantValues.NetWorkStatus.NORMAL;
         } catch (MalformedURLException e) {
-//            e.printStackTrace();
             netWorkStatus = ConstantValues.NetWorkStatus.ERROR;
         } catch (IOException e) {
-//            e.printStackTrace();
             netWorkStatus = ConstantValues.NetWorkStatus.ERROR;
         } catch (JSONException e) {
             e.printStackTrace();
         }
-//        Log.d(LOG_TAG, "getNews: " + response.toString());
+    }
+
+    private void getSuggestNews() {
+        int allNum = ConstantValues.DEFAULT_NEWS_SIZE;
+        List<Map.Entry<String, Double>> keyWords = UserConfig.getInstance().getKeyWords(allNum);
+        double allScore = 0;
+        for (Map.Entry<String, Double> entry : keyWords) {
+            allScore += entry.getValue();
+        }
+        List<Integer> newsNum = new ArrayList<>();
+        for (Map.Entry<String, Double> entry : keyWords) {
+            int num = (int)((allNum + 1) * entry.getValue() / allScore);
+            newsNum.add(num);
+        }
+
+        for (int i = 0; i < newsNum.size(); ++i) {
+            if (newsNum.get(i) > 0) {
+                getNews(keyWords.get(i).getKey(), "", newsNum.get(i));
+            }
+        }
+    }
+
+    @Override
+    public void run() {
+        if (crawlerInfo.category.equals("推荐")) {
+            getSuggestNews();
+        }
+        else {
+            getNews(crawlerInfo.keyWords, crawlerInfo.category, crawlerInfo.size);
+        }
     }
 
     public ArrayList<JSONObject> getNewsResp() {

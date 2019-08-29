@@ -24,4 +24,6 @@ public class ConstantValues {
     public enum NetWorkStatus {
         NORMAL, ERROR
     }
+
+    public static int DEFAULT_NEWS_SIZE = 15;
 }

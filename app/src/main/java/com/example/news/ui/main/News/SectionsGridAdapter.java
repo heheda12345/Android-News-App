@@ -40,7 +40,7 @@ public class SectionsGridAdapter extends BaseAdapter {
             return UserConfig.getInstance().getSection(position).getSectionName();
         }
         else {
-            return UserConfig.getInstance().getUnSetion(position).getSectionName();
+            return UserConfig.getInstance().getUnSection(position).getSectionName();
         }
     }
 
@@ -60,7 +60,7 @@ public class SectionsGridAdapter extends BaseAdapter {
             sectionButton.setText(UserConfig.getInstance().getSection(position).getSectionName());
         }
         else {
-            sectionButton.setText(UserConfig.getInstance().getUnSetion(position).getSectionName());
+            sectionButton.setText(UserConfig.getInstance().getUnSection(position).getSectionName());
         }
         sectionButton.setOnClickListener(sectionClick);
         return convertView;
