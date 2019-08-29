@@ -1,9 +1,8 @@
 package com.example.news;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
@@ -12,6 +11,7 @@ import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.support.v7.widget.SearchView;
 import android.widget.AdapterView;
@@ -26,7 +26,7 @@ import com.iflytek.cloud.SpeechUtility;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener, ViewPager.OnPageChangeListener {
     private ArrayAdapter suggestArrayAdapter;
     private ListPopupWindow listPopupWindow;
     private Toolbar toolbar;
@@ -37,7 +37,8 @@ public class MainActivity extends AppCompatActivity {
     private UserConfig userConfig = UserConfig.getInstance();
     private String LOG_TAG = getClass().getSimpleName();
     private ViewPager mainViewPager;
-    private TabLayout mainTabLayout;
+    private BottomNavigationView bottomNavigationView;
+    private MenuItem menuItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,46 +48,16 @@ public class MainActivity extends AppCompatActivity {
         searchSuggest = new ArrayList<>();
         searchSuggest.addAll(userConfig.getSearchHistory());
 
-        /* Create Main Tab Layout */
-        mainTabLayout = findViewById(R.id.main_tabLayout);
-        mainTabLayout.addTab(mainTabLayout.newTab().setText(R.string.mainTab_news));
-        mainTabLayout.addTab(mainTabLayout.newTab().setText(R.string.mainTab_mine));
+        /* Create Main bottom navigation */
+        bottomNavigationView = findViewById(R.id.main_bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(this);
 
         /* Create Main View Pager */
         mainViewPager = findViewById(R.id.main_viewPager);
         MainPagerAdapter mainPagerAdapter = new MainPagerAdapter(this, getSupportFragmentManager(), 2);
         mainViewPager.setAdapter(mainPagerAdapter);
+        mainViewPager.addOnPageChangeListener(this);
 
-        /* Set listener for clicks*/
-        mainViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mainTabLayout));
-        mainTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                mainViewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-            }
-        });
-        //        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
-//        ViewPager viewPager = findViewById(R.id.view_pager);
-//        viewPager.setAdapter(sectionsPagerAdapter);
-//        TabLayout tabs = findViewById(R.id.tabs);
-//        tabs.setupWithViewPager(viewPager);
-        FloatingActionButton fab = findViewById(R.id.fab);
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
         /*科大讯飞语音合成api初始化*/
         SpeechUtility.createUtility(this, SpeechConstant.APPID +"=5d58fa7c");
 
@@ -112,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         searchResultFragment = NewsListFragment.newInstance(false);
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.replace(R.id.fragment_container, searchResultFragment);
-        ft.hide(searchResultFragment);
+        ft.detach(searchResultFragment);
         ft.commit();
     }
 
@@ -125,11 +96,11 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                fragmentManager.beginTransaction().show(searchResultFragment).commit();
+                fragmentManager.beginTransaction().attach(searchResultFragment).commit();
                 searchResultFragment.setNews(s);
                 userConfig.addSearchHistory(s);
                 mainViewPager.setVisibility(View.GONE);
-                mainTabLayout.setVisibility(View.GONE);
+                bottomNavigationView.setVisibility(View.GONE);
                 listPopupWindow.dismiss();
                 return true;
             }
@@ -168,10 +139,41 @@ public class MainActivity extends AppCompatActivity {
             public boolean onClose() {
                 fragmentManager.beginTransaction().hide(searchResultFragment).commit();
                 mainViewPager.setVisibility(View.VISIBLE);
-                mainTabLayout.setVisibility(View.VISIBLE);
+                bottomNavigationView.setVisibility(View.VISIBLE);
                 return false;
             }
         });
         return true;
     }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int itemId = item.getItemId();
+        switch (itemId){
+            case R.id.tab_news:
+                mainViewPager.setCurrentItem(0);
+                break;
+            case R.id.tab_mine:
+                mainViewPager.setCurrentItem(1);
+                break;
+        }
+        return false;
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        menuItem = bottomNavigationView.getMenu().getItem(position);
+        menuItem.setChecked(true);
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
+
 }

@@ -23,4 +23,5 @@
         <item name="android:windowExitAnimation">@anim/pop_out_anim</item>
     </style>
 
+
 </resources>
