@@ -232,7 +232,7 @@ public class NewsListFragment extends Fragment {
             }
 
         }
-        Date newDate = new Date(latestTime - 5000);
+        Date newDate = new Date(latestTime + 5000);
 
         return df.format(newDate);
     }

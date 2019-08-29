@@ -57,6 +57,10 @@ public class SectionsGridAdapter extends BaseAdapter {
         Button sectionButton = convertView.findViewById(R.id.section_button);
         sectionButton.setTag(position);
         if (type) {
+            if (position == 0) {
+                //推荐 按钮设置为不可点击
+                sectionButton.setEnabled(false);
+            }
             sectionButton.setText(UserConfig.getInstance().getSection(position).getSectionName());
         }
         else {
