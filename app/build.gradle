@@ -51,14 +51,14 @@ dependencies {
     implementation 'com.r0adkll:slidableactivity:2.0.6'
     //网络请求框架
     implementation 'com.loopj.android:android-async-http:1.4.9'
-    //图片选择
-    implementation 'com.longsh:PhotoPicker:1.5.0'
-    implementation 'com.android.support:recyclerview-v7:25.1.0'
-    implementation "com.nineoldandroids:library:2.4.0"
-    implementation "com.github.bumptech.glide:glide:3.7.0"
-    implementation 'com.yalantis:ucrop:2.2.0'
     //圆形的头像
     implementation 'de.hdodenhof:circleimageview:3.0.1'
     //底部工具栏
     implementation 'am.widget:smoothinputlayout:1.1.2'
+    //图片选择
+    implementation 'com.zhihu.android:matisse:0.5.2-beta3'
+    //图片
+    implementation "com.github.bumptech.glide:glide:3.7.0"
+    //图片裁剪
+    implementation "com.soundcloud.android:android-crop:1.0.1@aar"
 }

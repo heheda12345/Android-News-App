@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.ListIterator;
 
 public class UserConfig {
-        public static class Section {
+
+
+    public static class Section {
         private String mSectionName;
         private int mPosition;
         Section(String sectionName, int position) {
@@ -120,8 +122,8 @@ public class UserConfig {
         return "95.179.200.164";
     }
     public static int getHostPort() {return 5000;}
-    public static boolean isNetworkAvailable(Context context) {
-        ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+    public static boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = ((ConnectivityManager) getInstance().context.getSystemService(Context.CONNECTIVITY_SERVICE));
         return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 
@@ -137,5 +139,15 @@ public class UserConfig {
     public boolean isLogin() {
         return userName.length() > 0;
     }
+
+    public Context getContext() {
+        return context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
+    private Context context;
 
 }

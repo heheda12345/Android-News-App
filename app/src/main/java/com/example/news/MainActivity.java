@@ -70,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        UserConfig.getInstance().setContext(getBaseContext());
+
     }
 
 }

@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,24 +17,25 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.news.MainActivity;
 import com.example.news.R;
 import com.example.news.data.UserConfig;
 import com.example.news.support.ServerInteraction;
-import com.loopj.android.http.RequestParams;
+import com.soundcloud.android.crop.Crop;
+import com.zhihu.matisse.Matisse;
+import com.zhihu.matisse.MimeType;
+import com.zhihu.matisse.engine.impl.GlideEngine;
+import com.zhihu.matisse.filter.Filter;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.List;
+import java.net.URI;
 
-import me.iwf.photopicker.PhotoPicker;
-import me.iwf.photopicker.PhotoPreview;
 
 import static android.app.Activity.RESULT_OK;
-import static com.example.news.support.ServerInteraction.*;
+import static com.example.news.support.ServerInteraction.ResultCode;
+import static com.example.news.support.ServerInteraction.getInstance;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,6 +43,7 @@ import static com.example.news.support.ServerInteraction.*;
  * create an instance of this fragment.
  */
 public class MineFragment extends Fragment {
+    private static final int REQUEST_CODE_CHOOSE = 977;
     private static String LOG_TAG = MineFragment.class.getSimpleName();
     View view;
 
@@ -81,7 +84,7 @@ public class MineFragment extends Fragment {
         view.findViewById(R.id.loginButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!UserConfig.isNetworkAvailable(getContext())) {
+                if (!UserConfig.isNetworkAvailable()) {
                     new AlertDialog.Builder(getActivity()).setMessage("无网络").show();
                     return;
                 }
@@ -112,7 +115,7 @@ public class MineFragment extends Fragment {
         view.findViewById(R.id.registerButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!UserConfig.isNetworkAvailable(getContext())) {
+                if (!UserConfig.isNetworkAvailable()) {
                     new AlertDialog.Builder(getActivity()).setMessage("无网络").show();
                     return;
                 }
@@ -145,7 +148,7 @@ public class MineFragment extends Fragment {
         view.findViewById(R.id.logoutButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!UserConfig.isNetworkAvailable(getContext())) {
+                if (!UserConfig.isNetworkAvailable()) {
                     new AlertDialog.Builder(getActivity()).setMessage("无网络").show();
                     return;
                 }
@@ -161,7 +164,7 @@ public class MineFragment extends Fragment {
         view.findViewById(R.id.iconButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!UserConfig.isNetworkAvailable(getContext())) {
+                if (!UserConfig.isNetworkAvailable()) {
                     new AlertDialog.Builder(getActivity()).setMessage("无网络").show();
                     return;
                 }
@@ -169,15 +172,19 @@ public class MineFragment extends Fragment {
                     new AlertDialog.Builder(getActivity()).setMessage("请先登录").show();
                     return;
                 }
-                PhotoPicker.builder()
-                        .setPhotoCount(1)
-                        .setPreviewEnabled(false)
-                        .setCrop(true)
-                        .setCropColors(R.color.colorPrimary, R.color.colorPrimaryDark)
-                        .start(getActivity(), MineFragment.this);
+                Log.d(LOG_TAG, "clicked!");
+
+                Matisse.from(MineFragment.this)
+                        .choose(MimeType.ofImage())
+                        .maxSelectable(1)
+                        .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
+                        .thumbnailScale(0.85f)
+                        .imageEngine(new GlideEngine())
+                        .theme(R.style.Matisse_Mine)
+                        .forResult(REQUEST_CODE_CHOOSE);
             }
         });
-
+        icon = view.findViewById(R.id.iconImageView);
         return view;
     }
 
@@ -202,25 +209,34 @@ public class MineFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //拍照功能或者裁剪功能返回
-        Log.d(LOG_TAG, String.format("ar %d %d", requestCode, resultCode));
-        if (resultCode == RESULT_OK && requestCode == PhotoPicker.REQUEST_CODE) {
-            ImageView icon = view.findViewById(R.id.iconImageView);
-            Log.d(LOG_TAG, data.getStringExtra(PhotoPicker.KEY_CAMEAR_PATH));
-            File f = new File(data.getStringExtra(PhotoPicker.KEY_CAMEAR_PATH));
-            ResultCode result = ServerInteraction.getInstance().uploadIcon(f, UserConfig.getInstance().getUserName());
-            if (result == ResultCode.success) {
-                new AlertDialog.Builder(getActivity()).setMessage("上传成功").show();
-                File f1 = ServerInteraction.getInstance().getIcon(UserConfig.getInstance().getUserName(),
-                            true, getContext());
-                if (f1 != null)
-                    Glide.with(view.getContext()).load(Uri.fromFile(f1)).into(icon);
-            } else {
+        Log.d(LOG_TAG, String.format("activity result %d %d", requestCode, resultCode));
+        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE_CHOOSE) {
+            Uri uri = Matisse.obtainResult(data).get(0);
+            File f= new File(Matisse.obtainPathResult(data).get(0));
+            iconUri = Uri.fromFile(new File(getActivity().getCacheDir(), f.getName()));
+            Crop.of(uri, iconUri).asSquare().start(getActivity(), MineFragment.this);
+        }
+        if (resultCode == RESULT_OK  && requestCode == Crop.REQUEST_CROP) {
+            Log.d(LOG_TAG, iconUri.toString());
+            try {
+                File f = new File(new URI(iconUri.toString()));
+                ResultCode result = ServerInteraction.getInstance().uploadIcon(f, UserConfig.getInstance().getUserName());
+                if (result == ResultCode.success) {
+                    new AlertDialog.Builder(getActivity()).setMessage("上传成功").show();
+                    Glide.with(view.getContext()).load(iconUri).into(icon);
+                } else {
+                    new AlertDialog.Builder(getActivity()).setMessage("上传失败").show();
+                }
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "onActivityResult: ", e);
                 new AlertDialog.Builder(getActivity()).setMessage("上传失败").show();
             }
+
         }
     }
 
     int mTTSPersonSelected = 0;
+    ImageView icon;
+    Uri iconUri;
     Context mContext;
 }
