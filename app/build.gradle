@@ -62,3 +62,36 @@ dependencies {
     //图片裁剪
     implementation "com.soundcloud.android:android-crop:1.0.1@aar"
 }
+
+apply plugin: 'com.mob.sdk'
+
+MobSDK {
+    appKey "2c421e84ae274"
+    appSecret "027d0034e2b2b89373be847c556b611e"
+    ShareSDK {
+        loopShare true
+        devInfo {
+            SinaWeibo {
+                appKey "3615727547"
+                appSecret "058aece005b40ab5622d2af818209d02"
+                callbackUri "http://www.sharesdk.cn"
+            }
+            Wechat {
+                appId "wx2836fc2f489ce00d"
+                appSecret "6335cd23e953e491671f8d39b035b950"
+                userName "gh_afb25ac019c9"
+                path "pages/index/index.html?id=1"
+                withShareTicket true
+                miniprogramType 2
+            }
+            WechatMoments {
+                appId "wx2836fc2f489ce00d"
+                appSecret "6335cd23e953e491671f8d39b035b950"
+            }
+            WechatFavorite {
+                appId "wx2836fc2f489ce00d"
+                appSecret "6335cd23e953e491671f8d39b035b950"
+            }
+        }
+    }
+}

@@ -15,6 +15,7 @@ import com.example.news.data.UserConfig;
 import com.example.news.ui.main.MainPagerAdapter;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechUtility;
+import com.mob.MobSDK;
 
 public class MainActivity extends AppCompatActivity {
     private static String LOG_TAG = MainActivity.class.getSimpleName();
@@ -71,7 +72,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         UserConfig.getInstance().setContext(getBaseContext());
-
+        // 分享初始化
+        MobSDK.init(this);
     }
 
 }
