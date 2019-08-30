@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -259,11 +260,11 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
                 container.addView(imageViews.get(i));
             }
         }
-        //收到的json
-        TextView debugView = new TextView(this);
-        debugView.setTextIsSelectable(true);
-        debugView.setText(String.format("Debug:\n%s", getIntent().getStringExtra("data")));
-        container.addView(debugView);
+        TextView comment = new TextView(this);
+        comment.setText("评论区");
+        comment.setTextSize(20);
+        comment.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+        container.addView(comment);
     }
 
     @Override
