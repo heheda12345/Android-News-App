@@ -260,11 +260,12 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
                 container.addView(imageViews.get(i));
             }
         }
-        TextView comment = new TextView(this);
-        comment.setText("评论区");
-        comment.setTextSize(20);
-        comment.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
-        container.addView(comment);
+        commentDivider = new TextView(this);
+        commentDivider.setText("评论区");
+        commentDivider.setTextSize(20);
+        commentDivider.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+        commentDivider.setVisibility(View.GONE);
+        container.addView(commentDivider);
     }
 
     @Override
@@ -338,7 +339,7 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
                 e.printStackTrace();
             }
         }
-
+        commentDivider.setVisibility(commentViews.size() > 0 ? View.VISIBLE : View.GONE);
     }
 
     private void sendMessage() {
@@ -414,7 +415,7 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
     private EditText edtInput;
     private View btnCollect, btnShare, btnSend, vList;
     private TtsButton btnVoice;
-
+    private TextView commentDivider;
     private LinearLayout container;
     private ArrayList<View> commentViews = new ArrayList<>();
 }
