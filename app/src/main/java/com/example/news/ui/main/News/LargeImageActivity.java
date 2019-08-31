@@ -30,12 +30,12 @@ public class LargeImageActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_large_image);
         viewPager = findViewById(R.id.viewPager);
-
         imageViews = new ArrayList<>();
 
         initImageViews();
         mAdapter = new LargeImageAdapter(imageViews);
         viewPager.setAdapter(mAdapter);
+        viewPager.setCurrentItem(getIntent().getIntExtra("click", 0));
     }
 
     void initImageViews() {

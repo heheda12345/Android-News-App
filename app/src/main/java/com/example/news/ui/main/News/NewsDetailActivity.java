@@ -257,6 +257,7 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
                 imageView.setLayoutParams(params);
                 imageView.setAdjustViewBounds(true);
                 imageView.setScaleType(FIT_XY);
+                final int id = i;
                 imageViews.add(imageView);
                 if (bitmap.getHeight() * 1.0 / bitmap.getWidth() < 1)
                     imageViewCanInsert.add(imageViews.size() - 1);
@@ -265,6 +266,7 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
                     public void onClick(View v) {
                         Intent intent = new Intent(NewsDetailActivity.this, LargeImageActivity.class);
                         intent.putStringArrayListExtra("url", imgUrls);
+                        intent.putExtra("click", id);
                         startActivity(intent);
                     }
                 });
