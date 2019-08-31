@@ -1,7 +1,14 @@
 package com.example.news.data;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Environment;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -18,8 +25,18 @@ public class BitMapCache {
         return instance;
     }
 
-    public void add(int pos, String url, Bitmap bitmap) {
+    public void add(int pos, String url, Bitmap bitmap) throws IOException {
+        File file = new File(Environment.getExternalStorageDirectory(), url.hashCode()+".jpg");
+        FileOutputStream fOut = new FileOutputStream(file);
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+        fOut.flush();
+        fOut.close();
         maps.get(pos).put(url, bitmap);
+    }
+
+    public void add(int pos, String url, String path) {
+        File f = new File(URI.create(url));
+        maps.get(pos).put(url, BitmapFactory.decodeFile(f.getPath()));
     }
 
     public void clear(int pos) {

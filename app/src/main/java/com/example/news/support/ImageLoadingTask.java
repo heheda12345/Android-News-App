@@ -2,16 +2,23 @@ package com.example.news.support;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.ImageView;
 
 import com.example.news.data.BitMapCache;
+import com.nostra13.universalimageloader.utils.L;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,14 +53,15 @@ public class ImageLoadingTask extends AsyncTask<String, Void, List<Bitmap>> {
                 conn.setRequestMethod("GET");
                 InputStream is = conn.getInputStream();
                 bitmap = BitmapFactory.decodeStream(is);
-                bitmapList.add(bitmap);
                 cache.add(sectionPos, url, bitmap);
+                bitmapList.add(bitmap);
                 is.close();
                 conn.disconnect();
             } catch (MalformedURLException e) {
 //                Log.e(LOG_TAG, e.getMessage());
-            } catch (IOException e) {
-//                Log.e(LOG_TAG, e.getMessage());
+            } catch (Exception e) {
+                Log.e(LOG_TAG, e.getMessage());
+                e.printStackTrace();
             }
         }
         return bitmapList;
@@ -63,7 +71,7 @@ public class ImageLoadingTask extends AsyncTask<String, Void, List<Bitmap>> {
     protected void onPostExecute(List<Bitmap> result) {
         if (result != null) {
             for (int i = 0; i < result.size(); ++i) {
-                    imageViews[i].setImageBitmap(result.get(i));
+                imageViews[i].setImageBitmap(result.get(i));
             }
         }
     }
