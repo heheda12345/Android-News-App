@@ -33,11 +33,11 @@ public class UserConfig {
     public static class TTS { // 语音合成的配置
         private String voicer = "xiaoyan";
 
-        public String getVoicer() {
+        String getVoicer() {
             return voicer;
         }
 
-        public void setVoicer(String voicer) {
+        void setVoicer(String voicer) {
             this.voicer = voicer;
         }
     }
@@ -63,7 +63,7 @@ public class UserConfig {
         searchHistory.add("Hello World");
         searchHistory.add("清华大学");
         searchHistory.add("特朗普");
-        keyWordsSet = new HashMap<String, Double>();
+        keyWordsSet = new HashMap<>();
         keyWordsSet.put("新时代", 1.0);
         for (int i = 0; i < ConstantValues.ALL_SECTIONS.length; i += 2) {
             selectSectionsIndices.add(i);

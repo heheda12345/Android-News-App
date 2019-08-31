@@ -8,7 +8,10 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +22,6 @@ import android.widget.ImageView;
 import android.widget.Switch;
 
 import com.bumptech.glide.Glide;
-import com.example.news.MainActivity;
 import com.example.news.R;
 import com.example.news.data.UserConfig;
 import com.example.news.support.ServerInteraction;
@@ -27,7 +29,6 @@ import com.soundcloud.android.crop.Crop;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.engine.impl.GlideEngine;
-import com.zhihu.matisse.filter.Filter;
 
 import java.io.File;
 import java.net.URI;
@@ -46,14 +47,16 @@ public class MineFragment extends Fragment {
     private static final int REQUEST_CODE_CHOOSE = 977;
     private static String LOG_TAG = MineFragment.class.getSimpleName();
     View view;
+    FragmentManager fragmentManager;
+    LogedFragment logedFragment;
+    NotLogFragment notLogFragment;
 
     public MineFragment() {
         // Required empty public constructor
     }
 
     public static MineFragment newInstance() {
-        MineFragment fragment = new MineFragment();
-        return fragment;
+        return new MineFragment();
     }
 
     @Override
@@ -62,11 +65,23 @@ public class MineFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_mine_section, container, false);
         mContext = view.getContext();
+
+        /* login fragment 和not login fragment*/
+        fragmentManager = getFragmentManager();
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        logedFragment = LogedFragment.newInstance();
+        notLogFragment = NotLogFragment.newInstance();
+        ft.add(R.id.login_fragment_container, notLogFragment);
+        ft.add(R.id.login_fragment_container, logedFragment);
+        ft.hide(logedFragment);
+        ft.commit();
+
+        /* 选择语音播报员按钮 */
         view.findViewById(R.id.tts_btn_person_select).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,6 +89,7 @@ public class MineFragment extends Fragment {
             }
         });
 
+        /* 仅文字版按钮 */
         ((Switch)view.findViewById(R.id.switch_text_only)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -81,70 +97,20 @@ public class MineFragment extends Fragment {
             }
         });
 
-        view.findViewById(R.id.loginButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!UserConfig.isNetworkAvailable()) {
-                    new AlertDialog.Builder(getActivity()).setMessage("无网络").show();
-                    return;
-                }
-                final String name = ((EditText)view.findViewById(R.id.userName)).getText().toString();
-                final String passwd = ((EditText)view.findViewById(R.id.password)).getText().toString();
-                ResultCode result = getInstance().login(name, passwd);
-                switch (result) {
-                    case success:
-                        new AlertDialog.Builder(getActivity()).setMessage("登录成功").show();
-                        UserConfig.getInstance().setUserName(name);
-                        File f1 = ServerInteraction.getInstance().getIcon(UserConfig.getInstance().getUserName(),
-                                true, getContext());
-                        ImageView icon = view.findViewById(R.id.iconImageView);
-                        if (f1 != null)
-                            Glide.with(view.getContext()).load(Uri.fromFile(f1)).into(icon);
-                        break;
-                    case wrongUserNameorPassWord:
-                        new AlertDialog.Builder(getActivity()).setMessage("用户名或密码错误").show();
-                        break;
-                    case unknownError:
-                        new AlertDialog.Builder(getActivity()).setMessage("网络错误，请稍后重试").show();
-                        break;
-                }
-                Log.d(LOG_TAG, "Login:" + result.toString());
-            }
-        });
 
-        view.findViewById(R.id.registerButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!UserConfig.isNetworkAvailable()) {
-                    new AlertDialog.Builder(getActivity()).setMessage("无网络").show();
-                    return;
-                }
-                String name = ((EditText)view.findViewById(R.id.userName)).getText().toString().trim();
-                String passwd = ((EditText)view.findViewById(R.id.password)).getText().toString().trim();
-                if (!name.matches("[0-9a-zA-Z]{2,10}")) {
-                    new AlertDialog.Builder(getActivity()).setMessage("用户名应为长度2-10的字母或数字").show();
-                    return;
-                }
-                if (!passwd.matches("[0-9]{2,10}")) {
-                    new AlertDialog.Builder(getActivity()).setMessage("密码应为长度2-10的数字").show();
-                    return;
-                }
-                ResultCode result = getInstance().register(name, passwd);
-                switch (result) {
-                    case success:
-                        new AlertDialog.Builder(getActivity()).setMessage("注册成功").show();
-                        break;
-                    case nameUsed:
-                        new AlertDialog.Builder(getActivity()).setMessage("用户名已被占用").show();
-                        break;
-                    case unknownError:
-                        new AlertDialog.Builder(getActivity()).setMessage("网络错误，请稍后重试").show();
-                        break;
-                }
-                Log.d(LOG_TAG, "Register:" + result.toString());
-            }
-        });
+//        initLoginButton();
+//        initRegisterButton();
+        initLogoutButton();
+        initIconButton();
 
+
+
+
+        icon = view.findViewById(R.id.iconImageView);
+        return view;
+    }
+
+    private void initLogoutButton() {
         view.findViewById(R.id.logoutButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -160,7 +126,9 @@ public class MineFragment extends Fragment {
                 Log.d(LOG_TAG, "Logout:" + result.toString());
             }
         });
+    }
 
+    private void initIconButton() {
         view.findViewById(R.id.iconButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -184,8 +152,6 @@ public class MineFragment extends Fragment {
                         .forResult(REQUEST_CODE_CHOOSE);
             }
         });
-        icon = view.findViewById(R.id.iconImageView);
-        return view;
     }
 
     private void showPersonSelectDialog() {
