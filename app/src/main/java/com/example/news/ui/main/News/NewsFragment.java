@@ -1,10 +1,10 @@
 package com.example.news.ui.main.News;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,25 +13,22 @@ import android.widget.Button;
 import android.widget.PopupWindow;
 import com.example.news.R;
 import com.example.news.data.BitMapCache;
+import com.example.news.data.NewsCache;
 import com.example.news.data.UserConfig;
 
 public class NewsFragment extends Fragment {
 
-    private TabLayout mSectionTabLayout;
-    private ViewPager mNewsViewPager;
-    private Button mPopSectionsButton;
     private SectionsPopWindow mPopWindow;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private BitMapCache bitMapCache;
+    private NewsCache newsCache;
 
     public NewsFragment() {
         // Required empty public constructor
     }
 
     public static NewsFragment newInstance() {
-        Log.d("NewsFragment", "newInstance");
-        NewsFragment fragment = new NewsFragment();
-        return fragment;
+        return new NewsFragment();
     }
 
     @Override
@@ -39,16 +36,17 @@ public class NewsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
         bitMapCache = BitMapCache.getInstance();
+        newsCache = NewsCache.getInstance();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_news_section, container, false);
-        mNewsViewPager = view.findViewById(R.id.sections_viewPager);
-        mSectionTabLayout = view.findViewById(R.id.sections_tabLayout);
-        mPopSectionsButton = view.findViewById(R.id.popSections_button);
+        ViewPager mNewsViewPager = view.findViewById(R.id.sections_viewPager);
+        TabLayout mSectionTabLayout = view.findViewById(R.id.sections_tabLayout);
+        Button mPopSectionsButton = view.findViewById(R.id.popSections_button);
 
         for (int i = 0; i < UserConfig.getInstance().getSectionNum(); ++i) {
             mSectionTabLayout.addTab(mSectionTabLayout.newTab());
@@ -71,6 +69,7 @@ public class NewsFragment extends Fragment {
         });
 
         bitMapCache.addAllSections(UserConfig.getInstance().getSectionNum());
+        newsCache.addAllSections(UserConfig.getInstance().getSectionNum());
         return view;
     }
 
@@ -80,6 +79,7 @@ public class NewsFragment extends Fragment {
             int pos = (int)v.getTag();
             delPage(pos);
             bitMapCache.removeSection(pos);
+            newsCache.removeSection(pos);
         }
     };
 
@@ -89,6 +89,7 @@ public class NewsFragment extends Fragment {
             int pos = (int)v.getTag();
             addPage(pos);
             bitMapCache.addSection();
+            newsCache.addSection();
         }
     };
 

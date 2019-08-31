@@ -6,8 +6,12 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.graphics.BitmapFactory;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -38,6 +42,10 @@ import com.example.news.support.ImageCrawler;
 import com.example.news.support.NewsCrawler;
 import com.example.news.support.ServerInteraction;
 import com.r0adkll.slidr.Slidr;
+import com.example.news.data.NewsCache;
+import com.example.news.support.ImageCrawler;
+import com.example.news.support.NewsCrawler;
+import com.example.news.support.NewsItem;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -66,6 +74,22 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_news_detail);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//                Intent intent = new Intent(NewsDetailActivity.this, TtsEngine.class);
+//                startActivity(intent);
+//            }
+//        });
+
+        mNewsCache = NewsCache.getInstance();
+        rawNews = getIntent().getStringExtra("data");
+        mSectionPos = getIntent().getIntExtra("sectionPos", 0);
+
         parseJson();
         container = findViewById(R.id.container);
         initContainer(container);
@@ -151,11 +175,21 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
         return super.onOptionsItemSelected(item);
     }
 
-    private void parseJson() {
-        Intent intent = getIntent();
-        String message = intent.getStringExtra("data");
+    private void storeCache(ArrayList<Bitmap> bitmaps) {
         try {
-            JSONObject jsonNews = new JSONObject(message);
+            NewsItem item = new NewsItem(new JSONObject(rawNews));
+            item.setImages(bitmaps);
+            mNewsCache.add(mSectionPos, newsID, item);
+            Log.d(LOG_TAG, "Cached News");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void parseJson() {
+        try {
+            JSONObject jsonNews = new JSONObject(rawNews);
             text = jsonNews.getString("content");
             content.addAll(Arrays.asList(text.split("\n+")));
             title = jsonNews.getString("title");
@@ -175,25 +209,50 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
     private void initContainer(LinearLayout container) {
         // 建立所有imageView
         ArrayList<ImageView> imageViews = new ArrayList<>();
+        ArrayList<Bitmap> bitmaps = new ArrayList<>();
         ArrayList<Integer> imageViewCanInsert = new ArrayList<>();
         ArrayList<Boolean> imageViewInserted = new ArrayList<>();
         if (!UserConfig.getInstance().isTextMode()) {
-            ArrayList<ImageCrawler> crawlers = new ArrayList<>();
-            for (int i=0; i<imgUrls.size(); i++) {
-                ImageCrawler imageCrawler = new ImageCrawler(imgUrls.get(i));
-                imageCrawler.start();
-                crawlers.add(imageCrawler);
+            boolean fromCache = false;
+            if (mNewsCache.contains(mSectionPos, newsID)) {
+                fromCache = true;
+                bitmaps = mNewsCache.get(mSectionPos, newsID).getBitmaps();
             }
-            for (int i=0; i<crawlers.size(); i++) {
-                try {
-                    crawlers.get(i).join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    continue;
+
+            ArrayList<ImageCrawler> crawlers = new ArrayList<>();
+            if (!fromCache) {
+                for (int i=0; i < imgUrls.size(); i++) {
+                    ImageCrawler imageCrawler = new ImageCrawler(imgUrls.get(i));
+                    imageCrawler.start();
+                    crawlers.add(imageCrawler);
                 }
-                Bitmap bitmap = crawlers.get(i).getBitmap();
+            }
+
+            for (int i = 0; i < imgUrls.size(); i++) {
+                if (!fromCache) {
+                    try {
+                        crawlers.get(i).join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        continue;
+                    }
+                }
+
+                Bitmap bitmap = null;
+                if (fromCache) {
+                    bitmap = bitmaps.get(i);
+                    Log.d(LOG_TAG, "from cache");
+                }
+                else {
+                    bitmap = crawlers.get(i).getBitmap();
+                }
                 ImageView imageView = new ImageView(this);
+                if (bitmap == null) {
+                    bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.no_image);
+                }
+                bitmaps.add(bitmap);
                 imageView.setImageBitmap(bitmap);
+
                 ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT);
                 imageView.setLayoutParams(params);
                 imageView.setAdjustViewBounds(true);
@@ -211,10 +270,14 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
                 });
                 imageViewInserted.add(false);
             }
+
+            if (!fromCache) {
+                storeCache(bitmaps);
+            }
         }
         //建立所有的textView
         ArrayList<TextView> textViews = new ArrayList<>();
-        for (int i=0; i<content.size(); i++) {
+        for (int i=0; i < content.size(); i++) {
             TextView textView = new TextView(this);
             textView.setText(content.get(i));
             textView.setTextSize(18);
@@ -260,6 +323,11 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
                 container.addView(imageViews.get(i));
             }
         }
+        TextView debugView = new TextView(this);
+        debugView.setTextIsSelectable(true);
+        debugView.setText(String.format("Debug:\n%s", getIntent().getStringExtra("data")));
+        container.addView(debugView);
+
         commentDivider = new TextView(this);
         commentDivider.setText("评论区");
         commentDivider.setTextSize(20);
@@ -402,6 +470,8 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
         super.onBackPressed();
     }
 
+    private NewsCache mNewsCache;
+    private String rawNews = "";
     private String title = "";
     private String text = "";
     private ArrayList<String> content = new ArrayList<>();
@@ -410,6 +480,8 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
     private String newsSource = "";
     private String newsTime = "";
     private CollectionViewModel mCollectionViewModel;
+    private MenuItem mCollectionIcon;
+    private int mSectionPos;
 
     private SmoothInputLayout lytContent;
     private EditText edtInput;

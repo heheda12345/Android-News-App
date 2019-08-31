@@ -20,4 +20,11 @@ public class ConstantValues {
     public enum ItemViewType {
         NONE, ONE_BIG, ONE_SMALL, THREE, FOOTER
     }
+
+    public enum NetWorkStatus {
+        NORMAL, ERROR
+    }
+
+    public static int DEFAULT_NEWS_SIZE = 15;
+    public static int DEFAULT_SUGGEST_TOP = 5;
 }

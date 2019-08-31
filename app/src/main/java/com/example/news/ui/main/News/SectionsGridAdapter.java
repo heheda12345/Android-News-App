@@ -1,5 +1,6 @@
 package com.example.news.ui.main.News;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +11,6 @@ import android.widget.Button;
 import com.example.news.R;
 import com.example.news.data.UserConfig;
 
-import java.util.List;
 
 public class SectionsGridAdapter extends BaseAdapter {
     private Context context;
@@ -18,7 +18,7 @@ public class SectionsGridAdapter extends BaseAdapter {
 //    private List<UserConfig.Section> listItem;
     private View.OnClickListener sectionClick;
 
-    public SectionsGridAdapter(Context context, boolean type, View.OnClickListener sectionClick) {
+    SectionsGridAdapter(Context context, boolean type, View.OnClickListener sectionClick) {
         this.context = context;
 //        this.listItem = listItem;
         this.type = type;
@@ -41,7 +41,7 @@ public class SectionsGridAdapter extends BaseAdapter {
             return UserConfig.getInstance().getSection(position).getSectionName();
         }
         else {
-            return UserConfig.getInstance().getUnSetion(position).getSectionName();
+            return UserConfig.getInstance().getUnSection(position).getSectionName();
         }
     }
 
@@ -50,6 +50,7 @@ public class SectionsGridAdapter extends BaseAdapter {
         return position;
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
@@ -58,10 +59,19 @@ public class SectionsGridAdapter extends BaseAdapter {
         Button sectionButton = convertView.findViewById(R.id.section_button);
         sectionButton.setTag(position);
         if (type) {
-            sectionButton.setText(UserConfig.getInstance().getSection(position).getSectionName());
+            String sectionName = UserConfig.getInstance().getSection(position).getSectionName();
+            if (sectionName.equals("推荐")) {
+                //推荐 按钮设置为不可点击
+                sectionButton.setEnabled(false);
+                sectionButton.setText(sectionName);
+            }
+            else {
+                sectionButton.setEnabled(true);
+                sectionButton.setText("- " + sectionName);
+            }
         }
         else {
-            sectionButton.setText(UserConfig.getInstance().getUnSetion(position).getSectionName());
+            sectionButton.setText("+ " + UserConfig.getInstance().getUnSection(position).getSectionName());
         }
         sectionButton.setOnClickListener(sectionClick);
         return convertView;

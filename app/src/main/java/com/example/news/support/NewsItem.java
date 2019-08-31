@@ -37,4 +37,8 @@ public class NewsItem {
         this.bitmapLoaded = true;
     }
 
+    public ArrayList<Bitmap> getBitmaps() {
+        return bitmaps;
+    }
+
 }

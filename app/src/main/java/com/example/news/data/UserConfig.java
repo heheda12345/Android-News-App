@@ -4,8 +4,11 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
+import java.util.Map;
 
 public class UserConfig {
 
@@ -45,11 +48,23 @@ public class UserConfig {
     private TTS tts;
     private boolean textMode = false;
 
+    private List<String> searchHistory;
+
+    private HashMap<String, Double> keyWordsSet;
+
+
     private static UserConfig instance = new UserConfig();
 
     private UserConfig() {
         selectSectionsIndices = new ArrayList<>();
         unselectedSectionsIndices = new ArrayList<>();
+        searchHistory = new ArrayList<>();
+        /* Hard Code for Debug */
+        searchHistory.add("Hello World");
+        searchHistory.add("清华大学");
+        searchHistory.add("特朗普");
+        keyWordsSet = new HashMap<String, Double>();
+        keyWordsSet.put("新时代", 1.0);
         for (int i = 0; i < ConstantValues.ALL_SECTIONS.length; i += 2) {
             selectSectionsIndices.add(i);
         }
@@ -63,28 +78,31 @@ public class UserConfig {
         return instance;
     }
 
-    public List<Section> getAllSelectSections() {
-        List<Section> sL = new ArrayList<>();
-        for (int position = 0; position < selectSectionsIndices.size(); ++position) {
-            sL.add(new Section(ConstantValues.ALL_SECTIONS[selectSectionsIndices.get(position)], position));
+    /**
+     * 搜索的历史纪录
+     * */
+
+    public void addSearchHistory(String history) {
+        if (!searchHistory.contains(history)) {
+            searchHistory.add(history);
         }
-        return sL;
     }
 
-    public List<Section> getAllUnselectedSections() {
-        List<Section> sL = new ArrayList<>();
-        for (int position = 0; position < unselectedSectionsIndices.size(); ++position) {
-            sL.add(new Section(ConstantValues.ALL_SECTIONS[unselectedSectionsIndices.get(position)], position));
-        }
-        return sL;
+    public List<String> getSearchHistory() {
+        return searchHistory;
     }
+
+
+    /**
+     *  Section 获取、添加、删除
+     * */
 
     public Section getSection(int position) {
         int sectionIndex = selectSectionsIndices.get(position);
         return new Section(ConstantValues.ALL_SECTIONS[sectionIndex], position);
     }
 
-    public Section getUnSetion(int position) {
+    public Section getUnSection(int position) {
         int sectionIndex = unselectedSectionsIndices.get(position);
         return new Section(ConstantValues.ALL_SECTIONS[sectionIndex], position);
     }
@@ -150,4 +168,53 @@ public class UserConfig {
 
     private Context context;
 
+    public List<Section> getAllSelectSections() {
+        List<Section> sL = new ArrayList<>();
+        for (int position = 0; position < selectSectionsIndices.size(); ++position) {
+            sL.add(new Section(ConstantValues.ALL_SECTIONS[selectSectionsIndices.get(position)], position));
+        }
+        return sL;
+    }
+
+    public List<Section> getAllUnselectedSections() {
+        List<Section> sL = new ArrayList<>();
+        for (int position = 0; position < unselectedSectionsIndices.size(); ++position) {
+            sL.add(new Section(ConstantValues.ALL_SECTIONS[unselectedSectionsIndices.get(position)], position));
+        }
+        return sL;
+    }
+
+
+    /**
+     * 关键词操作
+     * */
+    public void addKeyWords(String keyWord, double score) {
+        keyWordsSet.put(keyWord, score);
+    }
+
+    public List<Map.Entry<String, Double>> getKeyWords(int num) {
+        List<Map.Entry<String, Double>>keyWordsLists = new ArrayList<>(keyWordsSet.entrySet());
+        Collections.sort(keyWordsLists, new Comparator<Map.Entry<String, Double>>() {
+            public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
+                double q1 = o1.getValue();
+                double q2 = o2.getValue();
+                double p = q2 - q1;
+                if(p > 0){
+                    return 1;
+                }
+                else if(p == 0){
+                    return 0;
+                }
+                else
+                    return -1;
+            }
+        });
+
+        if (num < 0) {
+            return keyWordsLists;
+        }
+        else {
+            return keyWordsLists.subList(0, Math.min(num, keyWordsLists.size()));
+        }
+    }
 }
