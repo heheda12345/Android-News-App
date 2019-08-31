@@ -1,12 +1,20 @@
 package com.example.news;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -24,10 +32,11 @@ import com.example.news.ui.main.MainPagerAdapter;
 import com.example.news.ui.main.News.NewsListFragment;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechUtility;
-import com.mob.MobSDK;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener, ViewPager.OnPageChangeListener {
     private static String LOG_TAG = MainActivity.class.getSimpleName();
@@ -42,9 +51,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private ViewPager mainViewPager;
     private BottomNavigationView bottomNavigationView;
     private MenuItem menuItem;
+    private static final int STORAGE_STORAGE_REQUEST_CODE = 1657;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        grantUriPermission("com.android.providers.media.MediaProvider",
+                Uri.parse("content://media/external/file"), Intent.FLAG_GRANT_READ_URI_PERMISSION);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         /* Load User Config*/
@@ -156,9 +169,35 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         UserConfig.getInstance().setContext(getBaseContext());
         // 分享初始化
-        MobSDK.init(this);
+//        MobSDK.init(this);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+                    checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_STORAGE_REQUEST_CODE);
+            }
+        } // no need to ask permission
 
         return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case STORAGE_STORAGE_REQUEST_CODE: {
+                // If request is cancelled, the result arrays are empty.
+                Log.d("233", String.valueOf(grantResults.length));
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                    finish();
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request.
+        }
     }
 
     @Override
