@@ -47,6 +47,7 @@ public class UserConfig {
     private List<Integer> unselectedSectionsIndices;
     private TTS tts;
     private boolean textMode = false;
+    private boolean nightMode = false;
 
     private List<String> searchHistory;
 
@@ -76,6 +77,14 @@ public class UserConfig {
 
     public static UserConfig getInstance() {
         return instance;
+    }
+
+    public void setNightMode(boolean nightMode) {
+        this.nightMode = nightMode;
+    }
+
+    public boolean getNightMode() {
+        return nightMode;
     }
 
     /**

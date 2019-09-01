@@ -1,14 +1,18 @@
 package com.example.news.ui.main.Mine;
 
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,8 +20,10 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
+import com.example.news.MainActivity;
 import com.example.news.R;
 import com.example.news.data.UserConfig;
+import com.mob.wrappers.UMSSDKWrapper;
 
 import java.io.Serializable;
 import static com.example.news.support.ServerInteraction.ResultCode;
@@ -91,6 +97,32 @@ public class MineFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 UserConfig.getInstance().setTextMode(isChecked);
+            }
+        });
+
+        /* 夜间模式切换 */
+        Switch nightModeSwitch = view.findViewById(R.id.night_mode);
+        if (UserConfig.getInstance().getNightMode()) {
+            nightModeSwitch.setChecked(true);
+        }
+        else {
+            nightModeSwitch.setChecked(false);
+        }
+        nightModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Log.d(LOG_TAG, "change mode");
+                    UserConfig.getInstance().setNightMode(true);
+                }
+                else {
+                    UserConfig.getInstance().setNightMode(false);
+                }
+                Activity activity = (Activity)mContext;
+                Intent intent = new Intent(activity, MainActivity.class);
+                activity.startActivity(intent);
+                activity.overridePendingTransition(R.anim.in_anim, R.anim.out_anim);
+                activity.finish();
             }
         });
 
