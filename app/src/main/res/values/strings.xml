@@ -99,4 +99,7 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="write_comments_text">写评论...</string>
+    <string name="login_text">登陆</string>
+    <string name="register_text">注册</string>
+    <string name="upload_icon">上传头像</string>
 </resources>

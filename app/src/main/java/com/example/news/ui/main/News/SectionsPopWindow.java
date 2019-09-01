@@ -69,7 +69,7 @@ public class SectionsPopWindow extends PopupWindow {
         backGroundAlpha(context,0.5f);
     }
 
-    public void backGroundAlpha(Activity context, float alpha) {
+    void backGroundAlpha(Activity context, float alpha) {
         WindowManager.LayoutParams p = context.getWindow().getAttributes();
         p.alpha = alpha;
         context.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);

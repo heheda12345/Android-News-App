@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 
@@ -31,6 +32,7 @@ import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.engine.impl.GlideEngine;
 
 import java.io.File;
+import java.io.Serializable;
 import java.net.URI;
 
 
@@ -46,6 +48,11 @@ import static com.example.news.support.ServerInteraction.getInstance;
 public class MineFragment extends Fragment {
     private static final int REQUEST_CODE_CHOOSE = 977;
     private static String LOG_TAG = MineFragment.class.getSimpleName();
+    public static String LOGIN_LISTENER_ARG = "login";
+    public static String REGISTER_LISTENER_ARG = "register";
+    public static String USERNAME_ARG = "username";
+    public static String USERICON_ARG = "usericon";
+
     View view;
     FragmentManager fragmentManager;
     LogedFragment logedFragment;
@@ -74,8 +81,15 @@ public class MineFragment extends Fragment {
         /* login fragment 和not login fragment*/
         fragmentManager = getFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
+        /* Loged Fragment */
         logedFragment = LogedFragment.newInstance();
+        /* Not log Fragment */
         notLogFragment = NotLogFragment.newInstance();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(LOGIN_LISTENER_ARG, loginButtonListener);
+        bundle.putSerializable(REGISTER_LISTENER_ARG, registerButtonLister);
+        notLogFragment.setArguments(bundle);
+        /* Put fragments in to manager*/
         ft.add(R.id.login_fragment_container, notLogFragment);
         ft.add(R.id.login_fragment_container, logedFragment);
         ft.hide(logedFragment);
@@ -101,7 +115,7 @@ public class MineFragment extends Fragment {
 //        initLoginButton();
 //        initRegisterButton();
         initLogoutButton();
-        initIconButton();
+//        initIconButton();
 
 
 
@@ -128,31 +142,7 @@ public class MineFragment extends Fragment {
         });
     }
 
-    private void initIconButton() {
-        view.findViewById(R.id.iconButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!UserConfig.isNetworkAvailable()) {
-                    new AlertDialog.Builder(getActivity()).setMessage("无网络").show();
-                    return;
-                }
-                if (UserConfig.getInstance().getUserName().length() == 0) {
-                    new AlertDialog.Builder(getActivity()).setMessage("请先登录").show();
-                    return;
-                }
-                Log.d(LOG_TAG, "clicked!");
 
-                Matisse.from(MineFragment.this)
-                        .choose(MimeType.ofImage())
-                        .maxSelectable(1)
-                        .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
-                        .thumbnailScale(0.85f)
-                        .imageEngine(new GlideEngine())
-                        .theme(R.style.Matisse_Mine)
-                        .forResult(REQUEST_CODE_CHOOSE);
-            }
-        });
-    }
 
     private void showPersonSelectDialog() {
         final String[] cloudVoicersEntries = getResources().getStringArray(R.array.voicer_cloud_entries);
@@ -171,6 +161,73 @@ public class MineFragment extends Fragment {
                             }
                         }).show();
     }
+
+    private void changeFragment(Fragment fragmentToHide, Fragment fragmentToShow) {
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.hide(fragmentToHide).show(fragmentToShow).commit();
+    }
+
+    abstract class LoginListener implements View.OnClickListener, Serializable { };
+
+    private LoginListener loginButtonListener = new LoginListener() {
+            @Override
+            public void onClick(View v) {
+                if (!UserConfig.isNetworkAvailable()) {
+                    new AlertDialog.Builder(getActivity()).setMessage("无网络").show();
+                    return;
+                }
+                final String name = notLogFragment.getUsername();
+                final String passwd = notLogFragment.getPasswd();
+                ResultCode result = getInstance().login(name, passwd);
+                switch (result) {
+                    case success:
+                        new AlertDialog.Builder(getActivity()).setMessage("登录成功").show();
+                        UserConfig.getInstance().setUserName(name);
+                        changeFragment(notLogFragment, logedFragment);
+                        break;
+                    case wrongUserNameorPassWord:
+                        new AlertDialog.Builder(getActivity()).setMessage("用户名或密码错误").show();
+                        break;
+                    case unknownError:
+                        new AlertDialog.Builder(getActivity()).setMessage("网络错误，请稍后重试").show();
+                        break;
+                }
+                Log.d(LOG_TAG, "Login:" + result.toString());
+            }
+        };
+
+    private LoginListener registerButtonLister = new LoginListener() {
+            @Override
+            public void onClick(View v) {
+                if (!UserConfig.isNetworkAvailable()) {
+                    new AlertDialog.Builder(getActivity()).setMessage("无网络").show();
+                    return;
+                }
+                String name = notLogFragment.getUsername();
+                String passwd = notLogFragment.getUsername();
+                if (!name.matches("[0-9a-zA-Z]{2,10}")) {
+                    new AlertDialog.Builder(getActivity()).setMessage("用户名应为长度2-10的字母或数字").show();
+                    return;
+                }
+                if (!passwd.matches("[0-9]{2,10}")) {
+                    new AlertDialog.Builder(getActivity()).setMessage("密码应为长度2-10的数字").show();
+                    return;
+                }
+                ResultCode result = getInstance().register(name, passwd);
+                switch (result) {
+                    case success:
+                        new AlertDialog.Builder(getActivity()).setMessage("注册成功").show();
+                        break;
+                    case nameUsed:
+                        new AlertDialog.Builder(getActivity()).setMessage("用户名已被占用").show();
+                        break;
+                    case unknownError:
+                        new AlertDialog.Builder(getActivity()).setMessage("网络错误，请稍后重试").show();
+                        break;
+                }
+                Log.d(LOG_TAG, "Register:" + result.toString());
+            }
+        };
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
