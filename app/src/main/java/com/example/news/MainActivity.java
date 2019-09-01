@@ -60,19 +60,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private ViewPager mainViewPager;
     private BottomNavigationView bottomNavigationView;
     private MenuItem menuItem;
-    private static final int STORAGE_STORAGE_REQUEST_CODE = 1657;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
-                    checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_STORAGE_REQUEST_CODE);
-            }
-        } // no need to ask permission
-        grantUriPermission("com.android.providers.media.MediaProvider",
-                Uri.parse("content://media/external/file"), Intent.FLAG_GRANT_READ_URI_PERMISSION);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         /* Load User Config*/
@@ -211,25 +202,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case STORAGE_STORAGE_REQUEST_CODE: {
-                // If request is cancelled, the result arrays are empty.
-                Log.d("233", String.valueOf(grantResults.length));
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                    finish();
-                }
-                return;
-            }
-
-            // other 'case' lines to check for other
-            // permissions this app might request.
-        }
-    }
-
-    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
         switch (itemId){
@@ -260,5 +232,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     }
 
     CollectionViewModel db;
+    boolean permissinDenied;
 
 }
