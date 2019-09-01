@@ -4,9 +4,6 @@ package com.example.news.ui.main.Mine;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -17,26 +14,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Switch;
 
-import com.bumptech.glide.Glide;
 import com.example.news.R;
 import com.example.news.data.UserConfig;
-import com.example.news.support.ServerInteraction;
-import com.soundcloud.android.crop.Crop;
-import com.zhihu.matisse.Matisse;
-import com.zhihu.matisse.MimeType;
-import com.zhihu.matisse.engine.impl.GlideEngine;
 
-import java.io.File;
 import java.io.Serializable;
-import java.net.URI;
-
-
-import static android.app.Activity.RESULT_OK;
 import static com.example.news.support.ServerInteraction.ResultCode;
 import static com.example.news.support.ServerInteraction.getInstance;
 
@@ -46,12 +29,9 @@ import static com.example.news.support.ServerInteraction.getInstance;
  * create an instance of this fragment.
  */
 public class MineFragment extends Fragment {
-    private static final int REQUEST_CODE_CHOOSE = 977;
     private static String LOG_TAG = MineFragment.class.getSimpleName();
     public static String LOGIN_LISTENER_ARG = "login";
     public static String REGISTER_LISTENER_ARG = "register";
-    public static String USERNAME_ARG = "username";
-    public static String USERICON_ARG = "usericon";
 
     View view;
     FragmentManager fragmentManager;
@@ -81,14 +61,17 @@ public class MineFragment extends Fragment {
         /* login fragment 和not login fragment*/
         fragmentManager = getFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
+
         /* Loged Fragment */
         logedFragment = LogedFragment.newInstance();
+
         /* Not log Fragment */
         notLogFragment = NotLogFragment.newInstance();
         Bundle bundle = new Bundle();
         bundle.putSerializable(LOGIN_LISTENER_ARG, loginButtonListener);
         bundle.putSerializable(REGISTER_LISTENER_ARG, registerButtonLister);
         notLogFragment.setArguments(bundle);
+
         /* Put fragments in to manager*/
         ft.add(R.id.login_fragment_container, notLogFragment);
         ft.add(R.id.login_fragment_container, logedFragment);
@@ -111,16 +94,9 @@ public class MineFragment extends Fragment {
             }
         });
 
-
-//        initLoginButton();
-//        initRegisterButton();
+        /* 退出登录按钮 */
         initLogoutButton();
-//        initIconButton();
 
-
-
-
-        icon = view.findViewById(R.id.iconImageView);
         return view;
     }
 
@@ -136,13 +112,12 @@ public class MineFragment extends Fragment {
                 if (result == ResultCode.success) {
                     new AlertDialog.Builder(getActivity()).setMessage("退出成功").show();
                     UserConfig.getInstance().setUserName("");
+                    changeFragment(logedFragment, notLogFragment);
                 }
                 Log.d(LOG_TAG, "Logout:" + result.toString());
             }
         });
     }
-
-
 
     private void showPersonSelectDialog() {
         final String[] cloudVoicersEntries = getResources().getStringArray(R.array.voicer_cloud_entries);
@@ -204,7 +179,7 @@ public class MineFragment extends Fragment {
                     return;
                 }
                 String name = notLogFragment.getUsername();
-                String passwd = notLogFragment.getUsername();
+                String passwd = notLogFragment.getPasswd();
                 if (!name.matches("[0-9a-zA-Z]{2,10}")) {
                     new AlertDialog.Builder(getActivity()).setMessage("用户名应为长度2-10的字母或数字").show();
                     return;
@@ -229,37 +204,6 @@ public class MineFragment extends Fragment {
             }
         };
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Log.d(LOG_TAG, String.format("activity result %d %d", requestCode, resultCode));
-        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE_CHOOSE) {
-            Uri uri = Matisse.obtainResult(data).get(0);
-            File f= new File(Matisse.obtainPathResult(data).get(0));
-            iconUri = Uri.fromFile(new File(getActivity().getCacheDir(), f.getName()));
-            Crop.of(uri, iconUri).asSquare().start(getActivity(), MineFragment.this);
-        }
-        if (resultCode == RESULT_OK  && requestCode == Crop.REQUEST_CROP) {
-            Log.d(LOG_TAG, iconUri.toString());
-            try {
-                File f = new File(new URI(iconUri.toString()));
-                ResultCode result = ServerInteraction.getInstance().uploadIcon(f, UserConfig.getInstance().getUserName());
-                if (result == ResultCode.success) {
-                    new AlertDialog.Builder(getActivity()).setMessage("上传成功").show();
-                    Glide.with(view.getContext()).load(iconUri).into(icon);
-                } else {
-                    new AlertDialog.Builder(getActivity()).setMessage("上传失败").show();
-                }
-            } catch (Exception e) {
-                Log.e(LOG_TAG, "onActivityResult: ", e);
-                new AlertDialog.Builder(getActivity()).setMessage("上传失败").show();
-            }
-
-        }
-    }
-
     int mTTSPersonSelected = 0;
-    ImageView icon;
-    Uri iconUri;
     Context mContext;
 }

@@ -28,5 +28,6 @@
     <color name="gray">#BEBEBE</color>
     <color name="light_gray">#FCFCFC</color>
     <color name="white">#FFFFFF</color>
+    <color name="red">#FF0000</color>
 
 </resources>

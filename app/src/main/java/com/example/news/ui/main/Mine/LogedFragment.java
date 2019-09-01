@@ -2,6 +2,7 @@ package com.example.news.ui.main.Mine;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,17 +19,24 @@ import com.bumptech.glide.Glide;
 import com.example.news.R;
 import com.example.news.data.UserConfig;
 import com.example.news.support.ServerInteraction;
+import com.example.news.support.ServerInteraction.ResultCode;
+import com.soundcloud.android.crop.Crop;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.engine.impl.GlideEngine;
 
 import java.io.File;
+import java.net.URI;
+
+import static android.app.Activity.RESULT_OK;
 
 public class LogedFragment extends Fragment {
     private static String LOG_TAG = LogedFragment.class.getSimpleName();
     private static final int REQUEST_CODE_CHOOSE = 977;
     View view;
     Context context;
+    ImageView icon;
+    Uri iconUri;
 
     public LogedFragment() {
 
@@ -43,6 +51,7 @@ public class LogedFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_loged, container, false);
         context = view.getContext();
+        icon = view.findViewById(R.id.iconImageView);
         initIconButton();
         return view;
     }
@@ -88,4 +97,32 @@ public class LogedFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(LOG_TAG, String.format("activity result %d %d", requestCode, resultCode));
+        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE_CHOOSE) {
+            Uri uri = Matisse.obtainResult(data).get(0);
+            File f= new File(Matisse.obtainPathResult(data).get(0));
+            iconUri = Uri.fromFile(new File(getActivity().getCacheDir(), f.getName()));
+            Crop.of(uri, iconUri).asSquare().start(getActivity(), LogedFragment.this);
+        }
+        if (resultCode == RESULT_OK  && requestCode == Crop.REQUEST_CROP) {
+            Log.d(LOG_TAG, iconUri.toString());
+            try {
+                File f = new File(new URI(iconUri.toString()));
+                ResultCode result = ServerInteraction.getInstance().uploadIcon(f, UserConfig.getInstance().getUserName());
+                if (result == ResultCode.success) {
+                    new AlertDialog.Builder(getActivity()).setMessage("上传成功").show();
+                    Glide.with(view.getContext()).load(iconUri).into(icon);
+                } else {
+                    new AlertDialog.Builder(getActivity()).setMessage("上传失败").show();
+                }
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "onActivityResult: ", e);
+                new AlertDialog.Builder(getActivity()).setMessage("上传失败").show();
+            }
+
+        }
+    }
 }
