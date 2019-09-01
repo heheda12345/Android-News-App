@@ -2,6 +2,7 @@ package com.example.news;
 
 import android.Manifest;
 import android.app.Activity;
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -27,7 +29,14 @@ import android.support.v7.widget.SearchView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
+import com.example.news.collection.CollectionItem;
+import com.example.news.collection.CollectionRepository;
+import com.example.news.collection.CollectionViewModel;
+import com.example.news.collection.NewsListItem;
+import com.example.news.collection.NewsSavedItem;
+import com.example.news.data.NewsCache;
 import com.example.news.data.UserConfig;
+import com.example.news.support.NewsItem;
 import com.example.news.ui.main.MainPagerAdapter;
 import com.example.news.ui.main.News.NewsListFragment;
 import com.iflytek.cloud.SpeechConstant;
@@ -56,6 +65,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+                    checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_STORAGE_REQUEST_CODE);
+            }
+        } // no need to ask permission
         grantUriPermission("com.android.providers.media.MediaProvider",
                 Uri.parse("content://media/external/file"), Intent.FLAG_GRANT_READ_URI_PERMISSION);
         super.onCreate(savedInstanceState);
@@ -74,8 +89,41 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         mainViewPager.setAdapter(mainPagerAdapter);
         mainViewPager.addOnPageChangeListener(this);
 
+        /*初始化db*/
+        CollectionRepository.setApp(getApplication());
+        db = new CollectionViewModel(getApplication());
+        db.getAllNews().observe(this, new Observer<List<NewsSavedItem>>() {
+            @Override
+            public void onChanged(@Nullable List<NewsSavedItem> newsSavedItems) {
+                for (NewsSavedItem item: newsSavedItems) {
+                    Log.d(LOG_TAG, "saved news: " + item.id);
+                }
+            }
+        });
+        db.getAllList().observe(this, new Observer<List<NewsListItem>>() {
+            @Override
+            public void onChanged(@Nullable List<NewsListItem> newsListItems) {
+                for (NewsListItem item: newsListItems) {
+                    Log.d(LOG_TAG, "saved list: " + item.cid + " " + item.ids);
+                }
+                ArrayList<NewsItem> collected = db.getNewsList("CCC");
+                for (NewsItem item: collected) {
+                    Log.d(LOG_TAG, "collection: " + item.title);
+                }
+            }
+        });
+        db.getAllItems().observe(this, new Observer<List<CollectionItem>>() {
+            @Override
+            public void onChanged(@Nullable List<CollectionItem> collectionItems) {
+                db.updateCollection();
+            }
+        });
+
         /*科大讯飞语音合成api初始化*/
         SpeechUtility.createUtility(this, SpeechConstant.APPID +"=5d58fa7c");
+
+        /*UserConfig 需要context*/
+        UserConfig.getInstance().setContext(getBaseContext());
 
         /* Create Tool Bar*/
         toolbar = findViewById(R.id.toolbar);
@@ -159,25 +207,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             }
         });
 
-        /*科大讯飞语音合成api初始化*/
-        try {
-            SpeechUtility.createUtility(this, SpeechConstant.APPID +"=5d58fa7c");
-        } catch (Exception e) {
-            Log.e(LOG_TAG, e.getMessage());
-            e.printStackTrace();
-        }
-
-        UserConfig.getInstance().setContext(getBaseContext());
-        // 分享初始化
-//        MobSDK.init(this);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
-                    checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_STORAGE_REQUEST_CODE);
-            }
-        } // no need to ask permission
-
         return true;
     }
 
@@ -229,5 +258,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public void onPageScrollStateChanged(int state) {
 
     }
+
+    CollectionViewModel db;
 
 }

@@ -2,6 +2,8 @@ package com.example.news.ui.main.Mine;
 
 
 import android.app.AlertDialog;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,7 +23,9 @@ import android.widget.Switch;
 import com.bumptech.glide.Glide;
 import com.example.news.MainActivity;
 import com.example.news.R;
+import com.example.news.collection.CollectionViewModel;
 import com.example.news.data.UserConfig;
+import com.example.news.support.NewsItem;
 import com.example.news.support.ServerInteraction;
 import com.soundcloud.android.crop.Crop;
 import com.zhihu.matisse.Matisse;
@@ -182,6 +186,18 @@ public class MineFragment extends Fragment {
                         .imageEngine(new GlideEngine())
                         .theme(R.style.Matisse_Mine)
                         .forResult(REQUEST_CODE_CHOOSE);
+            }
+        });
+        view.findViewById(R.id.logButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String name = ((EditText)view.findViewById(R.id.newsidEdit)).getText().toString().trim();
+                CollectionViewModel model = ViewModelProviders.of(MineFragment.this).get(CollectionViewModel.class);
+                NewsItem item = model.getNewsItem(name);
+                if (item != null)
+                    new AlertDialog.Builder(getActivity()).setMessage(item.id + item.title).show();
+                else
+                    new AlertDialog.Builder(getActivity()).setMessage("not found").show();
             }
         });
         icon = view.findViewById(R.id.iconImageView);

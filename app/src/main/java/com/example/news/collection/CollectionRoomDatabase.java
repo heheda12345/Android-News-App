@@ -5,7 +5,7 @@ import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
-@Database(entities = {CollectionItem.class}, version = 1, exportSchema = false)
+@Database(entities = {CollectionItem.class, NewsListItem.class, NewsSavedItem.class}, version = 2, exportSchema = false)
 public abstract class CollectionRoomDatabase extends RoomDatabase {
 
     public abstract CollectionDao collectionDao();
@@ -15,7 +15,7 @@ public abstract class CollectionRoomDatabase extends RoomDatabase {
         if (INSTANCE == null) {
             synchronized (CollectionDao.class) {
                 if (INSTANCE == null) {
-                    INSTANCE = (CollectionRoomDatabase) Room.databaseBuilder(context.getApplicationContext(),
+                    INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             CollectionRoomDatabase.class, "collectionDatabase")
                             // Wipes and rebuilds instead of migrating
                             // if no Migration object.

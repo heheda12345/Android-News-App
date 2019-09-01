@@ -25,18 +25,14 @@ public class BitMapCache {
         return instance;
     }
 
-    public void add(int pos, String url, Bitmap bitmap) throws IOException {
+    public String add(int pos, String url, Bitmap bitmap) throws IOException {
         File file = new File(Environment.getExternalStorageDirectory(), url.hashCode()+".jpg");
         FileOutputStream fOut = new FileOutputStream(file);
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
         fOut.flush();
         fOut.close();
         maps.get(pos).put(url, bitmap);
-    }
-
-    public void add(int pos, String url, String path) {
-        File f = new File(URI.create(url));
-        maps.get(pos).put(url, BitmapFactory.decodeFile(f.getPath()));
+        return file.getAbsolutePath();
     }
 
     public void clear(int pos) {
