@@ -11,8 +11,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +21,6 @@ import android.widget.Switch;
 import com.example.news.MainActivity;
 import com.example.news.R;
 import com.example.news.data.UserConfig;
-import com.mob.wrappers.UMSSDKWrapper;
 
 import java.io.Serializable;
 import static com.example.news.support.ServerInteraction.ResultCode;

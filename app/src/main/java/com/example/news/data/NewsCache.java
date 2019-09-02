@@ -23,6 +23,15 @@ public class NewsCache {
 
     public boolean contains(int pos, String newsID) { return maps.get(pos).containsKey(newsID); }
 
+    public boolean contains(String newsID) {
+        for (int pos = 0; pos < maps.size(); ++pos) {
+            if (contains(pos, newsID)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void addAllSections(int numSections) {
         for (int i = 0; i < numSections; ++i) {
             maps.add(new HashMap<String, NewsItem>());

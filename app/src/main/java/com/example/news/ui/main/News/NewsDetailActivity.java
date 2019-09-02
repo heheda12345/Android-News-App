@@ -160,9 +160,10 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
     private void storeCache(ArrayList<Bitmap> bitmaps) {
         try {
             NewsItem item = new NewsItem(new JSONObject(rawNews));
+            item.setRead(true);
             item.setImages(bitmaps);
             mNewsCache.add(mSectionPos, newsID, item);
-            Log.d(LOG_TAG, "Cached News");
+            Log.d(LOG_TAG, "Cached News " + newsID);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -175,7 +176,7 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
             text = jsonNews.getString("content");
             content.addAll(Arrays.asList(text.split("\n+")));
             title = jsonNews.getString("title");
-            newsID = jsonNews.getString("title");
+            newsID = jsonNews.getString("newsID");
             newsSource = jsonNews.getString("publisher");
             newsTime  = jsonNews.getString("publishTime");
             String url = jsonNews.getString("image");

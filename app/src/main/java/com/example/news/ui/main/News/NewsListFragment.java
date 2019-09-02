@@ -34,6 +34,7 @@ import java.util.Date;
 
 public class NewsListFragment extends Fragment {
 
+    private static final String LOG_TAG = NewsListFragment.class.getSimpleName();
     private static final String ARG_SECTION_POS = "section_number";
     private static final String ARG_SECTION_NAME = "section_name";
     private static final String ARG_INIT_ON_CREATE = "init_on_create";
@@ -43,6 +44,7 @@ public class NewsListFragment extends Fragment {
 
     private boolean mInitOnCreate = false;
     private String mKeyWord = "";
+    private boolean firstCreate = true;
 
     protected NewsListAdapter mNewsListAdapter;
     protected int mPage = 0;
@@ -99,8 +101,10 @@ public class NewsListFragment extends Fragment {
             Bundle savedInstanceState) {
 
         /* 每次改变section时，重新请求一次数据*/
-        if (mInitOnCreate) {
+        if (mInitOnCreate && firstCreate) {
+            Log.d(LOG_TAG, "fitst create");
             setNews("", mSectionName);
+            firstCreate = false;
         }
 
         /*从news List 的layout中构造出NewsList 的root view*/
