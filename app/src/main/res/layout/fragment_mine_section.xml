@@ -63,5 +63,4 @@
         android:textColor="@color/red"
         android:background="@color/white"/>
 
-
 </LinearLayout>

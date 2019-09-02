@@ -13,7 +13,9 @@ import android.widget.PopupWindow;
 
 import com.example.news.R;
 
-public class NotLogFragment extends Fragment {
+import java.io.Serializable;
+
+public class NotLogFragment extends Fragment implements Serializable {
     private String LOG_TAG = NotLogFragment.class.getSimpleName();
     private static final int REQUEST_CODE_CHOOSE = 977;
     private View.OnClickListener loginClick;

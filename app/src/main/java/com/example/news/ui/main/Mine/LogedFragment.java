@@ -26,11 +26,12 @@ import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.engine.impl.GlideEngine;
 
 import java.io.File;
+import java.io.Serializable;
 import java.net.URI;
 
 import static android.app.Activity.RESULT_OK;
 
-public class LogedFragment extends Fragment {
+public class LogedFragment extends Fragment implements Serializable {
     private static String LOG_TAG = LogedFragment.class.getSimpleName();
     private static final int REQUEST_CODE_CHOOSE = 977;
     View view;

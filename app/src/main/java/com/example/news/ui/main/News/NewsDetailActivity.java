@@ -120,9 +120,6 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
         mCollectionViewModel.getAllItems().observe(this, new Observer<List<CollectionItem>>() {
             @Override
             public void onChanged(@Nullable final List<CollectionItem> items) {
-                // Update the cached copy of the words in the adapter.
-                for (CollectionItem item: items)
-                    Log.d(LOG_TAG, "collection updated!"+item.getNewsID());
                 updateCollectionIcon();
             }
         });
@@ -176,7 +173,7 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
             text = jsonNews.getString("content");
             content.addAll(Arrays.asList(text.split("\n+")));
             title = jsonNews.getString("title");
-            newsID = jsonNews.getString("newsID");
+            newsID = jsonNews.getString("newsID").trim();
             newsSource = jsonNews.getString("publisher");
             newsTime  = jsonNews.getString("publishTime");
             String url = jsonNews.getString("image");
@@ -240,14 +237,17 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
                 imageView.setLayoutParams(params);
                 imageView.setAdjustViewBounds(true);
                 imageView.setScaleType(FIT_XY);
+                final int id = i;
                 imageViews.add(imageView);
-                if (bitmap.getHeight() * 1.0 / bitmap.getWidth() < 1)
+                if (bitmap.getHeight() * 1.0 / bitmap.getWidth() > 0.5 &&
+                        bitmap.getHeight() * 1.0 / bitmap.getWidth() < 1)
                     imageViewCanInsert.add(imageViews.size() - 1);
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(NewsDetailActivity.this, LargeImageActivity.class);
                         intent.putStringArrayListExtra("url", imgUrls);
+                        intent.putExtra("click", id);
                         startActivity(intent);
                     }
                 });
@@ -309,6 +309,7 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
         TextView debugView = new TextView(this);
         debugView.setTextIsSelectable(true);
         debugView.setText(String.format("Debug:\n%s", getIntent().getStringExtra("data")));
+        debugView.setTextIsSelectable(true);
         container.addView(debugView);
 
         commentDivider = new TextView(this);

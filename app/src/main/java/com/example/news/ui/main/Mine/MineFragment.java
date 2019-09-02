@@ -3,9 +3,13 @@ package com.example.news.ui.main.Mine;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -16,13 +20,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.Switch;
 
+import com.bumptech.glide.Glide;
 import com.example.news.MainActivity;
 import com.example.news.R;
+import com.example.news.collection.CollectionViewModel;
 import com.example.news.data.UserConfig;
+import com.example.news.support.NewsItem;
+import com.example.news.support.ServerInteraction;
+import com.soundcloud.android.crop.Crop;
+import com.zhihu.matisse.Matisse;
+import com.zhihu.matisse.MimeType;
+import com.zhihu.matisse.engine.impl.GlideEngine;
+import com.zhihu.matisse.filter.Filter;
+
+import java.io.File;
+import java.net.URI;
 
 import java.io.Serializable;
+
+import static android.app.Activity.RESULT_OK;
 import static com.example.news.support.ServerInteraction.ResultCode;
 import static com.example.news.support.ServerInteraction.getInstance;
 
@@ -32,6 +51,7 @@ import static com.example.news.support.ServerInteraction.getInstance;
  * create an instance of this fragment.
  */
 public class MineFragment extends Fragment {
+    private static final int REQUEST_CODE_CHOOSE = 977;
     private static String LOG_TAG = MineFragment.class.getSimpleName();
     public static String LOGIN_LISTENER_ARG = "login";
     public static String REGISTER_LISTENER_ARG = "register";
@@ -62,8 +82,7 @@ public class MineFragment extends Fragment {
         mContext = view.getContext();
 
         /* login fragment 和not login fragment*/
-        fragmentManager = getFragmentManager();
-        FragmentTransaction ft = fragmentManager.beginTransaction();
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
 
         /* Loged Fragment */
         logedFragment = LogedFragment.newInstance();
@@ -167,7 +186,7 @@ public class MineFragment extends Fragment {
     }
 
     private void changeFragment(Fragment fragmentToHide, Fragment fragmentToShow) {
-        FragmentTransaction ft = fragmentManager.beginTransaction();
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.hide(fragmentToHide).show(fragmentToShow).commit();
     }
 
@@ -233,6 +252,37 @@ public class MineFragment extends Fragment {
             }
         };
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(LOG_TAG, String.format("activity result %d %d", requestCode, resultCode));
+        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE_CHOOSE) {
+            Uri uri = Matisse.obtainResult(data).get(0);
+            File f= new File(Matisse.obtainPathResult(data).get(0));
+            iconUri = Uri.fromFile(new File(getActivity().getCacheDir(), f.getName()));
+            Crop.of(uri, iconUri).asSquare().start(getActivity(), MineFragment.this);
+        }
+        if (resultCode == RESULT_OK  && requestCode == Crop.REQUEST_CROP) {
+            Log.d(LOG_TAG, iconUri.toString());
+            try {
+                File f = new File(new URI(iconUri.toString()));
+                ResultCode result = ServerInteraction.getInstance().uploadIcon(f, UserConfig.getInstance().getUserName());
+                if (result == ResultCode.success) {
+                    new AlertDialog.Builder(getActivity()).setMessage("上传成功").show();
+                    Glide.with(view.getContext()).load(iconUri).into(icon);
+                } else {
+                    new AlertDialog.Builder(getActivity()).setMessage("上传失败").show();
+                }
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "onActivityResult: ", e);
+                new AlertDialog.Builder(getActivity()).setMessage("上传失败").show();
+            }
+
+        }
+    }
+
     int mTTSPersonSelected = 0;
+    ImageView icon;
+    Uri iconUri;
     Context mContext;
 }

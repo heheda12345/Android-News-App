@@ -18,7 +18,6 @@ import com.example.news.support.ImageLoadingTask;
 import com.example.news.support.NewsItem;
 import com.example.news.ui.main.Items.FootViewHolder;
 import com.example.news.ui.main.Items.NewsItemVH;
-import com.mob.wrappers.UMSSDKWrapper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
