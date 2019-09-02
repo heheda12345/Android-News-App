@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.Toolbar;
@@ -42,11 +43,18 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private ViewPager mainViewPager;
     private BottomNavigationView bottomNavigationView;
     private MenuItem menuItem;
+    private boolean firstCreate = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (userConfig.getNightMode()) {
+            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+        else {
+            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
         /* Load User Config*/
         searchSuggest = new ArrayList<>();
         searchSuggest.addAll(userConfig.getSearchHistory());

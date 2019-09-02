@@ -7,17 +7,12 @@ import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.graphics.BitmapFactory;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.TextWatcher;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
@@ -43,8 +38,6 @@ import com.example.news.support.NewsCrawler;
 import com.example.news.support.ServerInteraction;
 import com.r0adkll.slidr.Slidr;
 import com.example.news.data.NewsCache;
-import com.example.news.support.ImageCrawler;
-import com.example.news.support.NewsCrawler;
 import com.example.news.support.NewsItem;
 
 import org.json.JSONArray;
@@ -74,17 +67,6 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_news_detail);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//                Intent intent = new Intent(NewsDetailActivity.this, TtsEngine.class);
-//                startActivity(intent);
-//            }
-//        });
 
         mNewsCache = NewsCache.getInstance();
         rawNews = getIntent().getStringExtra("data");
@@ -178,9 +160,10 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
     private void storeCache(ArrayList<Bitmap> bitmaps) {
         try {
             NewsItem item = new NewsItem(new JSONObject(rawNews));
+            item.setRead(true);
             item.setImages(bitmaps);
             mNewsCache.add(mSectionPos, newsID, item);
-            Log.d(LOG_TAG, "Cached News");
+            Log.d(LOG_TAG, "Cached News " + newsID);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -193,7 +176,7 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
             text = jsonNews.getString("content");
             content.addAll(Arrays.asList(text.split("\n+")));
             title = jsonNews.getString("title");
-            newsID = jsonNews.getString("title");
+            newsID = jsonNews.getString("newsID");
             newsSource = jsonNews.getString("publisher");
             newsTime  = jsonNews.getString("publishTime");
             String url = jsonNews.getString("image");

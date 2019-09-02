@@ -52,10 +52,20 @@ public class NewsItemVH extends RecyclerView.ViewHolder {
         return hasRead;
     }
 
-    public void setRead() {
-        int readColor = ContextCompat.getColor(mContext, R.color.gray);
-        title.setTextColor(readColor);
-        author.setTextColor(readColor);
-        time.setTextColor(readColor);
+    public void setRead(boolean isRead) {
+        hasRead = isRead;
+        if (isRead) {
+            int readColor = ContextCompat.getColor(mContext, R.color.gray);
+            title.setTextColor(readColor);
+            author.setTextColor(readColor);
+            time.setTextColor(readColor);
+        }
+        else {
+            int notReadColor = ContextCompat.getColor(mContext, R.color.text_gray);
+            title.setTextColor(notReadColor);
+            author.setTextColor(notReadColor);
+            time.setTextColor(notReadColor);
+        }
+
     }
 }

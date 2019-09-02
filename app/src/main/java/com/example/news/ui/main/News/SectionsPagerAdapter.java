@@ -8,6 +8,9 @@ import android.support.v4.view.PagerAdapter;
 
 import com.example.news.data.UserConfig;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
  * one of the sections/tabs/pages.

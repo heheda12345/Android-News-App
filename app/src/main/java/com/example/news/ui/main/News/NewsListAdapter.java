@@ -12,10 +12,13 @@ import android.widget.Toast;
 
 import com.example.news.R;
 import com.example.news.data.ConstantValues;
+import com.example.news.data.NewsCache;
 import com.example.news.data.UserConfig;
 import com.example.news.support.ImageLoadingTask;
+import com.example.news.support.NewsItem;
 import com.example.news.ui.main.Items.FootViewHolder;
 import com.example.news.ui.main.Items.NewsItemVH;
+import com.mob.wrappers.UMSSDKWrapper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,10 +30,11 @@ import java.util.List;
 
 public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final String TAG = "NewsListAdapter";
+    private static final String LOG_TAG = "NewsListAdapter";
     private Context mContext;
     private int mSectionPos;
-    private List<JSONObject> mNews;
+    private List<NewsItem> mNews;
+
     private boolean netWorkError = false;
 
     NewsListAdapter(Context context, int sectionPos) {
@@ -44,17 +48,17 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         if (holder instanceof NewsItemVH) {
             final NewsItemVH itemHolder = (NewsItemVH) holder;
-            String imagesUrlStr = "[]";
-            try {
-                itemHolder.title.setText(mNews.get(position).getString("title"));
-                itemHolder.author.setText(mNews.get(position).getString("publisher"));
-                itemHolder.time.setText(mNews.get(position).getString("publishTime"));
-                imagesUrlStr = mNews.get(position).getString("image");
-                itemHolder.mCurrentPosition = position;
-                itemHolder.initImages();
+            itemHolder.title.setText(mNews.get(position).getTitle());
+            itemHolder.author.setText(mNews.get(position).getAuthor());
+            itemHolder.time.setText(mNews.get(position).getTime());
+            String imagesUrlStr = mNews.get(position).getImageUrlStr();
+            itemHolder.mCurrentPosition = position;
+            itemHolder.initImages();
+            if (mNews.get(position).getRead()) {
+                itemHolder.setRead(true);
             }
-            catch (JSONException e) {
-                e.printStackTrace();
+            else {
+                itemHolder.setRead(false);
             }
 
             List<String> imgUrls = getImageUrlsList(imagesUrlStr, ConstantValues.IMAGE_NUM[itemHolder.layoutType.ordinal()]);
@@ -66,7 +70,8 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 public void onClick(View v) {
                     showNews(mNews.get(position));
                     addToKeywords(mNews.get(position));
-                    itemHolder.setRead();
+                    mNews.get(position).setRead(true);
+                    itemHolder.setRead(true);
 
                 }
             });
@@ -77,7 +82,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 footViewHolder.setNetWorkError();
             }
             else {
-                Log.d(TAG, "Set Loading");
+                Log.d(LOG_TAG, "Set Loading");
                 footViewHolder.setLoading();
             }
         }
@@ -94,13 +99,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         if (position == mNews.size()) {
             return ConstantValues.ItemViewType.FOOTER.ordinal();
         }
-        String imgUrlsStr = "[]";
-        try {
-            imgUrlsStr = mNews.get(position).getString("image");
-        }
-        catch (JSONException e) {
-            e.printStackTrace();
-        }
+        String imgUrlsStr = mNews.get(position).getImageUrlStr();
         List<String> imgUrlList = parseJsonList(imgUrlsStr);
         if (imgUrlList.size() == 0) {
             return ConstantValues.ItemViewType.NONE.ordinal();
@@ -137,6 +136,16 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return new NewsItemVH(mContext, v, layoutType);
     }
 
+    private void checkNewsRead(List<NewsItem> news) {
+        NewsCache cache = NewsCache.getInstance();
+        for (NewsItem newsItem : news) {
+            if (cache.contains(mSectionPos, newsItem.getId())) {
+                Log.d(LOG_TAG, "cached news");
+                newsItem.setRead(cache.get(mSectionPos, newsItem.getId()).getRead());
+            }
+        }
+    }
+
     /**
      * 实现加载时候foot view 的状态
      * */
@@ -149,7 +158,8 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
      * 实现新闻分类改变后存入新的数据
      * */
     void setNews(ConstantValues.NetWorkStatus status, List<JSONObject> news) {
-        mNews = news;
+        mNews = NewsItem.convert(news);
+        checkNewsRead(mNews);
         if (status == ConstantValues.NetWorkStatus.NORMAL) {
             netWorkError = false;
             notifyDataSetChanged();
@@ -164,7 +174,8 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
      * */
     void addNews(ConstantValues.NetWorkStatus status, List<JSONObject> news) {
         int changePos = mNews.size();
-        mNews.addAll(news);
+        mNews.addAll(NewsItem.convert(news));
+        checkNewsRead(mNews);
         if (status == ConstantValues.NetWorkStatus.NORMAL) {
             netWorkError = false;
             notifyItemRangeInserted(changePos, news.size());
@@ -179,7 +190,8 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
      * 实现下拉刷新功能
      * */
     void addRefreshNews(ConstantValues.NetWorkStatus status, List<JSONObject> news) {
-        mNews.addAll(0, news);
+        mNews.addAll(0, NewsItem.convert(news));
+        checkNewsRead(mNews);
         if (status == ConstantValues.NetWorkStatus.NORMAL) {
             netWorkError = false;
             if (news.size() > 0) {
@@ -199,16 +211,16 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
      * 展示新闻数据
      * */
 
-    private void showNews(JSONObject news) {
+    private void showNews(NewsItem news) {
         Intent intent = new Intent(mContext, NewsDetailActivity.class);
-        intent.putExtra("data", news.toString());
+        intent.putExtra("data", news.getJsonString());
         intent.putExtra("sectionPos", mSectionPos);
         mContext.startActivity(intent);
     }
 
-    private void addToKeywords(JSONObject news) {
+    private void addToKeywords(NewsItem news) {
         try {
-            JSONArray keywordsArray = news.getJSONArray("keywords");
+            JSONArray keywordsArray = news.getKeywordsArray();
             for (int i = 0; i < keywordsArray.length(); ++i) {
                 JSONObject obj = keywordsArray.getJSONObject(i);
                 UserConfig.getInstance().addKeyWords(obj.getString("word"), obj.getDouble("score"));
