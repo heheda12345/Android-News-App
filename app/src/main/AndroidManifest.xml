@@ -34,7 +34,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.main.News.LargeImageActivity" />
-        <activity android:name=".ui.main.Mine.CollectionActivity" />
+        <activity
+            android:name=".ui.main.Mine.CollectionActivity"
+            android:theme="@style/AppTheme.Slidable"/>
         <activity
             android:name=".ui.main.News.NewsDetailActivity"
             android:label="@string/title_activity_news_detail"

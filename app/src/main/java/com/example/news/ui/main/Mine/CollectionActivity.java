@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import com.example.news.R;
 import com.example.news.collection.CollectionViewModel;
@@ -30,5 +32,14 @@ public class CollectionActivity extends AppCompatActivity {
         CollectionListAdapter collectionListAdapter = new CollectionListAdapter(this, news);
         recyclerView.setAdapter(collectionListAdapter);
         recyclerView.setHasFixedSize(true);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 }

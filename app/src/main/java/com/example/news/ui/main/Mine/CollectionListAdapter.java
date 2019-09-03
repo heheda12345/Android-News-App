@@ -55,12 +55,12 @@ public class CollectionListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             itemHolder.time.setText(news.get(position).getTime());
             itemHolder.mCurrentPosition = position;
             itemHolder.initImages();
-            if (news.get(position).getRead()) {
-                itemHolder.setRead(true);
-            }
-            else {
-                itemHolder.setRead(false);
-            }
+//            if (news.get(position).getRead()) {
+//                itemHolder.setRead(true);
+//            }
+//            else {
+//                itemHolder.setRead(false);
+//            }
             List<Bitmap> bitmaps = news.get(position).getBitmaps();
             int imageNum = Math.min(itemHolder.images.length, bitmaps.size());
             for (int i = 0; i < imageNum; ++i) {
@@ -71,8 +71,8 @@ public class CollectionListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 @Override
                 public void onClick(View v) {
                     showNews(news.get(position));
-                    news.get(position).setRead(true);
-                    itemHolder.setRead(true);
+//                    news.get(position).setRead(true);
+//                    itemHolder.setRead(true);
                 }
             });
         }
