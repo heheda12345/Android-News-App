@@ -94,7 +94,12 @@ public class MineFragment extends Fragment implements Serializable{
         });
 
         /* 仅文字版按钮 */
-        ((Switch)view.findViewById(R.id.switch_text_only)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        Switch textSwitch = view.findViewById(R.id.switch_text_only);
+        if (UserConfig.getInstance().isTextMode())
+            textSwitch.setChecked(true);
+        else
+            textSwitch.setChecked(false);
+        textSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 UserConfig.getInstance().setTextMode(isChecked);
@@ -167,19 +172,30 @@ public class MineFragment extends Fragment implements Serializable{
                 }
             }
         });
+
+        mTTSPersonSelected = UserConfig.getInstance().getTTSVoicer();
         return view;
     }
 
     private void updateLoginVisibility(View view) {
+        ImageView icon = view.findViewById(R.id.loginButton);
         if (!UserConfig.getInstance().isLogin())
-            ((ImageView)view.findViewById(R.id.loginButton)).setImageResource(R.mipmap.login_round);
-        view.findViewById(R.id.userName).setVisibility(UserConfig.getInstance().isLogin() ? View.VISIBLE : View.GONE);
+            icon.setImageResource(R.mipmap.login_round);
+        else {
+            icon.setImageResource(R.mipmap.ic_launcher);
+            File f1 = ServerInteraction.getInstance().getIcon(UserConfig.getInstance().getUserName(),
+                    true, getContext());
+            if (f1 != null)
+                Glide.with(getContext()).load(Uri.fromFile(f1)).into(icon);
+        }
+        TextView name = view.findViewById(R.id.userName);
+        name.setText(UserConfig.getInstance().getUserName());
+        name.setVisibility(UserConfig.getInstance().isLogin() ? View.VISIBLE : View.GONE);
         view.findViewById(R.id.logoutButton).setVisibility(UserConfig.getInstance().isLogin() ? View.VISIBLE : View.GONE);
     }
 
     private void showPersonSelectDialog() {
         final String[] cloudVoicersEntries = getResources().getStringArray(R.array.voicer_cloud_entries);
-        final String[] cloudVoicersValue = getResources().getStringArray(R.array.voicer_cloud_values);
         new AlertDialog.Builder(getView().getContext()).setTitle("选择朗读发音人")
                 .setSingleChoiceItems(cloudVoicersEntries, // 单选框有几项,各是什么名字
                         mTTSPersonSelected, // 默认的选项
@@ -187,8 +203,7 @@ public class MineFragment extends Fragment implements Serializable{
                             public void onClick(DialogInterface dialog,
                                                 int which) { // 点击了哪一项
                                 Log.d(LOG_TAG, "Select " + which);
-                                String voicer = cloudVoicersValue[which];
-                                UserConfig.getInstance().setTTSVoicer(voicer);
+                                UserConfig.getInstance().setTTSVoicer(which);
                                 mTTSPersonSelected = which;
                                 dialog.dismiss();
                             }
@@ -202,13 +217,6 @@ public class MineFragment extends Fragment implements Serializable{
         Log.d(LOG_TAG, String.format("activity result %d %d", requestCode, resultCode));
         ImageView icon = getView().findViewById(R.id.loginButton);
         if (resultCode == LoginActivity.RESULT_LOGIN && requestCode == LOGIN_ACTIVITY) {
-            File f1 = ServerInteraction.getInstance().getIcon(UserConfig.getInstance().getUserName(),
-                    true, getContext());
-            icon.setImageResource(R.mipmap.ic_launcher);
-            if (f1 != null)
-                Glide.with(getContext()).load(Uri.fromFile(f1)).into(icon);
-            TextView name = getView().findViewById(R.id.userName);
-            name.setText(UserConfig.getInstance().getUserName());
             updateLoginVisibility(getView());
         }
         if (resultCode == RESULT_OK && requestCode == REQUEST_CODE_CHOOSE) {

@@ -24,6 +24,9 @@ public interface CollectionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(NewsListItem item);
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insert(ConfigItem item);
+
     @Query("DELETE FROM collection_table")
     void deleteAll();
 
@@ -35,4 +38,9 @@ public interface CollectionDao {
 
     @Query("SELECT * from news_list_table")
     LiveData<List<NewsListItem>> getAllList();
+
+    @Query("SELECT * from config_table")
+    List<ConfigItem> getConfig();
+
+
 }

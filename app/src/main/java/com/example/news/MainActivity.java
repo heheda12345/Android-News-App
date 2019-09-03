@@ -37,6 +37,7 @@ import android.widget.ArrayAdapter;
 import com.example.news.collection.CollectionItem;
 import com.example.news.collection.CollectionRepository;
 import com.example.news.collection.CollectionViewModel;
+import com.example.news.collection.ConfigItem;
 import com.example.news.collection.NewsListItem;
 import com.example.news.collection.NewsSavedItem;
 import com.example.news.data.BitMapCache;
@@ -77,25 +78,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (userConfig.getNightMode()) {
-            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        }
-        else {
-            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        }
-        /* Load User Config*/
-        searchSuggest = new ArrayList<>();
-        searchSuggest.addAll(userConfig.getSearchHistory());
-
-        /* Create Main bottom navigation */
-        bottomNavigationView = findViewById(R.id.main_bottom_navigation);
-        bottomNavigationView.setOnNavigationItemSelectedListener(this);
-
-        /* Create Main View Pager */
-        mainViewPager = findViewById(R.id.main_viewPager);
-        MainPagerAdapter mainPagerAdapter = new MainPagerAdapter(this, getSupportFragmentManager(), 2);
-        mainViewPager.setAdapter(mainPagerAdapter);
-        mainViewPager.addOnPageChangeListener(this);
 
         /*初始化db*/
         CollectionRepository.setApp(getApplication());
@@ -127,11 +109,30 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             }
         });
 
+        UserConfig.getInstance().setContext(getBaseContext(), db);
+
+        if (userConfig.getNightMode()) {
+            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+        else {
+            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+        /* Load User Config*/
+        searchSuggest = new ArrayList<>();
+        searchSuggest.addAll(userConfig.getSearchHistory());
+
+        /* Create Main bottom navigation */
+        bottomNavigationView = findViewById(R.id.main_bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(this);
+
+        /* Create Main View Pager */
+        mainViewPager = findViewById(R.id.main_viewPager);
+        MainPagerAdapter mainPagerAdapter = new MainPagerAdapter(this, getSupportFragmentManager(), 2);
+        mainViewPager.setAdapter(mainPagerAdapter);
+        mainViewPager.addOnPageChangeListener(this);
+
         /*科大讯飞语音合成api初始化*/
         SpeechUtility.createUtility(this, SpeechConstant.APPID +"=5d58fa7c");
-
-        /*UserConfig 需要context*/
-        UserConfig.getInstance().setContext(getBaseContext());
 
         /* Create Tool Bar*/
         toolbar = findViewById(R.id.toolbar);

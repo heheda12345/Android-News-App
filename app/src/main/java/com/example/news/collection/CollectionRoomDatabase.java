@@ -5,7 +5,7 @@ import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
-@Database(entities = {CollectionItem.class, NewsListItem.class, NewsSavedItem.class}, version = 3, exportSchema = false)
+@Database(entities = {CollectionItem.class, NewsListItem.class, NewsSavedItem.class, ConfigItem.class}, version = 4, exportSchema = false)
 public abstract class CollectionRoomDatabase extends RoomDatabase {
 
     public abstract CollectionDao collectionDao();

@@ -1,25 +1,24 @@
 package com.example.news.data;
 
+import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.util.Log;
+
+import com.example.news.collection.CollectionViewModel;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 public class UserConfig {
-
-
-    public String getIconPath() {
-        return iconPath;
-    }
-
-    public void setIconPath(String iconPath) {
-        this.iconPath = iconPath;
-    }
 
     public static class Section {
         private String mSectionName;
@@ -39,13 +38,13 @@ public class UserConfig {
     }
 
     public static class TTS { // 语音合成的配置
-        private String voicer = "xiaoyan";
+        private int voicer = 0;
 
-        String getVoicer() {
+        int getVoicer() {
             return voicer;
         }
 
-        void setVoicer(String voicer) {
+        void setVoicer(int voicer) {
             this.voicer = voicer;
         }
     }
@@ -56,6 +55,7 @@ public class UserConfig {
     private TTS tts;
     private boolean textMode = false;
     private boolean nightMode = false;
+    private boolean commentMode = true;
 
     private List<String> searchHistory;
 
@@ -89,6 +89,7 @@ public class UserConfig {
 
     public void setNightMode(boolean nightMode) {
         this.nightMode = nightMode;
+        saveTodb();
     }
 
     public boolean getNightMode() {
@@ -102,6 +103,7 @@ public class UserConfig {
     public void addSearchHistory(String history) {
         if (!searchHistory.contains(history)) {
             searchHistory.add(history);
+            saveTodb();
         }
     }
 
@@ -134,16 +136,21 @@ public class UserConfig {
         int id = unselectedSectionsIndices.get(pos);
         unselectedSectionsIndices.remove(pos);
         selectSectionsIndices.add(id);
+        saveTodb();
     }
 
     public void removeSection(int pos) {
         int id = selectSectionsIndices.get(pos);
         selectSectionsIndices.remove(pos);
         unselectedSectionsIndices.add(id);
+        saveTodb();
     }
 
-    public String getTTSVoicer() { return tts.getVoicer(); }
-    public void setTTSVoicer(String voicer) { tts.setVoicer(voicer);}
+    public int getTTSVoicer() { return tts.getVoicer(); }
+    public void setTTSVoicer(int voicer) {
+        tts.setVoicer(voicer);
+        saveTodb();
+    }
 
     public boolean isTextMode() {
         return textMode;
@@ -151,12 +158,14 @@ public class UserConfig {
 
     public void setTextMode(boolean textMode) {
         this.textMode = textMode;
+        saveTodb();
     }
 
     public static String getHostName() {
         return "95.179.200.164";
     }
     public static int getHostPort() {return 5000;}
+
     public static boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = ((ConnectivityManager) getInstance().context.getSystemService(Context.CONNECTIVITY_SERVICE));
         return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
@@ -169,6 +178,7 @@ public class UserConfig {
 
     public void setUserName(String userName) {
         this.userName = userName;
+        saveTodb();
     }
 
     public boolean isLogin() {
@@ -179,8 +189,10 @@ public class UserConfig {
         return context;
     }
 
-    public void setContext(Context context) {
+    public void setContext(Context context, CollectionViewModel database) {
         this.context = context;
+        db = database;
+        loadFromdb();
     }
 
     private Context context;
@@ -207,6 +219,7 @@ public class UserConfig {
      * */
     public void addKeyWords(String keyWord, double score) {
         keyWordsSet.put(keyWord, score);
+        saveTodb();
     }
 
     public List<Map.Entry<String, Double>> getKeyWords(int num) {
@@ -234,5 +247,113 @@ public class UserConfig {
             return keyWordsLists.subList(0, Math.min(num, keyWordsLists.size()));
         }
     }
-    private String iconPath="";
+
+    public boolean isCommentMode() {
+        return commentMode;
+    }
+
+    public void setCommentMode(boolean commentMode) {
+        this.commentMode = commentMode;
+        saveTodb();
+    }
+
+    private CollectionViewModel db;
+
+    public String toJson() {
+        try {
+            JSONObject js = new JSONObject();
+
+            JSONArray selected = new JSONArray();
+            for (Integer i: selectSectionsIndices) {
+                selected.put(i.intValue());
+            }
+            js.put("selected", selected);
+
+            JSONArray unselected = new JSONArray();
+            for (Integer i: unselectedSectionsIndices) {
+                unselected.put(i.intValue());
+            }
+            js.put("unselected", unselected);
+
+            js.put("tts", tts.getVoicer());
+            js.put("textMode", textMode);
+            js.put("nightMode", nightMode);
+            js.put("commentMode", commentMode);
+
+            JSONArray sh = new JSONArray();
+            for (String s: searchHistory)
+                sh.put(s);
+            js.put("searchHistory", sh);
+
+            JSONObject keywords = new JSONObject();
+            for (Map.Entry<String, Double> x: keyWordsSet.entrySet()) {
+                keywords.put(x.getKey(), x.getValue());
+            }
+            js.put("keywords", keywords);
+
+            js.put("userName", userName);
+            return js.toString();
+        } catch (Exception e) {
+            return (new JSONObject()).toString();
+        }
+    }
+
+    public void parseJson(String jsonString) { // 这里头不要用set*
+        Log.d("UserConfig", "loaded: " + jsonString);
+        if (jsonString == null)
+            return;
+        try {
+            JSONObject obj = new JSONObject(jsonString);
+
+            List<Integer> selected = new ArrayList<>();
+            JSONArray js_selected = obj.getJSONArray("selected");
+            for (int i=0; i < js_selected.length(); i++)
+                selected.add(js_selected.getInt(i));
+            selectSectionsIndices = selected;
+
+            List<Integer> unselected = new ArrayList<>();
+            JSONArray js_unselected = obj.getJSONArray("unselected");
+            for (int i=0; i<js_unselected.length(); i++)
+                unselected.add(js_unselected.getInt(i));
+            unselectedSectionsIndices = unselected;
+
+            tts.voicer = obj.getInt("tts");
+            textMode = obj.getBoolean("textMode");
+            nightMode = obj.getBoolean("nightMode");
+            commentMode = obj.getBoolean("commentMode");
+
+            List<String> history = new ArrayList<>();
+            JSONArray js_history = obj.getJSONArray("searchHistory");
+            for (int i=0; i<js_history.length(); i++) {
+                history.add(js_history.getString(i));
+            }
+            searchHistory = history;
+
+            HashMap<String, Double> keywords = new HashMap<>();
+            JSONObject js_keywords = obj.getJSONObject("keywords");
+            Iterator iterator = js_keywords.keys();
+            while(iterator.hasNext()){
+                String key = (String) iterator.next();
+                Double value = js_keywords.getDouble(key);
+                keywords.put(key, value);
+            }
+            keyWordsSet = keywords;
+
+            userName = obj.getString("userName");
+        } catch (Exception e) {
+            Log.e("UserConfig", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void saveTodb() {
+        String saved = toJson();
+        Log.d("UserConfig", "saved: "+saved);
+        db.updateSetting(toJson());
+    }
+
+    public void loadFromdb() {
+        parseJson(db.getSetting());
+    }
+
 }

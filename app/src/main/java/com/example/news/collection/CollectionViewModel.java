@@ -3,6 +3,7 @@ package com.example.news.collection;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.example.news.support.NewsItem;
@@ -20,6 +21,7 @@ public class CollectionViewModel extends AndroidViewModel {
     private LiveData<List<CollectionItem>> mAllItems;
     private LiveData<List<NewsSavedItem>> mAllNews;
     private LiveData<List<NewsListItem>> mAllList;
+    private List<ConfigItem> mConfig;
 
     public CollectionViewModel (Application application) {
         super(application);
@@ -27,6 +29,7 @@ public class CollectionViewModel extends AndroidViewModel {
         mAllItems = mRepository.getAllItems();
         mAllNews = mRepository.getAllNews();
         mAllList = mRepository.getAllList();
+        mConfig = mRepository.getConfig();
     }
 
     public LiveData<List<CollectionItem>> getAllItems() { return mAllItems; }
@@ -95,5 +98,17 @@ public class CollectionViewModel extends AndroidViewModel {
         for (int i=0; i<items.size(); i++)
             ids[i] = items.get(i).getNewsID();
         saveNewsList("CCC", ids);
+    }
+
+    public void updateSetting(@NonNull String setting) {
+        mRepository.insert(new ConfigItem(setting));
+    }
+
+    public String getSetting() {
+        List<ConfigItem> items = mConfig;
+        if (items == null || items.size() == 0)
+            return null;
+        else
+            return items.get(0).getSetting();
     }
 }

@@ -171,7 +171,8 @@ public class TtsButton extends AppCompatImageButton {
 
     private void setParam(){
         mTts.setParameter(SpeechConstant.PARAMS, null);
-        mTts.setParameter(SpeechConstant.VOICE_NAME, UserConfig.getInstance().getTTSVoicer());
+        final String[] cloudVoicersValue = getResources().getStringArray(R.array.voicer_cloud_values);
+        mTts.setParameter(SpeechConstant.VOICE_NAME, cloudVoicersValue[UserConfig.getInstance().getTTSVoicer()]);
     }
 
     protected void destroy() {
