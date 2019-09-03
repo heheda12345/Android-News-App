@@ -132,6 +132,19 @@ public class MineFragment extends Fragment implements Serializable{
             }
         });
 
+        /* 开启评论按钮 */
+        Switch commentSwitch = view.findViewById(R.id.load_comment);
+        if (UserConfig.getInstance().isCommentMode())
+            commentSwitch.setChecked(true);
+        else
+            commentSwitch.setChecked(false);
+        commentSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                UserConfig.getInstance().setCommentMode(isChecked);
+            }
+        });
+
         /* 退出登录按钮 */
         view.findViewById(R.id.logoutButton).setOnClickListener(new View.OnClickListener() {
             @Override

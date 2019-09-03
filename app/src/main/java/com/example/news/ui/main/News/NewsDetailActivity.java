@@ -339,11 +339,11 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
             videos.add(videoView);
         }
 
-        TextView debugView = new TextView(this);
-        debugView.setTextIsSelectable(true);
-        debugView.setText(String.format("Debug:\n%s", getIntent().getStringExtra("data")));
-        debugView.setTextIsSelectable(true);
-        container.addView(debugView);
+//        TextView debugView = new TextView(this);
+//        debugView.setTextIsSelectable(true);
+//        debugView.setText(String.format("Debug:\n%s", getIntent().getStringExtra("data")));
+//        debugView.setTextIsSelectable(true);
+//        container.addView(debugView);
 
         commentDivider = new TextView(this);
         commentDivider.setText("评论区");
@@ -402,6 +402,8 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void loadComment() {
+        if (!UserConfig.getInstance().isCommentMode())
+            return;
         JSONArray comments = ServerInteraction.getInstance().getComment(newsID);
         Log.d(LOG_TAG, comments.toString());
         for (View v: commentViews)
