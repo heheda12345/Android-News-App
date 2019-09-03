@@ -8,6 +8,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -16,6 +17,7 @@ import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,8 +27,10 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
 import com.example.news.R;
@@ -45,6 +49,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -180,6 +185,10 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
             if (url.length() > 5) {
                 imgUrls.addAll(Arrays.asList(url.substring(1, url.length()-1).split(",")));
             }
+            url = jsonNews.getString("video");
+            if (url.length() > 5) {
+                videoUrls.add(url);
+            }
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage());
             e.printStackTrace();
@@ -306,6 +315,24 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
                 container.addView(imageViews.get(i));
             }
         }
+
+        // videoView
+        for (String url: videoUrls) {
+            VideoView videoView = new VideoView(this);
+            videoView.setVideoURI(Uri.parse(url));
+            LinearLayout.LayoutParams layoutParams =
+                    new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 200);
+            layoutParams.setMargins(10, 10, 10, 10);
+            layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+            videoView.setLayoutParams(layoutParams);
+            MediaController mediaController = new MediaController(this);
+            videoView.setMediaController(mediaController);
+            mediaController.setMediaPlayer(videoView);
+            videoView.seekTo(1);
+            container.addView(videoView);
+            videos.add(videoView);
+        }
+
         TextView debugView = new TextView(this);
         debugView.setTextIsSelectable(true);
         debugView.setText(String.format("Debug:\n%s", getIntent().getStringExtra("data")));
@@ -460,6 +487,7 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
     private String text = "";
     private ArrayList<String> content = new ArrayList<>();
     private ArrayList<String> imgUrls = new ArrayList<>();
+    private ArrayList<String> videoUrls = new ArrayList<>();
     private String newsID = "";
     private String newsSource = "";
     private String newsTime = "";
@@ -474,4 +502,5 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
     private TextView commentDivider;
     private LinearLayout container;
     private ArrayList<View> commentViews = new ArrayList<>();
+    private ArrayList<VideoView> videos = new ArrayList<>();
 }

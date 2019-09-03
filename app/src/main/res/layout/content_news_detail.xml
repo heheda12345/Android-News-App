@@ -23,6 +23,11 @@
             android:orientation="vertical"
             android:paddingBottom="80sp"
             android:showDividers="middle">
+
+            <VideoView
+                android:id="@+id/videoView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
         </LinearLayout>
     </ScrollView>
 
