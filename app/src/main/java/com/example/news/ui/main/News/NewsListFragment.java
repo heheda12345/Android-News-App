@@ -38,7 +38,6 @@ public class NewsListFragment extends Fragment {
     private static final String ARG_SECTION_POS = "section_number";
     private static final String ARG_SECTION_NAME = "section_name";
     private static final String ARG_INIT_ON_CREATE = "init_on_create";
-    private static final String TAG = "News List Fragment";
     private String mSectionName = "";
     private int mSectionPos = 0; // default section is "suggest section"
 
@@ -81,18 +80,21 @@ public class NewsListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mSectionName = ConstantValues.ALL_SECTIONS[0];
-        if (getArguments() != null) {
-            mSectionName = getArguments().getString(ARG_SECTION_NAME);
-            mSectionPos = getArguments().getInt(ARG_SECTION_POS);
-            mInitOnCreate = getArguments().getBoolean(ARG_INIT_ON_CREATE);
-        }
-        /*构造 NewPageViewModel 用于处理数据*/
-        mNewsPageViewModel = ViewModelProviders.of(this).get(NewsPageViewModel.class);
+        Log.d(LOG_TAG, mSectionName);
+        if (firstCreate) {
+            mSectionName = ConstantValues.ALL_SECTIONS[0];
+            if (getArguments() != null) {
+                mSectionName = getArguments().getString(ARG_SECTION_NAME);
+                mSectionPos = getArguments().getInt(ARG_SECTION_POS);
+                mInitOnCreate = getArguments().getBoolean(ARG_INIT_ON_CREATE);
+            }
+            /*构造 NewPageViewModel 用于处理数据*/
+            mNewsPageViewModel = ViewModelProviders.of(this).get(NewsPageViewModel.class);
 
-        /* 构造News list Adapter 用于新闻列表*/
-        mNewsListAdapter = new NewsListAdapter(getContext(), mSectionPos);
-        mEarliestDate = getCurrentTime();
+            /* 构造News list Adapter 用于新闻列表*/
+            mNewsListAdapter = new NewsListAdapter(getContext(), mSectionPos);
+            mEarliestDate = getCurrentTime();
+        }
     }
 
     @Override
@@ -102,7 +104,6 @@ public class NewsListFragment extends Fragment {
 
         /* 每次改变section时，重新请求一次数据*/
         if (mInitOnCreate && firstCreate) {
-            Log.d(LOG_TAG, "fitst create");
             setNews("", mSectionName);
             firstCreate = false;
         }
@@ -128,7 +129,6 @@ public class NewsListFragment extends Fragment {
         mRecyclerView.addOnScrollListener(new OnLoadMoreListener() {
             @Override
             protected void onLoading(int countNum, int lastNum) {
-                Log.d("Adapter List Fragment", "Loading " + mEarliestDate);
                 mPage++;
                 mNewsListAdapter.setLoading();
                 setNews(mKeyWord, "", mEarliestDate, mSectionName, ConstantValues.DEFAULT_NEWS_SIZE);

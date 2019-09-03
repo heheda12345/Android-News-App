@@ -11,9 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.example.news.R;
+import com.example.news.data.UserConfig;
 import com.example.news.support.ImageCrawler;
 
 import java.util.ArrayList;
@@ -28,6 +30,12 @@ public class LargeImageActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (UserConfig.getInstance().getNightMode()) {
+            setDark();
+        }
+        else {
+            setBright();
+        }
         setContentView(R.layout.activity_large_image);
         viewPager = findViewById(R.id.viewPager);
         imageViews = new ArrayList<>();
@@ -69,5 +77,19 @@ public class LargeImageActivity extends Activity {
             imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
             imageViews.add(imageView);
         }
+    }
+
+    public void setBright() {
+        WindowManager.LayoutParams p = getWindow().getAttributes();
+        p.alpha = 1.0f;
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        getWindow().setAttributes(p);
+    }
+
+    public void setDark() {
+        WindowManager.LayoutParams p = getWindow().getAttributes();
+        p.alpha = 0.3f;
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        getWindow().setAttributes(p);
     }
 }

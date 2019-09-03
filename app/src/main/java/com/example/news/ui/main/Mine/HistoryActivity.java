@@ -1,23 +1,23 @@
 package com.example.news.ui.main.Mine;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 
 import com.example.news.R;
-import com.example.news.collection.CollectionViewModel;
+import com.example.news.data.NewsCache;
 import com.example.news.data.UserConfig;
 import com.example.news.support.NewsItem;
 
 import java.util.List;
 
-public class CollectionActivity extends AppCompatActivity {
-    private CollectionViewModel db;
+public class HistoryActivity extends AppCompatActivity {
+    private NewsCache newsCache;
     private List<NewsItem> news;
     private RecyclerView recyclerView;
 
@@ -31,12 +31,12 @@ public class CollectionActivity extends AppCompatActivity {
         else {
             setBright();
         }
-        db = ViewModelProviders.of(this).get(CollectionViewModel.class);
-        news = db.getNewsList("CCC");
+        newsCache = NewsCache.getInstance();
+        news = newsCache.getAllNews();
         recyclerView = findViewById(R.id.collection_recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
-        SimpleNewsListAdapter simpleNewsListAdapter = new SimpleNewsListAdapter(this, news, MineFragment.NEWS_LIST_COLLECTION);
+        SimpleNewsListAdapter simpleNewsListAdapter = new SimpleNewsListAdapter(this, news, MineFragment.NEWS_LIST_HISTORY);
         recyclerView.setAdapter(simpleNewsListAdapter);
         recyclerView.setHasFixedSize(true);
         Toolbar toolbar = findViewById(R.id.toolbar);

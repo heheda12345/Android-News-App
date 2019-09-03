@@ -32,6 +32,7 @@ import com.example.news.collection.CollectionViewModel;
 import com.example.news.data.UserConfig;
 import com.example.news.support.NewsItem;
 import com.example.news.support.ServerInteraction;
+import com.example.news.ui.main.Items.CollectionFootViewHolder;
 import com.soundcloud.android.crop.Crop;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
@@ -62,9 +63,13 @@ public class MineFragment extends Fragment implements Serializable{
     private static String LOG_TAG = MineFragment.class.getSimpleName();
     public static String LOGIN_LISTENER_ARG = "login";
     public static String REGISTER_LISTENER_ARG = "register";
+    public static final String NEWS_LIST_HISTORY = "history";
+    public static final String NEWS_LIST_COLLECTION = "collection";
 
     LogedFragment logedFragment;
     NotLogFragment notLogFragment;
+
+    CollectionViewModel db;
 
     public MineFragment() {
         // Required empty public constructor
@@ -117,18 +122,21 @@ public class MineFragment extends Fragment implements Serializable{
         nightModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                MainActivity activity = (MainActivity)getContext();
                 if (isChecked) {
                     Log.d(LOG_TAG, "change mode");
                     UserConfig.getInstance().setNightMode(true);
+                    activity.setDark();
                 }
                 else {
                     UserConfig.getInstance().setNightMode(false);
+                    activity.setBright();
                 }
-                Activity activity = (Activity)getView().getContext();
-                Intent intent = new Intent(activity, MainActivity.class);
-                activity.startActivity(intent);
-                activity.overridePendingTransition(R.anim.in_anim, R.anim.out_anim);
-                activity.finish();
+//                Activity activity = (Activity)getView().getContext();
+//                Intent intent = new Intent(activity, MainActivity.class);
+//                activity.startActivity(intent);
+//                activity.overridePendingTransition(R.anim.in_anim, R.anim.out_anim);
+//                activity.finish();
             }
         });
 
@@ -183,6 +191,33 @@ public class MineFragment extends Fragment implements Serializable{
                     intent.setClass(MineFragment.this.getContext(), LoginActivity.class);
                     MineFragment.this.startActivityForResult(intent, LOGIN_ACTIVITY);
                 }
+            }
+        });
+
+        /* 我的收藏 */
+        view.findViewById(R.id.collection_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), CollectionActivity.class);
+                getContext().startActivity(intent);
+            }
+        });
+
+        /* 历史记录 */
+        view.findViewById(R.id.history_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), HistoryActivity.class);
+                getContext().startActivity(intent);
+            }
+        });
+
+        /* 关于我们 */
+        view.findViewById(R.id.about_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), AboutActivity.class);
+                getContext().startActivity(intent);
             }
         });
 

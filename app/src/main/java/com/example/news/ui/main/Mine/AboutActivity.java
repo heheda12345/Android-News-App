@@ -1,44 +1,29 @@
 package com.example.news.ui.main.Mine;
 
-import android.arch.lifecycle.ViewModelProviders;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
 import com.example.news.R;
-import com.example.news.collection.CollectionViewModel;
 import com.example.news.data.UserConfig;
-import com.example.news.support.NewsItem;
 
-import java.util.List;
-
-public class CollectionActivity extends AppCompatActivity {
-    private CollectionViewModel db;
-    private List<NewsItem> news;
-    private RecyclerView recyclerView;
-
+public class AboutActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_collection);
         if (UserConfig.getInstance().getNightMode()) {
             setDark();
         }
         else {
             setBright();
         }
-        db = ViewModelProviders.of(this).get(CollectionViewModel.class);
-        news = db.getNewsList("CCC");
-        recyclerView = findViewById(R.id.collection_recyclerView);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        SimpleNewsListAdapter simpleNewsListAdapter = new SimpleNewsListAdapter(this, news, MineFragment.NEWS_LIST_COLLECTION);
-        recyclerView.setAdapter(simpleNewsListAdapter);
-        recyclerView.setHasFixedSize(true);
+
+        setContentView(R.layout.activity_about);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -48,6 +33,7 @@ public class CollectionActivity extends AppCompatActivity {
                 finish();
             }
         });
+//        ((ImageView)findViewById(R.id.gyx)).setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.gyx));
     }
 
     public void setBright() {

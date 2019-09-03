@@ -8,7 +8,7 @@
     android:paddingTop="2dp"
     android:paddingBottom="2dp"
     android:paddingStart="5dp"
-    android:paddingEnd="5dp"
+    android:paddingEnd="10dp"
     android:layout_width="match_parent"
     android:layout_height="0sp"/>
 

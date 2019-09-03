@@ -34,7 +34,18 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.main.News.LargeImageActivity" />
-        <activity android:name=".ui.main.Mine.CollectionActivity" />
+        <activity
+            android:name=".ui.main.Mine.CollectionActivity"
+            android:theme="@style/AppTheme.Slidable"
+            android:label="@string/collection_text"/>
+        <activity
+            android:name=".ui.main.Mine.HistoryActivity"
+            android:theme="@style/AppTheme.Slidable"
+            android:label="@string/history_text"/>
+        <activity
+            android:name=".ui.main.Mine.AboutActivity"
+            android:theme="@style/AppTheme.Slidable"
+            android:label="@string/about_us_text"/>
         <activity
             android:name=".ui.main.News.NewsDetailActivity"
             android:label="@string/title_activity_news_detail"

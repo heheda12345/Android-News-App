@@ -107,7 +107,10 @@
     <string name="night_mode_text">夜间模式</string>
     <string name="logout_text">退出登录</string>
     <string name="collection_text">我的收藏</string>
-    <string name="history_text">历史纪录</string>
+    <string name="history_text">历史记录</string>
     <string name="username_text">用户名：</string>
     <string name="password_text">密码：</string>
+    <string name="no_collection_text">还没有收藏哦！</string>
+    <string name="no_history_text">还没有历史纪录哦！</string>
+    <string name="about_us_text">关于我们</string>
 </resources>
