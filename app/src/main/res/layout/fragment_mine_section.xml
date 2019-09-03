@@ -34,7 +34,6 @@
             android:id="@+id/userName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="test"
             android:textSize="30sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -67,6 +66,7 @@
         android:textSize="16sp"/>
 
     <Button
+        android:id="@+id/collection_button"
         android:text="@string/collection_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -82,7 +82,7 @@
         android:background="@color/white"/>
 
     <Button
-        android:id="@+id/history"
+        android:id="@+id/history_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/history_text"

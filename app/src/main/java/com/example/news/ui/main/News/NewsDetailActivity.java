@@ -70,7 +70,7 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
 
         mNewsCache = NewsCache.getInstance();
         rawNews = getIntent().getStringExtra("data");
-        mSectionPos = getIntent().getIntExtra("sectionPos", 0);
+        mSectionPos = getIntent().getIntExtra("sectionPos", -1);
 
         parseJson();
         container = findViewById(R.id.container);
@@ -194,7 +194,7 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
         ArrayList<Boolean> imageViewInserted = new ArrayList<>();
         if (!UserConfig.getInstance().isTextMode()) {
             boolean fromCache = false;
-            if (mNewsCache.contains(mSectionPos, newsID)) {
+            if (mSectionPos >= 0 && mNewsCache.contains(mSectionPos, newsID)) {
                 fromCache = true;
                 bitmaps = mNewsCache.get(mSectionPos, newsID).getBitmaps();
             }
@@ -254,7 +254,7 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
                 imageViewInserted.add(false);
             }
 
-            if (!fromCache) {
+            if (!fromCache && mSectionPos >= 0) {
                 storeCache(bitmaps);
             }
         }

@@ -110,4 +110,5 @@
     <string name="history_text">历史纪录</string>
     <string name="username_text">用户名：</string>
     <string name="password_text">密码：</string>
+    <string name="no_collection_text">还没有收藏哦！</string>
 </resources>

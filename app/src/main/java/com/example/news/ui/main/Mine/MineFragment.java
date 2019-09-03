@@ -66,6 +66,8 @@ public class MineFragment extends Fragment implements Serializable{
     LogedFragment logedFragment;
     NotLogFragment notLogFragment;
 
+    CollectionViewModel db;
+
     public MineFragment() {
         // Required empty public constructor
     }
@@ -165,6 +167,15 @@ public class MineFragment extends Fragment implements Serializable{
                     intent.setClass(MineFragment.this.getContext(), LoginActivity.class);
                     MineFragment.this.startActivityForResult(intent, LOGIN_ACTIVITY);
                 }
+            }
+        });
+
+        /* 我的收藏 */
+        view.findViewById(R.id.collection_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), CollectionActivity.class);
+                getContext().startActivity(intent);
             }
         });
         return view;

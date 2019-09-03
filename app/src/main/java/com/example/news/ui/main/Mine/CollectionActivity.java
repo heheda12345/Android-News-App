@@ -7,14 +7,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.example.news.R;
-import com.example.news.collection.CollectionItem;
 import com.example.news.collection.CollectionViewModel;
+import com.example.news.support.NewsItem;
 
 import java.util.List;
 
 public class CollectionActivity extends AppCompatActivity {
-    private CollectionViewModel collectionViewModel;
-    private List<CollectionItem> news;
+    private CollectionViewModel db;
+    private List<NewsItem> news;
     private RecyclerView recyclerView;
 
     @Override
@@ -22,11 +22,13 @@ public class CollectionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_collection);
 
-        collectionViewModel = ViewModelProviders.of(this).get(CollectionViewModel.class);
-        news = collectionViewModel.getAllItems().getValue();
+        db = ViewModelProviders.of(this).get(CollectionViewModel.class);
+        news = db.getNewsList("CCC");
         recyclerView = findViewById(R.id.collection_recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
-
+        CollectionListAdapter collectionListAdapter = new CollectionListAdapter(this, news);
+        recyclerView.setAdapter(collectionListAdapter);
+        recyclerView.setHasFixedSize(true);
     }
 }
