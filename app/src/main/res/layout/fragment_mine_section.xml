@@ -11,7 +11,7 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="150dp">
+        android:layout_height="170dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
             xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -45,20 +45,26 @@
         android:id="@+id/login_fragment_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray"/>
     <Switch
         android:id="@+id/switch_text_only"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/save_data_text"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:layout_marginTop="20dp"
         android:textSize="16sp"/>
 
     <Switch
         android:id="@+id/night_mode"
         android:text="@string/night_mode_text"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="10dp"
@@ -71,6 +77,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:textSize="16sp"
+        android:gravity="start|center_vertical"
+        android:drawableEnd="@drawable/ic_right"
         android:background="@color/white"/>
 
     <Button
@@ -79,6 +90,11 @@
         android:layout_height="wrap_content"
         android:text="@string/announcer_text"
         android:layout_marginTop="5dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:textSize="16sp"
+        android:gravity="start|center_vertical"
+        android:drawableEnd="@drawable/ic_right"
         android:background="@color/white"/>
 
     <Button
@@ -87,6 +103,24 @@
         android:layout_height="wrap_content"
         android:text="@string/history_text"
         android:layout_marginTop="5dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:textSize="16sp"
+        android:gravity="start|center_vertical"
+        android:drawableEnd="@drawable/ic_right"
+        android:background="@color/white"/>
+
+    <Button
+        android:id="@+id/about_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/about_us_text"
+        android:layout_marginTop="5dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:textSize="16sp"
+        android:gravity="start|center_vertical"
+        android:drawableEnd="@drawable/ic_right"
         android:background="@color/white"/>
 
     <Button
@@ -94,6 +128,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/logout_text"
+        android:textSize="16sp"
         android:layout_marginTop="30dp"
         android:textColor="@color/red"
         android:background="@color/white"/>

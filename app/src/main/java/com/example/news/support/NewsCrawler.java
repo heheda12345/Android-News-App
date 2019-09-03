@@ -43,7 +43,10 @@ public class NewsCrawler extends Thread {
     private boolean isDuplicate(JSONObject obj) {
         for (JSONObject newsObj : newsResp) {
             try {
-                if (newsObj.getString("newsID").equals(obj.getString("newsID"))) {
+                if (newsObj.getString("newsID").equals(obj.getString("newsID")) ||
+                        newsObj.getString("title").equals(obj.getString("title")) ||
+                        newsObj.getString("image").equals(obj.getString("image"))
+                ) {
                     return true;
                 }
 

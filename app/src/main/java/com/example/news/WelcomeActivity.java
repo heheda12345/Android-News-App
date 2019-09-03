@@ -23,6 +23,8 @@ public class WelcomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
+        Log.d("Welcome", "in welcome");
+
         boolean waiting = false;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
@@ -39,10 +41,24 @@ public class WelcomeActivity extends AppCompatActivity {
         grantUriPermission("com.android.providers.media.MediaProvider",
                 Uri.parse("content://media/external/file"), Intent.FLAG_GRANT_READ_URI_PERMISSION);
         if (!waiting) {
-            Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
-            startActivity(intent);
-            finish();
+            Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        sleep(3000);
+                        Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                    catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            };
+            thread.start();
         }
+
     }
 
     @Override

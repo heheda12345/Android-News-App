@@ -27,6 +27,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.support.v7.widget.SearchView;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
@@ -69,10 +71,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (userConfig.getNightMode()) {
-            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            setDark();
         }
         else {
-            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            setBright();
         }
         /* Load User Config*/
         searchSuggest = new ArrayList<>();
@@ -131,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         /* Create Popup Window*/
         listPopupWindow = new ListPopupWindow(MainActivity.this);
+        listPopupWindow.setHorizontalOffset(1000);
         listPopupWindow.setAdapter(suggestArrayAdapter);
         listPopupWindow.setAnchorView(toolbar);
         listPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -156,7 +159,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         getMenuInflater().inflate(R.menu.menu_main, menu);
         searchView = (SearchView) menu.findItem(R.id.search_item).getActionView();
         searchView.setQueryHint(getString(R.string.search_text));
-
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
@@ -238,6 +240,22 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     @Override
     public void onPageScrollStateChanged(int state) {
 
+    }
+
+    public void setBright() {
+        Log.d(LOG_TAG, "set bright");
+        WindowManager.LayoutParams p = getWindow().getAttributes();
+        p.alpha = 1.0f;
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        getWindow().setAttributes(p);
+    }
+
+    public void setDark() {
+        Log.d(LOG_TAG, "set dark");
+        WindowManager.LayoutParams p = getWindow().getAttributes();
+        p.alpha = 0.3f;
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        getWindow().setAttributes(p);
     }
 
     CollectionViewModel db;

@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -67,7 +68,12 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_news_detail);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        if (UserConfig.getInstance().getNightMode()) {
+            setDark();
+        }
+        else {
+            setBright();
+        }
         mNewsCache = NewsCache.getInstance();
         rawNews = getIntent().getStringExtra("data");
         mSectionPos = getIntent().getIntExtra("sectionPos", -1);
@@ -452,6 +458,22 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
             return;
         }
         super.onBackPressed();
+    }
+
+    public void setBright() {
+        Log.d(LOG_TAG, "set bright");
+        WindowManager.LayoutParams p = getWindow().getAttributes();
+        p.alpha = 1.0f;
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        getWindow().setAttributes(p);
+    }
+
+    public void setDark() {
+        Log.d(LOG_TAG, "set dark");
+        WindowManager.LayoutParams p = getWindow().getAttributes();
+        p.alpha = 0.3f;
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        getWindow().setAttributes(p);
     }
 
     private NewsCache mNewsCache;

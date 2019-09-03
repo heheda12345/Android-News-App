@@ -46,7 +46,7 @@ public class SuggestNewsListFragment extends NewsListFragment {
         mRecyclerView.addOnScrollListener(new OnLoadMoreListener() {
             @Override
             protected void onLoading(int countNum, int lastNum) {
-                Log.d("Adapter List Fragment", "Loading " + mEarliestDate);
+                Log.d("Adapter List Fragment", "loading " + mEarliestDate);
                 mPage++;
                 mNewsListAdapter.setLoading();
                 setSuggestNews("", mEarliestDate);

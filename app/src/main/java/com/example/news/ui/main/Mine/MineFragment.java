@@ -117,18 +117,21 @@ public class MineFragment extends Fragment implements Serializable{
         nightModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                MainActivity activity = (MainActivity)getContext();
                 if (isChecked) {
                     Log.d(LOG_TAG, "change mode");
                     UserConfig.getInstance().setNightMode(true);
+                    activity.setDark();
                 }
                 else {
                     UserConfig.getInstance().setNightMode(false);
+                    activity.setBright();
                 }
-                Activity activity = (Activity)getView().getContext();
-                Intent intent = new Intent(activity, MainActivity.class);
-                activity.startActivity(intent);
-                activity.overridePendingTransition(R.anim.in_anim, R.anim.out_anim);
-                activity.finish();
+//                Activity activity = (Activity)getView().getContext();
+//                Intent intent = new Intent(activity, MainActivity.class);
+//                activity.startActivity(intent);
+//                activity.overridePendingTransition(R.anim.in_anim, R.anim.out_anim);
+//                activity.finish();
             }
         });
 
@@ -187,6 +190,15 @@ public class MineFragment extends Fragment implements Serializable{
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), HistoryActivity.class);
+                getContext().startActivity(intent);
+            }
+        });
+
+        /* 关于我们 */
+        view.findViewById(R.id.about_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), AboutActivity.class);
                 getContext().startActivity(intent);
             }
         });
