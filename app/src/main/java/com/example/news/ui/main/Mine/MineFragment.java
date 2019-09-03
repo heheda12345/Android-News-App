@@ -190,6 +190,15 @@ public class MineFragment extends Fragment implements Serializable{
                 getContext().startActivity(intent);
             }
         });
+
+        /* 关于我们 */
+        view.findViewById(R.id.about_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), AboutActivity.class);
+                getContext().startActivity(intent);
+            }
+        });
         return view;
     }
 
