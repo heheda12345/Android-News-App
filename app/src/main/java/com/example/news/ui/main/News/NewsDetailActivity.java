@@ -56,6 +56,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import am.widget.smoothinputlayout.SmoothInputLayout;
@@ -69,7 +70,7 @@ import static java.lang.Math.max;
 public class NewsDetailActivity extends AppCompatActivity implements View.OnClickListener,
         View.OnTouchListener{
     private static final String LOG_TAG =
-            NewsCrawler.class.getSimpleName();
+            NewsDetailActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -429,9 +430,18 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
                 if (UserConfig.getInstance().isTextMode()) {
                     iv.setVisibility(View.GONE);
                 } else {
-                    File f1 = ServerInteraction.getInstance().getIcon(name,false, getBaseContext());
-                    if (f1 != null)
-                        Glide.with(getBaseContext()).load(Uri.fromFile(f1)).into(iv);
+                    File f1;
+                    if (headMap.containsKey(name)) {
+                        f1 = headMap.get(name);
+                        Log.d(LOG_TAG, "skip "+ name);
+                    } else {
+                        Log.d(LOG_TAG, "download "+ name);
+                        f1 = ServerInteraction.getInstance().getIcon(name,false, getBaseContext());
+                        if (f1 != null) {
+                            headMap.put(name, f1);
+                        }
+                    }
+                    Glide.with(getBaseContext()).load(Uri.fromFile(f1)).into(iv);
                 }
             } catch (JSONException e) {
                 Log.e(LOG_TAG, e.getMessage());
@@ -523,4 +533,5 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
     private LinearLayout container;
     private ArrayList<View> commentViews = new ArrayList<>();
     private ArrayList<VideoView> videos = new ArrayList<>();
+    HashMap<String, File> headMap = new HashMap<>();
 }
