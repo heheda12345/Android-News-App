@@ -148,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         ft.replace(R.id.fragment_container, searchResultFragment);
         ft.detach(searchResultFragment);
         ft.commit();
+        System.setProperty("sun.io.serialization.extendedDebugInfo", "true");
     }
 
     @Override

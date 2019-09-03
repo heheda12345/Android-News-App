@@ -20,8 +20,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.news.MainActivity;
@@ -36,7 +38,11 @@ import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.engine.impl.GlideEngine;
 import com.zhihu.matisse.filter.Filter;
 
+import org.w3c.dom.Text;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.ObjectOutputStream;
 import java.net.URI;
 
 import java.io.Serializable;
@@ -50,14 +56,13 @@ import static com.example.news.support.ServerInteraction.getInstance;
  * Use the {@link MineFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MineFragment extends Fragment {
+public class MineFragment extends Fragment implements Serializable{
     private static final int REQUEST_CODE_CHOOSE = 977;
+    private static final int LOGIN_ACTIVITY = 5616;
     private static String LOG_TAG = MineFragment.class.getSimpleName();
     public static String LOGIN_LISTENER_ARG = "login";
     public static String REGISTER_LISTENER_ARG = "register";
 
-    View view;
-    FragmentManager fragmentManager;
     LogedFragment logedFragment;
     NotLogFragment notLogFragment;
 
@@ -78,27 +83,7 @@ public class MineFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_mine_section, container, false);
-        mContext = view.getContext();
-
-        /* login fragment 和not login fragment*/
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-
-        /* Loged Fragment */
-        logedFragment = LogedFragment.newInstance();
-
-        /* Not log Fragment */
-        notLogFragment = NotLogFragment.newInstance();
-        Bundle bundle = new Bundle();
-        bundle.putSerializable(LOGIN_LISTENER_ARG, loginButtonListener);
-        bundle.putSerializable(REGISTER_LISTENER_ARG, registerButtonLister);
-        notLogFragment.setArguments(bundle);
-
-        /* Put fragments in to manager*/
-        ft.add(R.id.login_fragment_container, notLogFragment);
-        ft.add(R.id.login_fragment_container, logedFragment);
-        ft.hide(logedFragment);
-        ft.commit();
+        final View view = inflater.inflate(R.layout.fragment_mine_section, container, false);
 
         /* 选择语音播报员按钮 */
         view.findViewById(R.id.tts_btn_person_select).setOnClickListener(new View.OnClickListener() {
@@ -134,7 +119,7 @@ public class MineFragment extends Fragment {
                 else {
                     UserConfig.getInstance().setNightMode(false);
                 }
-                Activity activity = (Activity)mContext;
+                Activity activity = (Activity)getView().getContext();
                 Intent intent = new Intent(activity, MainActivity.class);
                 activity.startActivity(intent);
                 activity.overridePendingTransition(R.anim.in_anim, R.anim.out_anim);
@@ -143,12 +128,6 @@ public class MineFragment extends Fragment {
         });
 
         /* 退出登录按钮 */
-        initLogoutButton();
-
-        return view;
-    }
-
-    private void initLogoutButton() {
         view.findViewById(R.id.logoutButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -160,17 +139,48 @@ public class MineFragment extends Fragment {
                 if (result == ResultCode.success) {
                     new AlertDialog.Builder(getActivity()).setMessage("退出成功").show();
                     UserConfig.getInstance().setUserName("");
-                    changeFragment(logedFragment, notLogFragment);
+                    updateLoginVisibility(view);
                 }
                 Log.d(LOG_TAG, "Logout:" + result.toString());
             }
         });
+        updateLoginVisibility(view);
+
+        /*头像&登录按钮*/
+        ImageView loginButton = view.findViewById(R.id.loginButton);
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (UserConfig.getInstance().isLogin()) {
+                    Matisse.from(MineFragment.this)
+                            .choose(MimeType.ofImage())
+                            .maxSelectable(1)
+                            .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
+                            .thumbnailScale(0.85f)
+                            .imageEngine(new GlideEngine())
+                            .theme(R.style.Matisse_Mine)
+                            .forResult(REQUEST_CODE_CHOOSE);
+                } else {
+                    Intent intent = new Intent();
+                    intent.setClass(MineFragment.this.getContext(), LoginActivity.class);
+                    MineFragment.this.startActivityForResult(intent, LOGIN_ACTIVITY);
+                }
+            }
+        });
+        return view;
+    }
+
+    private void updateLoginVisibility(View view) {
+        if (!UserConfig.getInstance().isLogin())
+            ((ImageView)view.findViewById(R.id.loginButton)).setImageResource(R.mipmap.login_round);
+        view.findViewById(R.id.userName).setVisibility(UserConfig.getInstance().isLogin() ? View.VISIBLE : View.GONE);
+        view.findViewById(R.id.logoutButton).setVisibility(UserConfig.getInstance().isLogin() ? View.VISIBLE : View.GONE);
     }
 
     private void showPersonSelectDialog() {
         final String[] cloudVoicersEntries = getResources().getStringArray(R.array.voicer_cloud_entries);
         final String[] cloudVoicersValue = getResources().getStringArray(R.array.voicer_cloud_values);
-        new AlertDialog.Builder(mContext).setTitle("在线合成发音人选项")
+        new AlertDialog.Builder(getView().getContext()).setTitle("选择朗读发音人")
                 .setSingleChoiceItems(cloudVoicersEntries, // 单选框有几项,各是什么名字
                         mTTSPersonSelected, // 默认的选项
                         new DialogInterface.OnClickListener() { // 点击单选框后的处理
@@ -185,77 +195,22 @@ public class MineFragment extends Fragment {
                         }).show();
     }
 
-    private void changeFragment(Fragment fragmentToHide, Fragment fragmentToShow) {
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.hide(fragmentToHide).show(fragmentToShow).commit();
-    }
-
-    abstract class LoginListener implements View.OnClickListener, Serializable { };
-
-    private LoginListener loginButtonListener = new LoginListener() {
-            @Override
-            public void onClick(View v) {
-                if (!UserConfig.isNetworkAvailable()) {
-                    new AlertDialog.Builder(getActivity()).setMessage("无网络").show();
-                    return;
-                }
-                final String name = notLogFragment.getUsername();
-                final String passwd = notLogFragment.getPasswd();
-                ResultCode result = getInstance().login(name, passwd);
-                switch (result) {
-                    case success:
-                        new AlertDialog.Builder(getActivity()).setMessage("登录成功").show();
-                        UserConfig.getInstance().setUserName(name);
-                        changeFragment(notLogFragment, logedFragment);
-                        break;
-                    case wrongUserNameorPassWord:
-                        new AlertDialog.Builder(getActivity()).setMessage("用户名或密码错误").show();
-                        break;
-                    case unknownError:
-                        new AlertDialog.Builder(getActivity()).setMessage("网络错误，请稍后重试").show();
-                        break;
-                }
-                Log.d(LOG_TAG, "Login:" + result.toString());
-            }
-        };
-
-    private LoginListener registerButtonLister = new LoginListener() {
-            @Override
-            public void onClick(View v) {
-                if (!UserConfig.isNetworkAvailable()) {
-                    new AlertDialog.Builder(getActivity()).setMessage("无网络").show();
-                    return;
-                }
-                String name = notLogFragment.getUsername();
-                String passwd = notLogFragment.getPasswd();
-                if (!name.matches("[0-9a-zA-Z]{2,10}")) {
-                    new AlertDialog.Builder(getActivity()).setMessage("用户名应为长度2-10的字母或数字").show();
-                    return;
-                }
-                if (!passwd.matches("[0-9]{2,10}")) {
-                    new AlertDialog.Builder(getActivity()).setMessage("密码应为长度2-10的数字").show();
-                    return;
-                }
-                ResultCode result = getInstance().register(name, passwd);
-                switch (result) {
-                    case success:
-                        new AlertDialog.Builder(getActivity()).setMessage("注册成功").show();
-                        break;
-                    case nameUsed:
-                        new AlertDialog.Builder(getActivity()).setMessage("用户名已被占用").show();
-                        break;
-                    case unknownError:
-                        new AlertDialog.Builder(getActivity()).setMessage("网络错误，请稍后重试").show();
-                        break;
-                }
-                Log.d(LOG_TAG, "Register:" + result.toString());
-            }
-        };
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(LOG_TAG, String.format("activity result %d %d", requestCode, resultCode));
+        ImageView icon = getView().findViewById(R.id.loginButton);
+        if (resultCode == LoginActivity.RESULT_LOGIN && requestCode == LOGIN_ACTIVITY) {
+            File f1 = ServerInteraction.getInstance().getIcon(UserConfig.getInstance().getUserName(),
+                    true, getContext());
+            icon.setImageResource(R.mipmap.ic_launcher);
+            if (f1 != null)
+                Glide.with(getContext()).load(Uri.fromFile(f1)).into(icon);
+            TextView name = getView().findViewById(R.id.userName);
+            name.setText(UserConfig.getInstance().getUserName());
+            updateLoginVisibility(getView());
+        }
         if (resultCode == RESULT_OK && requestCode == REQUEST_CODE_CHOOSE) {
             Uri uri = Matisse.obtainResult(data).get(0);
             File f= new File(Matisse.obtainPathResult(data).get(0));
@@ -269,7 +224,7 @@ public class MineFragment extends Fragment {
                 ResultCode result = ServerInteraction.getInstance().uploadIcon(f, UserConfig.getInstance().getUserName());
                 if (result == ResultCode.success) {
                     new AlertDialog.Builder(getActivity()).setMessage("上传成功").show();
-                    Glide.with(view.getContext()).load(iconUri).into(icon);
+                    Glide.with(getView().getContext()).load(iconUri).into(icon);
                 } else {
                     new AlertDialog.Builder(getActivity()).setMessage("上传失败").show();
                 }
@@ -282,7 +237,5 @@ public class MineFragment extends Fragment {
     }
 
     int mTTSPersonSelected = 0;
-    ImageView icon;
     Uri iconUri;
-    Context mContext;
 }
