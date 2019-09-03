@@ -5,11 +5,14 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableStringBuilder;
@@ -33,6 +36,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
+import com.example.news.MainActivity;
 import com.example.news.R;
 import com.example.news.collection.CollectionItem;
 import com.example.news.collection.CollectionViewModel;
@@ -55,6 +59,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import am.widget.smoothinputlayout.SmoothInputLayout;
+import cn.sharesdk.onekeyshare.OnekeyShare;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.widget.ImageView.ScaleType.FIT_XY;
@@ -365,8 +370,23 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
                 }
                 break;
             case R.id.sil_ibtn_share:
-                Toast.makeText(getApplicationContext(), "share, unimplemented",
-                        Toast.LENGTH_SHORT).show();
+                NewsItem item = NewsCache.getInstance().get(mSectionPos, newsID);
+                OnekeyShare oks = new OnekeyShare();
+                // title标题，微信、QQ和QQ空间等平台使用
+                oks.setTitle(title);
+                // text是分享文本，所有平台都需要这个字段
+                oks.setText(text);
+                // imagePath是图片的本地路径，确保SDcard下面存在此张图片
+                if (item.bitmapPaths.size() != 0)
+                    oks.setImagePath(item.bitmapPaths.get(0));
+                else {
+                    BitmapDrawable drawable = (BitmapDrawable) ContextCompat.getDrawable(NewsDetailActivity.this, R.mipmap.ic_launcher);
+                    oks.setImageData(drawable.getBitmap());
+                }
+                // url在微信、Facebook等平台中使用
+                oks.setUrl("http://sharesdk.cn");
+                // 启动分享GUI
+                oks.show(this);
                 break;
             case R.id.sil_ibtn_send:
                 sendMessage();

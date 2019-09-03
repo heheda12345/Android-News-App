@@ -44,6 +44,15 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
+        <meta-data
+            android:name="Mob-AppKey"
+            android:value="2c421e84ae274" />
+        <meta-data
+            android:name="Mob-AppSecret"
+            android:value="027d0034e2b2b89373be847c556b611e" />
+        <activity android:name="com.mob.tools.MobUIShell"
+            android:theme="@style/Transparent"/>
+
     </application>
 
 </manifest>

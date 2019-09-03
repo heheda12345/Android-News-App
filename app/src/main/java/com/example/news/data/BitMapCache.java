@@ -14,7 +14,6 @@ import java.util.HashMap;
 
 public class BitMapCache {
     private ArrayList<HashMap<String, Bitmap>> maps;
-
     private static BitMapCache instance = new BitMapCache();
 
     private BitMapCache() {
@@ -26,7 +25,7 @@ public class BitMapCache {
     }
 
     public String add(int pos, String url, Bitmap bitmap) throws IOException {
-        File file = new File(Environment.getExternalStorageDirectory(), url.hashCode()+".jpg");
+        File file = new File(Environment.getExternalStorageDirectory(), url.hashCode()+".png");
         FileOutputStream fOut = new FileOutputStream(file);
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
         fOut.flush();

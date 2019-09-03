@@ -13,6 +13,14 @@ import java.util.Map;
 public class UserConfig {
 
 
+    public String getIconPath() {
+        return iconPath;
+    }
+
+    public void setIconPath(String iconPath) {
+        this.iconPath = iconPath;
+    }
+
     public static class Section {
         private String mSectionName;
         private int mPosition;
@@ -226,4 +234,5 @@ public class UserConfig {
             return keyWordsLists.subList(0, Math.min(num, keyWordsLists.size()));
         }
     }
+    private String iconPath="";
 }

@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.example.news.ui.main.News.LargeImageActivity;
 import com.example.news.ui.main.News.NewsDetailActivity;
+import com.mob.MobSDK;
 
 public class WelcomeActivity extends AppCompatActivity {
     private static final int STORAGE_STORAGE_REQUEST_CODE = 1657;
