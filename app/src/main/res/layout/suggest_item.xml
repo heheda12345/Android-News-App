@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<TextView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/suggest_textView"
-    android:textSize="20sp"
-    android:textStyle="bold"
-    android:paddingTop="2dp"
-    android:paddingBottom="2dp"
-    android:paddingStart="5dp"
-    android:paddingEnd="10dp"
     android:layout_width="match_parent"
-    android:layout_height="0sp"/>
+    android:layout_height="wrap_content"
+    android:drawableStart="@drawable/ic_history"
+    android:drawablePadding="20dp"
+    android:gravity="center_vertical"
+    android:paddingLeft="20dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:text="test"
+    android:textSize="20dp"
+    android:textStyle="bold" />
 
