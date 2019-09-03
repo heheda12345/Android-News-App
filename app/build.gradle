@@ -94,4 +94,6 @@ dependencies {
     implementation "com.soundcloud.android:android-crop:1.0.1@aar"
     //好看的搜索框
     implementation 'com.github.mancj:MaterialSearchBar:0.8.2'
+    // 圆角按钮
+    implementation 'com.github.jd-alexander:android-flat-button:v1.1'
 }
