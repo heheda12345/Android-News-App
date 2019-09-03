@@ -27,6 +27,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.support.v7.widget.SearchView;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
@@ -237,6 +239,23 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     @Override
     public void onPageScrollStateChanged(int state) {
+
+    }
+
+    public void setBright() {
+        Log.d(LOG_TAG, "set bright");
+        Window localWindow = getWindow();
+        WindowManager.LayoutParams localLayoutParams = localWindow.getAttributes();
+        localLayoutParams.screenBrightness = -1;
+        localWindow.setAttributes(localLayoutParams);
+    }
+
+    public void setDark() {
+        Log.d(LOG_TAG, "set dark");
+        Window localWindow = getWindow();
+        WindowManager.LayoutParams localLayoutParams = localWindow.getAttributes();
+        localLayoutParams.screenBrightness = 0.5f;
+        localWindow.setAttributes(localLayoutParams);
 
     }
 
