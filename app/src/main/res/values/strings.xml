@@ -111,4 +111,5 @@
     <string name="username_text">用户名：</string>
     <string name="password_text">密码：</string>
     <string name="no_collection_text">还没有收藏哦！</string>
+    <string name="no_history_text">还没有历史纪录哦！</string>
 </resources>

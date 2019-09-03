@@ -18,13 +18,15 @@ import com.example.news.ui.main.News.NewsDetailActivity;
 
 import java.util.List;
 
-public class CollectionListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class SimpleNewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context context;
     private List<NewsItem> news;
+    private String type;
 
-    public CollectionListAdapter(Context context, List<NewsItem> news) {
+    public SimpleNewsListAdapter(Context context, List<NewsItem> news, String type) {
         this.context = context;
         this.news = news;
+        this.type = type;
     }
 
     @NonNull
@@ -34,7 +36,7 @@ public class CollectionListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         int resource = -1;
         if (layoutType == ConstantValues.ItemViewType.FOOTER) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.collection_foot_item, parent, false);
-            return new CollectionFootViewHolder(v);
+            return new CollectionFootViewHolder(context, v, type);
         }
         switch (layoutType) {
             case NONE: resource = R.layout.news_item_none; break;

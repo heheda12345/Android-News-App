@@ -7,6 +7,7 @@ import com.example.news.collection.CollectionViewModel;
 import com.example.news.collection.NewsListItem;
 import com.example.news.collection.NewsSavedItem;
 import com.example.news.support.NewsItem;
+import com.nostra13.universalimageloader.utils.L;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,4 +51,12 @@ public class NewsCache {
     public void addSection() { maps.add(new HashMap<String, NewsItem>()); }
 
     public void removeSection(int pos) {maps.remove(pos); }
+
+    public List<NewsItem> getAllNews() {
+        List<NewsItem> allNews = new ArrayList<>();
+        for (HashMap<String, NewsItem> map : maps) {
+            allNews.addAll(map.values());
+        }
+        return allNews;
+    }
 }

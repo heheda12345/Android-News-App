@@ -32,6 +32,7 @@ import com.example.news.collection.CollectionViewModel;
 import com.example.news.data.UserConfig;
 import com.example.news.support.NewsItem;
 import com.example.news.support.ServerInteraction;
+import com.example.news.ui.main.Items.CollectionFootViewHolder;
 import com.soundcloud.android.crop.Crop;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
@@ -62,6 +63,8 @@ public class MineFragment extends Fragment implements Serializable{
     private static String LOG_TAG = MineFragment.class.getSimpleName();
     public static String LOGIN_LISTENER_ARG = "login";
     public static String REGISTER_LISTENER_ARG = "register";
+    public static final String NEWS_LIST_HISTORY = "history";
+    public static final String NEWS_LIST_COLLECTION = "collection";
 
     LogedFragment logedFragment;
     NotLogFragment notLogFragment;
@@ -175,6 +178,15 @@ public class MineFragment extends Fragment implements Serializable{
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), CollectionActivity.class);
+                getContext().startActivity(intent);
+            }
+        });
+
+        /* 历史记录 */
+        view.findViewById(R.id.history_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), HistoryActivity.class);
                 getContext().startActivity(intent);
             }
         });
