@@ -71,10 +71,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (userConfig.getNightMode()) {
-            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            setDark();
         }
         else {
-            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            setBright();
         }
         /* Load User Config*/
         searchSuggest = new ArrayList<>();
@@ -133,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         /* Create Popup Window*/
         listPopupWindow = new ListPopupWindow(MainActivity.this);
+        listPopupWindow.setHorizontalOffset(1000);
         listPopupWindow.setAdapter(suggestArrayAdapter);
         listPopupWindow.setAnchorView(toolbar);
         listPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -244,19 +245,18 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     public void setBright() {
         Log.d(LOG_TAG, "set bright");
-        Window localWindow = getWindow();
-        WindowManager.LayoutParams localLayoutParams = localWindow.getAttributes();
-        localLayoutParams.screenBrightness = -1;
-        localWindow.setAttributes(localLayoutParams);
+        WindowManager.LayoutParams p = getWindow().getAttributes();
+        p.alpha = 1.0f;
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        getWindow().setAttributes(p);
     }
 
     public void setDark() {
         Log.d(LOG_TAG, "set dark");
-        Window localWindow = getWindow();
-        WindowManager.LayoutParams localLayoutParams = localWindow.getAttributes();
-        localLayoutParams.screenBrightness = 0.5f;
-        localWindow.setAttributes(localLayoutParams);
-
+        WindowManager.LayoutParams p = getWindow().getAttributes();
+        p.alpha = 0.3f;
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        getWindow().setAttributes(p);
     }
 
     CollectionViewModel db;

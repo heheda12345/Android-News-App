@@ -7,9 +7,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.WindowManager;
 
 import com.example.news.R;
 import com.example.news.collection.CollectionViewModel;
+import com.example.news.data.UserConfig;
 import com.example.news.support.NewsItem;
 
 import java.util.List;
@@ -23,7 +25,12 @@ public class CollectionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_collection);
-
+        if (UserConfig.getInstance().getNightMode()) {
+            setDark();
+        }
+        else {
+            setBright();
+        }
         db = ViewModelProviders.of(this).get(CollectionViewModel.class);
         news = db.getNewsList("CCC");
         recyclerView = findViewById(R.id.collection_recyclerView);
@@ -41,5 +48,19 @@ public class CollectionActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    public void setBright() {
+        WindowManager.LayoutParams p = getWindow().getAttributes();
+        p.alpha = 1.0f;
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        getWindow().setAttributes(p);
+    }
+
+    public void setDark() {
+        WindowManager.LayoutParams p = getWindow().getAttributes();
+        p.alpha = 0.3f;
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        getWindow().setAttributes(p);
     }
 }

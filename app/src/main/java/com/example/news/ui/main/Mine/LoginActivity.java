@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupWindow;
@@ -24,7 +25,12 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        if (UserConfig.getInstance().getNightMode()) {
+            setDark();
+        }
+        else {
+            setBright();
+        }
         Button login = findViewById(R.id.loginButton);
         login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,5 +98,19 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d(LOG_TAG, "Register:" + result.toString());
             }
         });
+    }
+
+    public void setBright() {
+        WindowManager.LayoutParams p = getWindow().getAttributes();
+        p.alpha = 1.0f;
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        getWindow().setAttributes(p);
+    }
+
+    public void setDark() {
+        WindowManager.LayoutParams p = getWindow().getAttributes();
+        p.alpha = 0.3f;
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        getWindow().setAttributes(p);
     }
 }
