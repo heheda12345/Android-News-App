@@ -10,6 +10,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.example.news.data.BitMapCache;
+import com.example.news.ui.main.Mine.LogedFragment;
 import com.nostra13.universalimageloader.utils.L;
 
 import java.io.File;
@@ -27,11 +28,13 @@ public class ImageLoadingTask extends AsyncTask<String, Void, List<Bitmap>> {
     private int sectionPos;
     private ImageView[] imageViews;
     private static final String LOG_TAG = "ImageLoadingTask";
+    private boolean networkError;
 
 
-    public ImageLoadingTask(int sectionPos, ImageView[] imageViews) {
+    public ImageLoadingTask(int sectionPos, ImageView[] imageViews, boolean networkError) {
         this.sectionPos = sectionPos;
         this.imageViews = imageViews;
+        this.networkError = networkError;
     }
 
     @Override
@@ -40,29 +43,29 @@ public class ImageLoadingTask extends AsyncTask<String, Void, List<Bitmap>> {
         BitMapCache cache = BitMapCache.getInstance();
         for (int i = 0; i < params.length; ++i) {
             String url = params[i];
-            if (cache.contains(sectionPos, url)) {
-//                Log.d(LOG_TAG, "Get from cache");
-                bitmapList.add(cache.get(sectionPos, url));
-                continue;
-            }
-            Bitmap bitmap = null;
-            try {
-                URL imgUrl = new URL(url);
-                HttpURLConnection conn = (HttpURLConnection) imgUrl
-                        .openConnection();
-                conn.setRequestMethod("GET");
-                InputStream is = conn.getInputStream();
-                bitmap = BitmapFactory.decodeStream(is);
-                cache.add(sectionPos, url, bitmap);
-                bitmapList.add(bitmap);
-                is.close();
-                conn.disconnect();
-            } catch (MalformedURLException e) {
+            Bitmap bitmap;
+            if (!networkError) {
+                try {
+                    URL imgUrl = new URL(url);
+                    HttpURLConnection conn = (HttpURLConnection) imgUrl
+                            .openConnection();
+                    conn.setRequestMethod("GET");
+                    conn.setConnectTimeout(1000);
+                    conn.setReadTimeout(1000);
+                    InputStream is = conn.getInputStream();
+                    bitmap = BitmapFactory.decodeStream(is);
+                    cache.add(sectionPos, url, bitmap);
+                    bitmapList.add(bitmap);
+                    is.close();
+                    conn.disconnect();
+                } catch (MalformedURLException e) {
 //                Log.e(LOG_TAG, e.getMessage());
-            } catch (Exception e) {
-                Log.e(LOG_TAG, e.getMessage());
-                e.printStackTrace();
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, e.getMessage());
+                    e.printStackTrace();
+                }
             }
+
         }
         return bitmapList;
     }

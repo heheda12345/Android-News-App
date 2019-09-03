@@ -1,9 +1,7 @@
 package com.example.news.support;
 
-import android.graphics.Bitmap;
 import android.util.Log;
 
-import com.example.news.MainActivity;
 import com.example.news.data.ConstantValues;
 import com.example.news.data.UserConfig;
 
@@ -16,12 +14,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +24,7 @@ import java.util.Map;
 
 
 public class NewsCrawler extends Thread {
-    private static final String LOG_TAG =
-            NewsCrawler.class.getSimpleName();
+//    private static final String LOG_TAG = NewsCrawler.class.getSimpleName();
     private ArrayList<JSONObject> newsResp = new ArrayList<>();
     private ConstantValues.NetWorkStatus netWorkStatus = ConstantValues.NetWorkStatus.NORMAL;
     private CrawlerInfo crawlerInfo;

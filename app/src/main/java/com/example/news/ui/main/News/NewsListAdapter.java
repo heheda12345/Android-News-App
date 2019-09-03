@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.news.R;
+import com.example.news.data.BitMapCache;
 import com.example.news.data.ConstantValues;
 import com.example.news.data.NewsCache;
 import com.example.news.data.UserConfig;
@@ -43,8 +44,6 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
-//        Log.d("NewsAdapter", "OnBind " + position);
-
         if (holder instanceof NewsItemVH) {
             final NewsItemVH itemHolder = (NewsItemVH) holder;
             itemHolder.title.setText(mNews.get(position).getTitle());
@@ -61,7 +60,13 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             }
 
             List<String> imgUrls = getImageUrlsList(imagesUrlStr, ConstantValues.IMAGE_NUM[itemHolder.layoutType.ordinal()]);
-            new ImageLoadingTask(mSectionPos, itemHolder.images).execute(imgUrls.toArray(new String[0]));
+            BitMapCache bitMapCache = BitMapCache.getInstance();
+            for (int i = 0; i < imgUrls.size(); ++i) {
+                if (bitMapCache.contains(mSectionPos, imgUrls.get(i))) {
+                    itemHolder.images[i].setImageBitmap(bitMapCache.get(mSectionPos, imgUrls.get(i)));
+                }
+            }
+            new ImageLoadingTask(mSectionPos, itemHolder.images, netWorkError).execute(imgUrls.toArray(new String[0]));
 
 
             itemHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -81,7 +86,6 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 footViewHolder.setNetWorkError();
             }
             else {
-                Log.d(LOG_TAG, "Set Loading");
                 footViewHolder.setLoading();
             }
         }
