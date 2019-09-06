@@ -43,7 +43,13 @@ public class BitMapCache {
     }
 
     public boolean contains(int pos, String url) {
-        return maps.get(pos).containsKey(url);
+        boolean has;
+        try {
+            has = maps.get(pos).containsKey(url);
+        } catch (Exception e) {
+            has = false;
+        }
+        return has;
     }
 
     public void addAllSections(int numSection) {
