@@ -379,6 +379,7 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
             case R.id.sil_ibtn_share:
                 NewsItem item = NewsCache.getInstance().get(mSectionPos, newsID);
                 OnekeyShare oks = new OnekeyShare();
+                oks.setTitleUrl("http://sharesdk.cn");
                 // title标题，微信、QQ和QQ空间等平台使用
                 oks.setTitle(title);
                 // text是分享文本，所有平台都需要这个字段
@@ -391,7 +392,7 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
                     oks.setImageData(drawable.getBitmap());
                 }
                 // url在微信、Facebook等平台中使用
-                oks.setUrl("http://sharesdk.cn");
+                oks.setUrl("http://gznews.cn");
                 // 启动分享GUI
                 oks.show(this);
                 break;

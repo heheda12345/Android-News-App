@@ -11,6 +11,7 @@ import android.widget.ImageView;
 
 import com.example.news.R;
 import com.example.news.data.UserConfig;
+import com.r0adkll.slidr.Slidr;
 
 public class AboutActivity extends AppCompatActivity {
     @Override
@@ -33,6 +34,7 @@ public class AboutActivity extends AppCompatActivity {
                 finish();
             }
         });
+        Slidr.attach(this);
 //        ((ImageView)findViewById(R.id.gyx)).setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.gyx));
     }
 

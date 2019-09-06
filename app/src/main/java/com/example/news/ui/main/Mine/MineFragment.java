@@ -212,6 +212,16 @@ public class MineFragment extends Fragment implements Serializable{
             }
         });
 
+        /* 检查更新 */
+        view.findViewById(R.id.check_version).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(getActivity()).setMessage("版本已是最新").show();
+            }
+        });
+
+
+
         /* 关于我们 */
         view.findViewById(R.id.about_button).setOnClickListener(new View.OnClickListener() {
             @Override

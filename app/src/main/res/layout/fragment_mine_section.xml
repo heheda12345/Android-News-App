@@ -53,39 +53,40 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/gray"/>
+
         <Switch
             android:id="@+id/switch_text_only"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/save_data_text"
             android:paddingStart="10dp"
-            android:paddingEnd="10dp"
             android:paddingTop="10dp"
+            android:paddingEnd="10dp"
             android:paddingBottom="10dp"
-            android:textSize="16sp"/>
+            android:text="@string/save_data_text"
+            android:textSize="16sp" />
 
         <Switch
             android:id="@+id/night_mode"
-            android:text="@string/night_mode_text"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingStart="10dp"
             android:paddingTop="10dp"
+            android:paddingEnd="10dp"
             android:paddingBottom="10dp"
-            android:textSize="16sp"/>
+            android:text="@string/night_mode_text"
+            android:textSize="16sp" />
 
         <Switch
             android:id="@+id/load_comment"
-            android:text="评论模式"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:checked="true"
             android:paddingStart="10dp"
-            android:paddingEnd="10dp"
             android:paddingTop="10dp"
+            android:paddingEnd="10dp"
             android:paddingBottom="10dp"
-            android:textSize="16sp"/>
+            android:text="评论模式"
+            android:textSize="16sp"  />
 
         <Button
             android:id="@+id/collection_button"
@@ -118,6 +119,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/history_text"
+            android:layout_marginTop="5dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:textSize="16sp"
+            android:gravity="start|center_vertical"
+            android:drawableEnd="@drawable/ic_right"
+            android:background="@color/white"/>
+
+        <Button
+            android:id="@+id/check_version"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="检查更新"
             android:layout_marginTop="5dp"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"

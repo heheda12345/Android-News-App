@@ -13,6 +13,7 @@ import com.example.news.R;
 import com.example.news.data.NewsCache;
 import com.example.news.data.UserConfig;
 import com.example.news.support.NewsItem;
+import com.r0adkll.slidr.Slidr;
 
 import java.util.List;
 
@@ -48,6 +49,7 @@ public class HistoryActivity extends AppCompatActivity {
                 finish();
             }
         });
+        Slidr.attach(this);
     }
 
     public void setBright() {
