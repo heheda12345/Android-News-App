@@ -33,6 +33,7 @@ public class NewsCrawler extends Thread {
         JSONTokener jsonTokener = new JSONTokener(response);
         JSONObject jsonObject = (JSONObject) jsonTokener.nextValue();
         JSONArray data = jsonObject.getJSONArray("data");
+
         for (int i = 0; i < data.length(); i++) {
             if (!isDuplicate(data.getJSONObject(i))) {
                 newsResp.add(data.getJSONObject(i));
@@ -45,7 +46,7 @@ public class NewsCrawler extends Thread {
             try {
                 if (newsObj.getString("newsID").equals(obj.getString("newsID")) ||
                         newsObj.getString("title").equals(obj.getString("title")) ||
-                        newsObj.getString("image").equals(obj.getString("image"))
+                        (newsObj.getString("image").length() > 5 && newsObj.getString("image").equals(obj.getString("image")))
                 ) {
                     return true;
                 }
@@ -100,6 +101,7 @@ public class NewsCrawler extends Thread {
                 response.append(data);
                 data=br.readLine();
             }
+
             br.close();
             read.close();
             input.close();
