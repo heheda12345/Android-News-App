@@ -54,15 +54,15 @@ public class HistoryActivity extends AppCompatActivity {
 
     public void setBright() {
         WindowManager.LayoutParams p = getWindow().getAttributes();
-        p.alpha = 1.0f;
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        p.screenBrightness = -1.0f;
+//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         getWindow().setAttributes(p);
     }
 
     public void setDark() {
         WindowManager.LayoutParams p = getWindow().getAttributes();
-        p.alpha = 0.3f;
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        p.screenBrightness = 0.1f;
+//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         getWindow().setAttributes(p);
     }
 }

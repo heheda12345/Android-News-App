@@ -254,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public void setBright() {
         Log.d(LOG_TAG, "set bright");
         WindowManager.LayoutParams p = getWindow().getAttributes();
-        p.screenBrightness = 1.0f;
+        p.screenBrightness = -1.0f;
 //        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         getWindow().setAttributes(p);
     }
@@ -262,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public void setDark() {
         Log.d(LOG_TAG, "set dark");
         WindowManager.LayoutParams p = getWindow().getAttributes();
-        p.screenBrightness = 0.3f;
+        p.screenBrightness = 0.1f;
 //        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         getWindow().setAttributes(p);
     }
