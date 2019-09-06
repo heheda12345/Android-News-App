@@ -12,7 +12,7 @@ import java.util.List;
 
 @Dao
 public interface CollectionDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(CollectionItem item);
 
     @Delete

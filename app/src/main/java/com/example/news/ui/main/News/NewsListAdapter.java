@@ -201,7 +201,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 notifyItemRangeInserted(0, news.size());
             }
             else {
-                Toast.makeText(mContext, "没有更多新闻啦！", Toast.LENGTH_LONG).show();
+                Toast.makeText(mContext, "新闻已经是最新啦！", Toast.LENGTH_LONG).show();
             }
         }
         else {

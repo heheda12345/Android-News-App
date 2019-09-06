@@ -65,6 +65,8 @@ public class NewsItem {
 
     public void setImages(String[] imgPath) {
         for (String s : imgPath) {
+            if (s.length() < 5)
+                continue;
             Bitmap bitmap = BitmapFactory.decodeFile(s);
             this.bitmaps.add(bitmap);
             this.bitmapPaths.add(s);
