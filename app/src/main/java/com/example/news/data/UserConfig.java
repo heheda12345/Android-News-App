@@ -162,12 +162,13 @@ public class UserConfig {
     }
 
     public static String getHostName() {
-        return "95.179.200.164";
+        return "101.6.5.200";
     }
-    public static int getHostPort() {return 5000;}
+    public static int getHostPort() {return 15565;}
 
     public static boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = ((ConnectivityManager) getInstance().context.getSystemService(Context.CONNECTIVITY_SERVICE));
+//        boolean ret = connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
         return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 
