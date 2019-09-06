@@ -102,6 +102,8 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         if (position == mNews.size()) {
             return ConstantValues.ItemViewType.FOOTER.ordinal();
         }
+        if (UserConfig.getInstance().isTextMode())
+            return ConstantValues.ItemViewType.NONE.ordinal();
         String imgUrlsStr = mNews.get(position).getImageUrlStr();
         List<String> imgUrlList = parseJsonList(imgUrlsStr);
         if (imgUrlList.size() == 0) {
