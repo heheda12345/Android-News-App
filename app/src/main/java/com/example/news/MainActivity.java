@@ -211,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                fragmentManager.beginTransaction().hide(searchResultFragment).commit();
+                fragmentManager.beginTransaction().detach(searchResultFragment).commit();
                 mainViewPager.setVisibility(View.VISIBLE);
                 bottomNavigationView.setVisibility(View.VISIBLE);
                 return false;
