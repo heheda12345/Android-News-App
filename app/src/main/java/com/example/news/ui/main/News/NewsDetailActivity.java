@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
@@ -64,6 +66,7 @@ import am.widget.smoothinputlayout.SmoothInputLayout;
 import cn.sharesdk.onekeyshare.OnekeyShare;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static android.widget.ImageView.ScaleType.FIT_XY;
 import static java.lang.Math.max;
 
@@ -207,7 +210,7 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
-    private void initContainer(LinearLayout container) {
+    private void initContainer(final LinearLayout container) {
         // 建立所有imageView
         ArrayList<ImageView> imageViews = new ArrayList<>();
         ArrayList<Bitmap> bitmaps = new ArrayList<>();
@@ -330,19 +333,19 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
 
         // videoView
         for (String url: videoUrls) {
-            VideoView videoView = new VideoView(this);
+            final VideoView videoView = new VideoView(this);
             videoView.setVideoURI(Uri.parse(url));
+            videos.add(videoView);
             LinearLayout.LayoutParams layoutParams =
-                    new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 200);
+                    new LinearLayout.LayoutParams(WRAP_CONTENT, 500);
             layoutParams.setMargins(10, 10, 10, 10);
             layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
             videoView.setLayoutParams(layoutParams);
+            container.addView(videoView);
             MediaController mediaController = new MediaController(this);
             videoView.setMediaController(mediaController);
             mediaController.setMediaPlayer(videoView);
             videoView.seekTo(1);
-            container.addView(videoView);
-            videos.add(videoView);
         }
 
 //        TextView debugView = new TextView(this);
