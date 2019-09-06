@@ -31,7 +31,16 @@ public class NewsCache {
 
     public NewsItem get(int pos, String newsID) { return maps.get(pos).get(newsID); }
 
-    public boolean contains(int pos, String newsID) { return maps.get(pos).containsKey(newsID); }
+    public boolean contains(int pos, String newsID) {
+        boolean has = true;
+        try {
+            has = maps.get(pos).containsKey(newsID);
+        } catch (Exception e) {
+            has = false;
+        }
+        return has;
+
+    }
 
     public boolean contains(String newsID) {
         for (int pos = 0; pos < maps.size(); ++pos) {
