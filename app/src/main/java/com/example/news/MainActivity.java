@@ -147,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             @Override
             public boolean onQueryTextSubmit(String s) {
                 fragmentManager.beginTransaction().attach(searchResultFragment).commit();
+                searchResultFragment.setInit();
                 searchResultFragment.setNews(s);
                 userConfig.addSearchHistory(s);
                 mainViewPager.setVisibility(View.GONE);

@@ -44,6 +44,7 @@ public class NewsListFragment extends Fragment {
     private boolean mInitOnCreate = false;
     private String mKeyWord = "";
     private boolean firstCreate = true;
+    private boolean init = false;
 
     protected NewsListAdapter mNewsListAdapter;
     protected int mPage = 0;
@@ -150,11 +151,12 @@ public class NewsListFragment extends Fragment {
                     }
                 }
                 else {
-                    if (mPage == 0) {
+                    if (mPage == 0 || init) {
                         mNewsListAdapter.setNews(status, news);
                         if (news.size() > 0) {
                             mLatestDate = getLatestTime(news);
                         }
+                        init = false;
                     }
                     else {
                         mNewsListAdapter.addNews(status, news);
@@ -166,6 +168,10 @@ public class NewsListFragment extends Fragment {
             }
         });
         return root;
+    }
+
+    public void setInit() {
+        init = true;
     }
 
     public void setNews(String keyWord) {

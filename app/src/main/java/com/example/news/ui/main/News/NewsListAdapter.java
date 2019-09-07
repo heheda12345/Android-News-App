@@ -94,6 +94,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public int getItemCount() {
         /* +1 for footer */
+        Log.d("List", mNews.size() + "");
         return mNews.size() + 1;
     }
 

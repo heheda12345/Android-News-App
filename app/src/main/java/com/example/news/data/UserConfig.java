@@ -73,6 +73,7 @@ public class UserConfig {
         searchHistory.add("清华大学");
         searchHistory.add("特朗普");
         searchHistory.add("海洋研究");
+        searchHistory.add("张晨");
         keyWordsSet = new HashMap<>();
         keyWordsSet.put("新时代", 1.0);
         for (int i = 0; i < ConstantValues.ALL_SECTIONS.length; i += 2) {
