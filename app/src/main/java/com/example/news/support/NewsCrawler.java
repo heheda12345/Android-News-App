@@ -81,7 +81,7 @@ public class NewsCrawler extends Thread {
     private void getNews(String keyWord, String category, int size) {
         StringBuilder response = new StringBuilder();
         try {
-            String urlStr = "https://api2.newsminer.net/svc/news/queryNewsList?" +
+            String urlStr = "https://news.com/svc/news/queryNewsList?" +
                     "words=" + keyWord + "&" +
                     "categories=" + category + "&" +
                     "startDate=" + crawlerInfo.startTime + "&" +

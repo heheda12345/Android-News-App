@@ -163,11 +163,6 @@ public class UserConfig {
         saveTodb();
     }
 
-    public static String getHostName() {
-        return "101.6.5.200";
-    }
-    public static int getHostPort() {return 15565;}
-
     public static boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = ((ConnectivityManager) getInstance().context.getSystemService(Context.CONNECTIVITY_SERVICE));
 //        boolean ret = connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
